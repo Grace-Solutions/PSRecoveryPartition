@@ -32,8 +32,7 @@ Registers the supplied WindowsRE image and returns the updated configuration.
 ## PARAMETERS
 
 ### -BootToRE
-{{ Fill BootToRE Description }}
-
+When set, schedules the system to boot into the Windows Recovery Environment on the next restart.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -62,8 +61,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
-
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -77,8 +75,7 @@ Accept wildcard characters: False
 ```
 
 ### -Target
-{{ Fill Target Description }}
-
+Reagentc target identifier used when registering or scheduling a WindowsRE boot.
 ```yaml
 Type: DirectoryInfo
 Parameter Sets: (All)
@@ -108,8 +105,7 @@ Accept wildcard characters: False
 ```
 
 ### -WindowsREImagePath
-{{ Fill WindowsREImagePath Description }}
-
+Path to a WindowsRE WIM image that should be staged into the recovery partition.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)

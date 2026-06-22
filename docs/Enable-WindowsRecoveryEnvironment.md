@@ -46,8 +46,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
-
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)

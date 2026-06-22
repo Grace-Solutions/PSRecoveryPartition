@@ -31,8 +31,7 @@ Lists WIM files in the specified folder.
 ## PARAMETERS
 
 ### -ComputeHash
-{{ Fill ComputeHash Description }}
-
+When set, computes a SHA-256 hash of each discovered image. Slower but useful for change detection.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -46,8 +45,7 @@ Accept wildcard characters: False
 ```
 
 ### -ImageKind
-{{ Fill ImageKind Description }}
-
+Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -62,8 +60,7 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-{{ Fill Path Description }}
-
+File-system path to search for WIM images.
 ```yaml
 Type: DirectoryInfo
 Parameter Sets: (All)

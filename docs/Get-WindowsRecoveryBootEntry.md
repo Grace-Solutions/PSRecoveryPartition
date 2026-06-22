@@ -32,8 +32,7 @@ Lists the recovery boot entries currently registered in BCD.
 ## PARAMETERS
 
 ### -BootImagePath
-{{ Fill BootImagePath Description }}
-
+Path to a boot WIM image used by the BCD recovery entry.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -47,8 +46,7 @@ Accept wildcard characters: False
 ```
 
 ### -IncludeAll
-{{ Fill IncludeAll Description }}
-
+When set, returns every BCD entry instead of only those that match recovery heuristics.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -62,8 +60,7 @@ Accept wildcard characters: False
 ```
 
 ### -IncludeHidden
-{{ Fill IncludeHidden Description }}
-
+When set, returns boot entries that are flagged as hidden in BCD.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -77,8 +74,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
-
+Friendly display name of the target boot entry.
 ```yaml
 Type: String
 Parameter Sets: (All)

@@ -31,8 +31,7 @@ Validates the recovery partition on disk 0 partition 5.
 ## PARAMETERS
 
 ### -DiskNumber
-{{ Fill DiskNumber Description }}
-
+Number of the physical disk to operate on, as reported by Get-Disk.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -46,8 +45,7 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-{{ Fill PartitionNumber Description }}
-
+Number of the partition on the target disk, as reported by Get-Partition.
 ```yaml
 Type: Int32
 Parameter Sets: (All)

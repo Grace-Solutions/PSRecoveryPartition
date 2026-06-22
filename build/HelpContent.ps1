@@ -1,9 +1,51 @@
 @{
+    '__Common' = @{
+        DiskNumber              = 'Number of the physical disk to operate on, as reported by Get-Disk.'
+        PartitionNumber         = 'Number of the partition on the target disk, as reported by Get-Partition.'
+        SizeBytes               = 'Explicit partition size in bytes. Mutually exclusive with -SizePercent.'
+        SizePercent              = 'Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.'
+        Label                   = 'File system label assigned to the recovery volume. Defaults to RECOVERY.'
+        FileSystem              = 'File system used to format the recovery partition. Defaults to NTFS.'
+        WindowsREImagePath      = 'Path to a WindowsRE WIM image that should be staged into the recovery partition.'
+        BootImagePath           = 'Path to a boot WIM image used by the BCD recovery entry.'
+        BootEntryName           = 'Friendly name applied to the recovery BCD boot entry.'
+        BootEntryVisibility     = 'Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.'
+        BootTimeout             = 'Boot menu timeout applied when a new recovery boot entry is configured.'
+        EntryPointMode          = 'Selects which recovery entry points to configure: PushButton, BootEntry, or Both.'
+        PushButtonAction        = 'Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).'
+        AccessPath              = 'Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.'
+        NoDefaultDriveLetter    = 'When set, prevents Windows from automatically assigning a drive letter to the partition.'
+        IsHidden                = 'When set, marks the partition as hidden so it is omitted from common UI surfaces.'
+        IncludeNonRecovery      = 'When set, the discovery surface also returns partitions that do not look like recovery partitions; useful for diagnostics.'
+        IncludeAll              = 'When set, returns every BCD entry instead of only those that match recovery heuristics.'
+        IncludeHidden           = 'When set, returns boot entries that are flagged as hidden in BCD.'
+        Path                    = 'File-system path to search for WIM images.'
+        ImageKind               = 'Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.'
+        ComputeHash             = 'When set, computes a SHA-256 hash of each discovered image. Slower but useful for change detection.'
+        InputObject             = 'Object received from the pipeline that the cmdlet should act on.'
+        Identifier              = 'BCD GUID identifier of the target boot entry.'
+        Name                    = 'Friendly display name of the target boot entry.'
+        DestinationPath         = 'Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.'
+        SourceImagePath         = 'Source WIM file that should be copied or staged.'
+        SourcePath              = 'Source file path on a local or UNC volume used as the input to the copy.'
+        SourceUri               = 'HTTPS URI from which the recovery image should be downloaded.'
+        BootToRE                = 'When set, schedules the system to boot into the Windows Recovery Environment on the next restart.'
+        Target                  = 'Reagentc target identifier used when registering or scheduling a WindowsRE boot.'
+        AddLast                 = 'When set, appends the new BCD entry to the end of the boot order instead of the default position.'
+        SetDefault              = 'When set, marks the new boot entry as the default in BCD.'
+        SetDefaultBootEntry     = 'When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.'
+        Force                   = 'Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.'
+        PassThru                = 'Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.'
+    }
     'Get-RecoveryPartition' = @{
         Synopsis    = 'Discovers recovery partitions on local disks.'
         Description = 'Enumerates physical disks and emits a RecoveryPartitionInfo object for each partition that carries the Windows recovery partition type GUID. Use -IncludeNonRecovery to widen the search to non-recovery partitions for diagnostics.'
         OneLiner    = 'Get-RecoveryPartition -DiskNumber 0'
         OneLinerDescription = 'Lists every recovery partition on disk 0.'
+        Parameters  = @{
+            DiskNumber      = 'Optional disk filter. When omitted, every physical disk is searched.'
+            PartitionNumber = 'Optional partition filter applied to the results of the disk-level enumeration.'
+        }
         Splat       = @'
 $GetRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $GetRecoveryPartitionParameters.DiskNumber = 0
@@ -98,6 +140,9 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)
         Description = 'Applies the steps in a plan produced by New-RecoveryPartitionPlan. Steps are processed in order and each step checks current state before applying changes. Honours -WhatIf and -Confirm and returns the resulting recovery partition when -PassThru is supplied.'
         OneLiner    = 'New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru'
         OneLinerDescription = 'Builds and applies the plan on disk 0 and emits the resulting recovery partition.'
+        Parameters  = @{
+            InputObject = 'RecoveryPartitionPlan produced by New-RecoveryPartitionPlan. Accepted from the pipeline.'
+        }
     }
     'Get-WindowsRecoveryImage' = @{
         Synopsis    = 'Discovers Windows RE or Windows PE image files.'

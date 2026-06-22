@@ -53,8 +53,7 @@ Splatted OrderedDictionary example for the combined entry-point configuration.
 ## PARAMETERS
 
 ### -BootEntryVisibility
-{{ Fill BootEntryVisibility Description }}
-
+Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.
 ```yaml
 Type: RecoveryBootEntryVisibility
 Parameter Sets: (All)
@@ -69,8 +68,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootImagePath
-{{ Fill BootImagePath Description }}
-
+Path to a boot WIM image used by the BCD recovery entry.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -84,8 +82,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootTimeout
-{{ Fill BootTimeout Description }}
-
+Boot menu timeout applied when a new recovery boot entry is configured.
 ```yaml
 Type: TimeSpan
 Parameter Sets: (All)
@@ -114,8 +111,7 @@ Accept wildcard characters: False
 ```
 
 ### -EntryPointMode
-{{ Fill EntryPointMode Description }}
-
+Selects which recovery entry points to configure: PushButton, BootEntry, or Both.
 ```yaml
 Type: RecoveryEntryPointMode
 Parameter Sets: (All)
@@ -130,8 +126,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
-
+Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -145,8 +140,7 @@ Accept wildcard characters: False
 ```
 
 ### -InputObject
-{{ Fill InputObject Description }}
-
+Object received from the pipeline that the cmdlet should act on.
 ```yaml
 Type: Object
 Parameter Sets: (All)
@@ -160,8 +154,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
-
+Friendly display name of the target boot entry.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -175,8 +168,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
-
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -190,8 +182,7 @@ Accept wildcard characters: False
 ```
 
 ### -PushButtonAction
-{{ Fill PushButtonAction Description }}
-
+Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -205,8 +196,7 @@ Accept wildcard characters: False
 ```
 
 ### -SetDefault
-{{ Fill SetDefault Description }}
-
+When set, marks the new boot entry as the default in BCD.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -236,8 +226,7 @@ Accept wildcard characters: False
 ```
 
 ### -WindowsREImagePath
-{{ Fill WindowsREImagePath Description }}
-
+Path to a WindowsRE WIM image that should be staged into the recovery partition.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)

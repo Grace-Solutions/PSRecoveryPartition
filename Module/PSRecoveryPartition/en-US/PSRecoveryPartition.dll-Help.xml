@@ -29,7 +29,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -40,7 +40,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -77,7 +77,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -89,7 +89,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -165,7 +165,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>AccessPath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill AccessPath Description }}</maml:para>
+            <maml:para>Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -188,7 +188,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -200,7 +200,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -212,7 +212,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -237,7 +237,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>AccessPath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill AccessPath Description }}</maml:para>
+          <maml:para>Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -261,7 +261,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -273,7 +273,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>PartitionNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+          <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -285,7 +285,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -372,7 +372,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -409,7 +409,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -485,7 +485,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Optional disk filter. When omitted, every physical disk is searched.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -497,7 +497,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>IncludeNonRecovery</maml:name>
           <maml:description>
-            <maml:para>{{ Fill IncludeNonRecovery Description }}</maml:para>
+            <maml:para>When set, the discovery surface also returns partitions that do not look like recovery partitions; useful for diagnostics.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -508,7 +508,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Optional partition filter applied to the results of the disk-level enumeration.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -523,7 +523,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Optional disk filter. When omitted, every physical disk is searched.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -535,7 +535,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>IncludeNonRecovery</maml:name>
         <maml:description>
-          <maml:para>{{ Fill IncludeNonRecovery Description }}</maml:para>
+          <maml:para>When set, the discovery surface also returns partitions that do not look like recovery partitions; useful for diagnostics.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -547,7 +547,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>PartitionNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+          <maml:para>Optional partition filter applied to the results of the disk-level enumeration.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -625,7 +625,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>BootImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+            <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -637,7 +637,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>IncludeAll</maml:name>
           <maml:description>
-            <maml:para>{{ Fill IncludeAll Description }}</maml:para>
+            <maml:para>When set, returns every BCD entry instead of only those that match recovery heuristics.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -648,7 +648,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>IncludeHidden</maml:name>
           <maml:description>
-            <maml:para>{{ Fill IncludeHidden Description }}</maml:para>
+            <maml:para>When set, returns boot entries that are flagged as hidden in BCD.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -659,7 +659,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Name Description }}</maml:para>
+            <maml:para>Friendly display name of the target boot entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -674,7 +674,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>BootImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+          <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -686,7 +686,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>IncludeAll</maml:name>
         <maml:description>
-          <maml:para>{{ Fill IncludeAll Description }}</maml:para>
+          <maml:para>When set, returns every BCD entry instead of only those that match recovery heuristics.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -698,7 +698,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>IncludeHidden</maml:name>
         <maml:description>
-          <maml:para>{{ Fill IncludeHidden Description }}</maml:para>
+          <maml:para>When set, returns boot entries that are flagged as hidden in BCD.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -710,7 +710,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Name Description }}</maml:para>
+          <maml:para>Friendly display name of the target boot entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -836,7 +836,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ComputeHash</maml:name>
           <maml:description>
-            <maml:para>{{ Fill ComputeHash Description }}</maml:para>
+            <maml:para>When set, computes a SHA-256 hash of each discovered image. Slower but useful for change detection.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -847,7 +847,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ImageKind</maml:name>
           <maml:description>
-            <maml:para>{{ Fill ImageKind Description }}</maml:para>
+            <maml:para>Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">WindowsRE</command:parameterValue>
@@ -865,7 +865,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Path</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Path Description }}</maml:para>
+            <maml:para>File-system path to search for WIM images.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">DirectoryInfo</command:parameterValue>
           <dev:type>
@@ -880,7 +880,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ComputeHash</maml:name>
         <maml:description>
-          <maml:para>{{ Fill ComputeHash Description }}</maml:para>
+          <maml:para>When set, computes a SHA-256 hash of each discovered image. Slower but useful for change detection.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -892,7 +892,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ImageKind</maml:name>
         <maml:description>
-          <maml:para>{{ Fill ImageKind Description }}</maml:para>
+          <maml:para>Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -904,7 +904,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
         <maml:name>Path</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Path Description }}</maml:para>
+          <maml:para>File-system path to search for WIM images.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">DirectoryInfo</command:parameterValue>
         <dev:type>
@@ -979,7 +979,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -990,7 +990,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
           <maml:name>InputObject</maml:name>
           <maml:description>
-            <maml:para>{{ Fill InputObject Description }}</maml:para>
+            <maml:para>RecoveryPartitionPlan produced by New-RecoveryPartitionPlan. Accepted from the pipeline.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">RecoveryPartitionPlan</command:parameterValue>
           <dev:type>
@@ -1002,7 +1002,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1039,7 +1039,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1051,7 +1051,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
         <maml:name>InputObject</maml:name>
         <maml:description>
-          <maml:para>{{ Fill InputObject Description }}</maml:para>
+          <maml:para>RecoveryPartitionPlan produced by New-RecoveryPartitionPlan. Accepted from the pipeline.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">RecoveryPartitionPlan</command:parameterValue>
         <dev:type>
@@ -1063,7 +1063,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1139,7 +1139,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>AccessPath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill AccessPath Description }}</maml:para>
+            <maml:para>Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1162,7 +1162,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1174,7 +1174,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1186,7 +1186,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1211,7 +1211,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>AccessPath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill AccessPath Description }}</maml:para>
+          <maml:para>Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -1235,7 +1235,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -1247,7 +1247,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>PartitionNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+          <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -1259,7 +1259,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1346,7 +1346,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1358,7 +1358,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>FileSystem</maml:name>
           <maml:description>
-            <maml:para>{{ Fill FileSystem Description }}</maml:para>
+            <maml:para>File system used to format the recovery partition. Defaults to NTFS.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
@@ -1375,7 +1375,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1386,7 +1386,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Label</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Label Description }}</maml:para>
+            <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1398,7 +1398,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1409,7 +1409,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SizeBytes</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+            <maml:para>Explicit partition size in bytes. Mutually exclusive with -SizePercent.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
           <dev:type>
@@ -1432,7 +1432,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>WindowsREImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -1458,7 +1458,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1470,7 +1470,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>FileSystem</maml:name>
           <maml:description>
-            <maml:para>{{ Fill FileSystem Description }}</maml:para>
+            <maml:para>File system used to format the recovery partition. Defaults to NTFS.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
@@ -1487,7 +1487,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1498,7 +1498,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Label</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Label Description }}</maml:para>
+            <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1510,7 +1510,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1521,7 +1521,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SizePercent</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SizePercent Description }}</maml:para>
+            <maml:para>Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1544,7 +1544,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>WindowsREImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -1571,7 +1571,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -1583,7 +1583,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>FileSystem</maml:name>
         <maml:description>
-          <maml:para>{{ Fill FileSystem Description }}</maml:para>
+          <maml:para>File system used to format the recovery partition. Defaults to NTFS.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -1595,7 +1595,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1607,7 +1607,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Label</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Label Description }}</maml:para>
+          <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -1619,7 +1619,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1631,7 +1631,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SizeBytes</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+          <maml:para>Explicit partition size in bytes. Mutually exclusive with -SizePercent.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
@@ -1643,7 +1643,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SizePercent</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SizePercent Description }}</maml:para>
+          <maml:para>Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -1667,7 +1667,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>WindowsREImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+          <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -1748,7 +1748,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootEntryName</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootEntryName Description }}</maml:para>
+            <maml:para>Friendly name applied to the recovery BCD boot entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1760,7 +1760,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootEntryVisibility</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+            <maml:para>Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">Visible</command:parameterValue>
@@ -1776,7 +1776,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+            <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -1788,7 +1788,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootTimeout</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+            <maml:para>Boot menu timeout applied when a new recovery boot entry is configured.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
           <dev:type>
@@ -1800,7 +1800,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1812,7 +1812,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>EntryPointMode</maml:name>
           <maml:description>
-            <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+            <maml:para>Selects which recovery entry points to configure: PushButton, BootEntry, or Both.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">None</command:parameterValue>
@@ -1830,7 +1830,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>FileSystem</maml:name>
           <maml:description>
-            <maml:para>{{ Fill FileSystem Description }}</maml:para>
+            <maml:para>File system used to format the recovery partition. Defaults to NTFS.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
@@ -1847,7 +1847,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Label</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Label Description }}</maml:para>
+            <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1859,7 +1859,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PushButtonAction</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+            <maml:para>Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1871,7 +1871,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SetDefaultBootEntry</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SetDefaultBootEntry Description }}</maml:para>
+            <maml:para>When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1882,7 +1882,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SizeBytes</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+            <maml:para>Explicit partition size in bytes. Mutually exclusive with -SizePercent.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
           <dev:type>
@@ -1894,7 +1894,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>WindowsREImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -1909,7 +1909,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootEntryName</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootEntryName Description }}</maml:para>
+            <maml:para>Friendly name applied to the recovery BCD boot entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1921,7 +1921,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootEntryVisibility</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+            <maml:para>Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">Visible</command:parameterValue>
@@ -1937,7 +1937,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+            <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -1949,7 +1949,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootTimeout</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+            <maml:para>Boot menu timeout applied when a new recovery boot entry is configured.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
           <dev:type>
@@ -1961,7 +1961,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1973,7 +1973,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>EntryPointMode</maml:name>
           <maml:description>
-            <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+            <maml:para>Selects which recovery entry points to configure: PushButton, BootEntry, or Both.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">None</command:parameterValue>
@@ -1991,7 +1991,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>FileSystem</maml:name>
           <maml:description>
-            <maml:para>{{ Fill FileSystem Description }}</maml:para>
+            <maml:para>File system used to format the recovery partition. Defaults to NTFS.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
@@ -2008,7 +2008,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Label</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Label Description }}</maml:para>
+            <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -2020,7 +2020,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PushButtonAction</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+            <maml:para>Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -2032,7 +2032,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SetDefaultBootEntry</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SetDefaultBootEntry Description }}</maml:para>
+            <maml:para>When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2043,7 +2043,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SizePercent</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SizePercent Description }}</maml:para>
+            <maml:para>Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -2055,7 +2055,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>WindowsREImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -2070,7 +2070,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootEntryName</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootEntryName Description }}</maml:para>
+          <maml:para>Friendly name applied to the recovery BCD boot entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -2082,7 +2082,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootEntryVisibility</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+          <maml:para>Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">RecoveryBootEntryVisibility</command:parameterValue>
         <dev:type>
@@ -2094,7 +2094,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+          <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -2106,7 +2106,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootTimeout</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+          <maml:para>Boot menu timeout applied when a new recovery boot entry is configured.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
         <dev:type>
@@ -2118,7 +2118,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -2130,7 +2130,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>EntryPointMode</maml:name>
         <maml:description>
-          <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+          <maml:para>Selects which recovery entry points to configure: PushButton, BootEntry, or Both.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">RecoveryEntryPointMode</command:parameterValue>
         <dev:type>
@@ -2142,7 +2142,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>FileSystem</maml:name>
         <maml:description>
-          <maml:para>{{ Fill FileSystem Description }}</maml:para>
+          <maml:para>File system used to format the recovery partition. Defaults to NTFS.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -2154,7 +2154,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Label</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Label Description }}</maml:para>
+          <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -2166,7 +2166,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PushButtonAction</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+          <maml:para>Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -2178,7 +2178,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SetDefaultBootEntry</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SetDefaultBootEntry Description }}</maml:para>
+          <maml:para>When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -2190,7 +2190,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SizeBytes</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+          <maml:para>Explicit partition size in bytes. Mutually exclusive with -SizePercent.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
@@ -2202,7 +2202,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SizePercent</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SizePercent Description }}</maml:para>
+          <maml:para>Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -2214,7 +2214,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>WindowsREImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+          <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -2296,7 +2296,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>AddLast</maml:name>
           <maml:description>
-            <maml:para>{{ Fill AddLast Description }}</maml:para>
+            <maml:para>When set, appends the new BCD entry to the end of the boot order instead of the default position.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2307,7 +2307,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootEntryVisibility</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+            <maml:para>Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">Visible</command:parameterValue>
@@ -2323,7 +2323,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>BootImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+            <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -2335,7 +2335,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootTimeout</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+            <maml:para>Boot menu timeout applied when a new recovery boot entry is configured.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
           <dev:type>
@@ -2358,7 +2358,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2369,7 +2369,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
           <maml:name>InputObject</maml:name>
           <maml:description>
-            <maml:para>{{ Fill InputObject Description }}</maml:para>
+            <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -2381,7 +2381,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Name Description }}</maml:para>
+            <maml:para>Friendly display name of the target boot entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -2393,7 +2393,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2404,7 +2404,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SetDefault</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SetDefault Description }}</maml:para>
+            <maml:para>When set, marks the new boot entry as the default in BCD.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2429,7 +2429,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>AddLast</maml:name>
         <maml:description>
-          <maml:para>{{ Fill AddLast Description }}</maml:para>
+          <maml:para>When set, appends the new BCD entry to the end of the boot order instead of the default position.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -2441,7 +2441,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootEntryVisibility</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+          <maml:para>Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">RecoveryBootEntryVisibility</command:parameterValue>
         <dev:type>
@@ -2453,7 +2453,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>BootImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+          <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -2465,7 +2465,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootTimeout</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+          <maml:para>Boot menu timeout applied when a new recovery boot entry is configured.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
         <dev:type>
@@ -2489,7 +2489,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -2501,7 +2501,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
         <maml:name>InputObject</maml:name>
         <maml:description>
-          <maml:para>{{ Fill InputObject Description }}</maml:para>
+          <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
@@ -2513,7 +2513,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Name Description }}</maml:para>
+          <maml:para>Friendly display name of the target boot entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -2525,7 +2525,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -2537,7 +2537,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SetDefault</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SetDefault Description }}</maml:para>
+          <maml:para>When set, marks the new boot entry as the default in BCD.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -2632,7 +2632,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -2644,7 +2644,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2655,7 +2655,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -2667,7 +2667,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2704,7 +2704,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -2716,7 +2716,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -2728,7 +2728,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>PartitionNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+          <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -2740,7 +2740,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -2827,7 +2827,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2838,7 +2838,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Identifier</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Identifier Description }}</maml:para>
+            <maml:para>BCD GUID identifier of the target boot entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -2850,7 +2850,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2886,7 +2886,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2897,7 +2897,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
           <maml:name>InputObject</maml:name>
           <maml:description>
-            <maml:para>{{ Fill InputObject Description }}</maml:para>
+            <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">WindowsRecoveryBootEntryInfo</command:parameterValue>
           <dev:type>
@@ -2909,7 +2909,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2945,7 +2945,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -2956,7 +2956,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Name Description }}</maml:para>
+            <maml:para>Friendly display name of the target boot entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -2968,7 +2968,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3005,7 +3005,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -3017,7 +3017,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Identifier</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Identifier Description }}</maml:para>
+          <maml:para>BCD GUID identifier of the target boot entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -3029,7 +3029,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
         <maml:name>InputObject</maml:name>
         <maml:description>
-          <maml:para>{{ Fill InputObject Description }}</maml:para>
+          <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">WindowsRecoveryBootEntryInfo</command:parameterValue>
         <dev:type>
@@ -3041,7 +3041,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Name Description }}</maml:para>
+          <maml:para>Friendly display name of the target boot entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -3053,7 +3053,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -3140,7 +3140,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -3152,7 +3152,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -3164,7 +3164,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3175,7 +3175,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SizeBytes</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+            <maml:para>Explicit partition size in bytes. Mutually exclusive with -SizePercent.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
           <dev:type>
@@ -3198,7 +3198,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3223,7 +3223,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -3235,7 +3235,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -3247,7 +3247,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3258,7 +3258,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SizePercent</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SizePercent Description }}</maml:para>
+            <maml:para>Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -3281,7 +3281,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3307,7 +3307,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -3319,7 +3319,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>PartitionNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+          <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -3331,7 +3331,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -3343,7 +3343,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SizeBytes</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+          <maml:para>Explicit partition size in bytes. Mutually exclusive with -SizePercent.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
         <dev:type>
@@ -3355,7 +3355,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SizePercent</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SizePercent Description }}</maml:para>
+          <maml:para>Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -3379,7 +3379,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -3443,7 +3443,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="0" aliases="none">
           <maml:name>SourcePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SourcePath Description }}</maml:para>
+            <maml:para>Source file path on a local or UNC volume used as the input to the copy.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -3466,7 +3466,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3477,7 +3477,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ImageKind</maml:name>
           <maml:description>
-            <maml:para>{{ Fill ImageKind Description }}</maml:para>
+            <maml:para>Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -3489,7 +3489,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3511,7 +3511,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>DestinationPath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DestinationPath Description }}</maml:para>
+            <maml:para>Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -3526,7 +3526,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="0" aliases="none">
           <maml:name>SourceUri</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SourceUri Description }}</maml:para>
+            <maml:para>HTTPS URI from which the recovery image should be downloaded.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Uri</command:parameterValue>
           <dev:type>
@@ -3549,7 +3549,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3560,7 +3560,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ImageKind</maml:name>
           <maml:description>
-            <maml:para>{{ Fill ImageKind Description }}</maml:para>
+            <maml:para>Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -3572,7 +3572,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3594,7 +3594,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>DestinationPath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DestinationPath Description }}</maml:para>
+            <maml:para>Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -3621,7 +3621,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -3633,7 +3633,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ImageKind</maml:name>
         <maml:description>
-          <maml:para>{{ Fill ImageKind Description }}</maml:para>
+          <maml:para>Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -3645,7 +3645,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -3657,7 +3657,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="0" aliases="none">
         <maml:name>SourcePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SourcePath Description }}</maml:para>
+          <maml:para>Source file path on a local or UNC volume used as the input to the copy.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -3669,7 +3669,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="0" aliases="none">
         <maml:name>SourceUri</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SourceUri Description }}</maml:para>
+          <maml:para>HTTPS URI from which the recovery image should be downloaded.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Uri</command:parameterValue>
         <dev:type>
@@ -3693,7 +3693,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>DestinationPath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DestinationPath Description }}</maml:para>
+          <maml:para>Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -3776,7 +3776,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -3788,7 +3788,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>IsHidden</maml:name>
           <maml:description>
-            <maml:para>{{ Fill IsHidden Description }}</maml:para>
+            <maml:para>When set, marks the partition as hidden so it is omitted from common UI surfaces.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Boolean</command:parameterValue>
           <dev:type>
@@ -3800,7 +3800,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Label</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Label Description }}</maml:para>
+            <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -3812,7 +3812,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoDefaultDriveLetter</maml:name>
           <maml:description>
-            <maml:para>{{ Fill NoDefaultDriveLetter Description }}</maml:para>
+            <maml:para>When set, prevents Windows from automatically assigning a drive letter to the partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Boolean</command:parameterValue>
           <dev:type>
@@ -3824,7 +3824,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -3836,7 +3836,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3873,7 +3873,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -3885,7 +3885,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>IsHidden</maml:name>
         <maml:description>
-          <maml:para>{{ Fill IsHidden Description }}</maml:para>
+          <maml:para>When set, marks the partition as hidden so it is omitted from common UI surfaces.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Boolean</command:parameterValue>
         <dev:type>
@@ -3897,7 +3897,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Label</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Label Description }}</maml:para>
+          <maml:para>File system label assigned to the recovery volume. Defaults to RECOVERY.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -3909,7 +3909,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>NoDefaultDriveLetter</maml:name>
         <maml:description>
-          <maml:para>{{ Fill NoDefaultDriveLetter Description }}</maml:para>
+          <maml:para>When set, prevents Windows from automatically assigning a drive letter to the partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Boolean</command:parameterValue>
         <dev:type>
@@ -3921,7 +3921,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>PartitionNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+          <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -3933,7 +3933,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4009,7 +4009,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootEntryVisibility</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+            <maml:para>Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">Visible</command:parameterValue>
@@ -4025,7 +4025,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>BootImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+            <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -4037,7 +4037,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootTimeout</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+            <maml:para>Boot menu timeout applied when a new recovery boot entry is configured.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
           <dev:type>
@@ -4060,7 +4060,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>EntryPointMode</maml:name>
           <maml:description>
-            <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+            <maml:para>Selects which recovery entry points to configure: PushButton, BootEntry, or Both.</maml:para>
           </maml:description>
           <command:parameterValueGroup>
             <command:parameterValue required="false" command:variableLength="false">PushButtonReset</command:parameterValue>
@@ -4077,7 +4077,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -4088,7 +4088,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
           <maml:name>InputObject</maml:name>
           <maml:description>
-            <maml:para>{{ Fill InputObject Description }}</maml:para>
+            <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -4100,7 +4100,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Name Description }}</maml:para>
+            <maml:para>Friendly display name of the target boot entry.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -4112,7 +4112,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -4123,7 +4123,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PushButtonAction</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+            <maml:para>Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -4135,7 +4135,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SetDefault</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SetDefault Description }}</maml:para>
+            <maml:para>When set, marks the new boot entry as the default in BCD.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -4157,7 +4157,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>WindowsREImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -4172,7 +4172,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootEntryVisibility</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+          <maml:para>Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">RecoveryBootEntryVisibility</command:parameterValue>
         <dev:type>
@@ -4184,7 +4184,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>BootImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+          <maml:para>Path to a boot WIM image used by the BCD recovery entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -4196,7 +4196,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootTimeout</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+          <maml:para>Boot menu timeout applied when a new recovery boot entry is configured.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
         <dev:type>
@@ -4220,7 +4220,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>EntryPointMode</maml:name>
         <maml:description>
-          <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+          <maml:para>Selects which recovery entry points to configure: PushButton, BootEntry, or Both.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">RecoveryEntryPointMode</command:parameterValue>
         <dev:type>
@@ -4232,7 +4232,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4244,7 +4244,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
         <maml:name>InputObject</maml:name>
         <maml:description>
-          <maml:para>{{ Fill InputObject Description }}</maml:para>
+          <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
@@ -4256,7 +4256,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Name Description }}</maml:para>
+          <maml:para>Friendly display name of the target boot entry.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -4268,7 +4268,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4280,7 +4280,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PushButtonAction</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+          <maml:para>Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -4292,7 +4292,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>SetDefault</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SetDefault Description }}</maml:para>
+          <maml:para>When set, marks the new boot entry as the default in BCD.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4316,7 +4316,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>WindowsREImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+          <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -4407,7 +4407,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BootToRE</maml:name>
           <maml:description>
-            <maml:para>{{ Fill BootToRE Description }}</maml:para>
+            <maml:para>When set, schedules the system to boot into the Windows Recovery Environment on the next restart.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -4429,7 +4429,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -4440,7 +4440,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Target</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Target Description }}</maml:para>
+            <maml:para>Reagentc target identifier used when registering or scheduling a WindowsRE boot.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">DirectoryInfo</command:parameterValue>
           <dev:type>
@@ -4463,7 +4463,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>WindowsREImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -4478,7 +4478,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BootToRE</maml:name>
         <maml:description>
-          <maml:para>{{ Fill BootToRE Description }}</maml:para>
+          <maml:para>When set, schedules the system to boot into the Windows Recovery Environment on the next restart.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4502,7 +4502,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4514,7 +4514,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Target</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Target Description }}</maml:para>
+          <maml:para>Reagentc target identifier used when registering or scheduling a WindowsRE boot.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">DirectoryInfo</command:parameterValue>
         <dev:type>
@@ -4538,7 +4538,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>WindowsREImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+          <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -4613,7 +4613,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -4624,7 +4624,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PassThru Description }}</maml:para>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -4635,7 +4635,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>SourceImagePath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill SourceImagePath Description }}</maml:para>
+            <maml:para>Source WIM file that should be copied or staged.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -4658,7 +4658,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>DestinationPath</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DestinationPath Description }}</maml:para>
+            <maml:para>Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
           <dev:type>
@@ -4685,7 +4685,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4697,7 +4697,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PassThru Description }}</maml:para>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -4709,7 +4709,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>SourceImagePath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill SourceImagePath Description }}</maml:para>
+          <maml:para>Source WIM file that should be copied or staged.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -4733,7 +4733,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>DestinationPath</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DestinationPath Description }}</maml:para>
+          <maml:para>Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
         <dev:type>
@@ -4797,7 +4797,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>DiskNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+            <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -4809,7 +4809,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>PartitionNumber</maml:name>
           <maml:description>
-            <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+            <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -4824,7 +4824,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>DiskNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          <maml:para>Number of the physical disk to operate on, as reported by Get-Disk.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -4836,7 +4836,7 @@ Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>PartitionNumber</maml:name>
         <maml:description>
-          <maml:para>{{ Fill PartitionNumber Description }}</maml:para>
+          <maml:para>Number of the partition on the target disk, as reported by Get-Partition.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>

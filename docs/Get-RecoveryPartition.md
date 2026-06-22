@@ -46,8 +46,7 @@ Discovers recovery partitions on disk 0 using a splatted OrderedDictionary param
 ## PARAMETERS
 
 ### -DiskNumber
-{{ Fill DiskNumber Description }}
-
+Optional disk filter. When omitted, every physical disk is searched.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -61,8 +60,7 @@ Accept wildcard characters: False
 ```
 
 ### -IncludeNonRecovery
-{{ Fill IncludeNonRecovery Description }}
-
+When set, the discovery surface also returns partitions that do not look like recovery partitions; useful for diagnostics.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -76,8 +74,7 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-{{ Fill PartitionNumber Description }}
-
+Optional partition filter applied to the results of the disk-level enumeration.
 ```yaml
 Type: Int32
 Parameter Sets: (All)

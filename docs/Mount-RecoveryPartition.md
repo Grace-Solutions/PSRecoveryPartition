@@ -32,8 +32,7 @@ Mounts the recovery partition on disk 0 partition 5 at the specified folder.
 ## PARAMETERS
 
 ### -AccessPath
-{{ Fill AccessPath Description }}
-
+Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -62,8 +61,7 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-{{ Fill DiskNumber Description }}
-
+Number of the physical disk to operate on, as reported by Get-Disk.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -77,8 +75,7 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-{{ Fill PartitionNumber Description }}
-
+Number of the partition on the target disk, as reported by Get-Partition.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -92,8 +89,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
-
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)

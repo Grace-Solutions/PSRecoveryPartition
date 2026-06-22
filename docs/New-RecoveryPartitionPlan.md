@@ -69,8 +69,7 @@ Builds a plan that creates a 1 GiB recovery partition, registers the WindowsRE i
 ## PARAMETERS
 
 ### -BootEntryName
-{{ Fill BootEntryName Description }}
-
+Friendly name applied to the recovery BCD boot entry.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -84,8 +83,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootEntryVisibility
-{{ Fill BootEntryVisibility Description }}
-
+Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.
 ```yaml
 Type: RecoveryBootEntryVisibility
 Parameter Sets: (All)
@@ -100,8 +98,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootImagePath
-{{ Fill BootImagePath Description }}
-
+Path to a boot WIM image used by the BCD recovery entry.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -115,8 +112,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootTimeout
-{{ Fill BootTimeout Description }}
-
+Boot menu timeout applied when a new recovery boot entry is configured.
 ```yaml
 Type: TimeSpan
 Parameter Sets: (All)
@@ -130,8 +126,7 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-{{ Fill DiskNumber Description }}
-
+Number of the physical disk to operate on, as reported by Get-Disk.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -145,8 +140,7 @@ Accept wildcard characters: False
 ```
 
 ### -EntryPointMode
-{{ Fill EntryPointMode Description }}
-
+Selects which recovery entry points to configure: PushButton, BootEntry, or Both.
 ```yaml
 Type: RecoveryEntryPointMode
 Parameter Sets: (All)
@@ -161,8 +155,7 @@ Accept wildcard characters: False
 ```
 
 ### -FileSystem
-{{ Fill FileSystem Description }}
-
+File system used to format the recovery partition. Defaults to NTFS.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -177,8 +170,7 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-{{ Fill Label Description }}
-
+File system label assigned to the recovery volume. Defaults to RECOVERY.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -192,8 +184,7 @@ Accept wildcard characters: False
 ```
 
 ### -PushButtonAction
-{{ Fill PushButtonAction Description }}
-
+Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -207,8 +198,7 @@ Accept wildcard characters: False
 ```
 
 ### -SetDefaultBootEntry
-{{ Fill SetDefaultBootEntry Description }}
-
+When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -222,8 +212,7 @@ Accept wildcard characters: False
 ```
 
 ### -SizeBytes
-{{ Fill SizeBytes Description }}
-
+Explicit partition size in bytes. Mutually exclusive with -SizePercent.
 ```yaml
 Type: Int64
 Parameter Sets: ExplicitSize
@@ -237,8 +226,7 @@ Accept wildcard characters: False
 ```
 
 ### -SizePercent
-{{ Fill SizePercent Description }}
-
+Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.
 ```yaml
 Type: Int32
 Parameter Sets: PercentSize
@@ -252,8 +240,7 @@ Accept wildcard characters: False
 ```
 
 ### -WindowsREImagePath
-{{ Fill WindowsREImagePath Description }}
-
+Path to a WindowsRE WIM image that should be staged into the recovery partition.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)

@@ -34,3 +34,6 @@ Thumbs.db
 
 # PlatyPS staging
 docs/cab/
+
+# Local build logs
+build.log

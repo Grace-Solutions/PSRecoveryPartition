@@ -77,8 +77,7 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-{{ Fill DiskNumber Description }}
-
+Number of the physical disk to operate on, as reported by Get-Disk.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -92,8 +91,7 @@ Accept wildcard characters: False
 ```
 
 ### -FileSystem
-{{ Fill FileSystem Description }}
-
+File system used to format the recovery partition. Defaults to NTFS.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -108,8 +106,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
-
+Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -123,8 +120,7 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-{{ Fill Label Description }}
-
+File system label assigned to the recovery volume. Defaults to RECOVERY.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -138,8 +134,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
-
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -153,8 +148,7 @@ Accept wildcard characters: False
 ```
 
 ### -SizeBytes
-{{ Fill SizeBytes Description }}
-
+Explicit partition size in bytes. Mutually exclusive with -SizePercent.
 ```yaml
 Type: Int64
 Parameter Sets: ExplicitSize
@@ -168,8 +162,7 @@ Accept wildcard characters: False
 ```
 
 ### -SizePercent
-{{ Fill SizePercent Description }}
-
+Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.
 ```yaml
 Type: Int32
 Parameter Sets: PercentSize
@@ -199,8 +192,7 @@ Accept wildcard characters: False
 ```
 
 ### -WindowsREImagePath
-{{ Fill WindowsREImagePath Description }}
-
+Path to a WindowsRE WIM image that should be staged into the recovery partition.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)

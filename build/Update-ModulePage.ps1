@@ -21,8 +21,11 @@ $lines.Add('PowerShell module for managing Windows recovery partitions, Windows 
 $lines.Add('')
 $lines.Add('## PSRecoveryPartition Cmdlets')
 foreach ($name in ($helpContent.Keys | Sort-Object)) {
+    if ($name -eq '__Common') { continue }
+    $entry = $helpContent[$name]
+    if ($entry -isnot [hashtable] -or -not $entry.ContainsKey('Synopsis')) { continue }
     $lines.Add("### [$name]($name.md)")
-    $lines.Add($helpContent[$name].Synopsis)
+    $lines.Add($entry.Synopsis)
     $lines.Add('')
 }
 Set-Content -LiteralPath $modulePath -Value ($lines -join "`r`n") -Encoding utf8

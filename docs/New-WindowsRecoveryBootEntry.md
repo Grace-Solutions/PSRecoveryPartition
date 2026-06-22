@@ -33,8 +33,7 @@ Creates a recovery boot entry that boots boot.wim.
 ## PARAMETERS
 
 ### -AddLast
-{{ Fill AddLast Description }}
-
+When set, appends the new BCD entry to the end of the boot order instead of the default position.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -48,8 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootEntryVisibility
-{{ Fill BootEntryVisibility Description }}
-
+Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.
 ```yaml
 Type: RecoveryBootEntryVisibility
 Parameter Sets: (All)
@@ -64,8 +62,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootImagePath
-{{ Fill BootImagePath Description }}
-
+Path to a boot WIM image used by the BCD recovery entry.
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -79,8 +76,7 @@ Accept wildcard characters: False
 ```
 
 ### -BootTimeout
-{{ Fill BootTimeout Description }}
-
+Boot menu timeout applied when a new recovery boot entry is configured.
 ```yaml
 Type: TimeSpan
 Parameter Sets: (All)
@@ -109,8 +105,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
-
+Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -124,8 +119,7 @@ Accept wildcard characters: False
 ```
 
 ### -InputObject
-{{ Fill InputObject Description }}
-
+Object received from the pipeline that the cmdlet should act on.
 ```yaml
 Type: Object
 Parameter Sets: (All)
@@ -139,8 +133,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
-
+Friendly display name of the target boot entry.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -154,8 +147,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
-
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -169,8 +161,7 @@ Accept wildcard characters: False
 ```
 
 ### -SetDefault
-{{ Fill SetDefault Description }}
-
+When set, marks the new boot entry as the default in BCD.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)

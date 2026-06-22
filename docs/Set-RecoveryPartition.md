@@ -47,8 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-{{ Fill DiskNumber Description }}
-
+Number of the physical disk to operate on, as reported by Get-Disk.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -62,8 +61,7 @@ Accept wildcard characters: False
 ```
 
 ### -IsHidden
-{{ Fill IsHidden Description }}
-
+When set, marks the partition as hidden so it is omitted from common UI surfaces.
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
@@ -77,8 +75,7 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-{{ Fill Label Description }}
-
+File system label assigned to the recovery volume. Defaults to RECOVERY.
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -92,8 +89,7 @@ Accept wildcard characters: False
 ```
 
 ### -NoDefaultDriveLetter
-{{ Fill NoDefaultDriveLetter Description }}
-
+When set, prevents Windows from automatically assigning a drive letter to the partition.
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
@@ -107,8 +103,7 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-{{ Fill PartitionNumber Description }}
-
+Number of the partition on the target disk, as reported by Get-Partition.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -122,8 +117,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
-
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)

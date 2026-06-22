@@ -23,7 +23,7 @@ Inspects a recovery partition and returns a structured pass/fail report covering
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Test-RecoveryPartition -DiskNumber 0 -PartitionNumber 5
 ```
 
@@ -82,12 +82,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
-
 ## OUTPUTS
 
 ### System.Boolean
-
 ## NOTES
 
 ## RELATED LINKS
-

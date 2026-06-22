@@ -36,14 +36,14 @@ Compares the current disk layout to the requested recovery layout and returns a 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Get-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2
 ```
 
 Returns the plan required to provision a 2 percent recovery partition on disk 0.
 
 ### Example 2: Splatted parameters with OrderedDictionary
-```powershell
+```
 $GetRecoveryPartitionPlanParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $GetRecoveryPartitionPlanParameters.DiskNumber = 0
     $GetRecoveryPartitionPlanParameters.SizeBytes = 1073741824
@@ -170,12 +170,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Int32
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.RecoveryPartitionPlan
-
 ## NOTES
 
 ## RELATED LINKS
-

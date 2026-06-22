@@ -18,19 +18,20 @@ Get-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [-Include
 ```
 
 ## DESCRIPTION
-Enumerates physical disks and emits a RecoveryPartitionInfo object for each partition that carries the Windows recovery partition type GUID. Use -IncludeNonRecovery to widen the search to non-recovery partitions for diagnostics.
+Enumerates physical disks and emits a RecoveryPartitionInfo object for each partition that carries the Windows recovery partition type GUID.
+Use -IncludeNonRecovery to widen the search to non-recovery partitions for diagnostics.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Get-RecoveryPartition -DiskNumber 0
 ```
 
 Lists every recovery partition on disk 0.
 
 ### Example 2: Splatted parameters with OrderedDictionary
-```powershell
+```
 $GetRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $GetRecoveryPartitionParameters.DiskNumber = 0
     $GetRecoveryPartitionParameters.IncludeNonRecovery = $False
@@ -70,7 +71,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -111,12 +112,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.RecoveryPartitionInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

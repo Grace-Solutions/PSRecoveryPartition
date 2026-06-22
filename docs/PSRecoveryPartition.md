@@ -1,4 +1,4 @@
----
+﻿---
 Module Name: PSRecoveryPartition
 Module Guid: d6d6f0b8-2a4b-4a8d-9d2a-7c0f4c2b5e9a
 Download Help Link: https://github.com/GraceSolutions/PSRecoveryPartition

@@ -23,10 +23,7 @@ namespace PSRecoveryPartition.Cmdlets
         public FileInfo SourcePath { get; set; }
 
         [Parameter(Mandatory = true, Position = 1)]
-        public DirectoryInfo DestinationDirectory { get; set; }
-
-        [Parameter]
-        public string DestinationFileName { get; set; }
+        public FileInfo DestinationPath { get; set; }
 
         [Parameter]
         public string ImageKind { get; set; } = "WindowsPE";
@@ -40,20 +37,17 @@ namespace PSRecoveryPartition.Cmdlets
         protected override void ProcessRecord()
         {
             ExecutionMethod = RecoveryExecutionMethod.Native;
-            if (!DestinationDirectory.Exists) { DestinationDirectory.Create(); }
 
-            string destName = DestinationFileName;
-            if (string.IsNullOrEmpty(destName))
+            string sourceLeaf;
+            if (ParameterSetName == "ByPath") { sourceLeaf = SourcePath != null ? SourcePath.Name : "bootimage.wim"; }
+            else
             {
-                if (ParameterSetName == "ByPath") { destName = SourcePath.Name; }
-                else
-                {
-                    var segments = SourceUri.Segments;
-                    destName = segments.Length > 0 ? Uri.UnescapeDataString(segments[segments.Length - 1]) : "bootimage.wim";
-                }
+                var segments = SourceUri.Segments;
+                sourceLeaf = segments.Length > 0 ? Uri.UnescapeDataString(segments[segments.Length - 1]) : "bootimage.wim";
             }
-            var destPath = Path.Combine(DestinationDirectory.FullName, destName);
-            var destFile = new FileInfo(destPath);
+
+            var destFile = DestinationPathResolver.Resolve(DestinationPath, sourceLeaf);
+            DestinationPathResolver.EnsureParentDirectoryExists(destFile);
 
             if (ParameterSetName == "ByPath")
             {
@@ -65,17 +59,17 @@ namespace PSRecoveryPartition.Cmdlets
                 var skip = !Force.IsPresent && destFile.Exists
                     && destFile.Length == SourcePath.Length
                     && destFile.LastWriteTimeUtc == SourcePath.LastWriteTimeUtc;
-                if (!skip && ShouldProcess(SourcePath.FullName + " -> " + destPath, "Copy recovery boot image"))
+                if (!skip && ShouldProcess(SourcePath.FullName + " -> " + destFile.FullName, "Copy recovery boot image"))
                 {
-                    File.Copy(SourcePath.FullName, destPath, true);
+                    File.Copy(SourcePath.FullName, destFile.FullName, true);
                     destFile.Refresh();
                 }
             }
             else
             {
-                if (ShouldProcess(SourceUri.ToString() + " -> " + destPath, "Download recovery boot image"))
+                if (ShouldProcess(SourceUri.ToString() + " -> " + destFile.FullName, "Download recovery boot image"))
                 {
-                    DownloadAsync(SourceUri, destPath).GetAwaiter().GetResult();
+                    DownloadAsync(SourceUri, destFile.FullName).GetAwaiter().GetResult();
                     destFile.Refresh();
                 }
             }

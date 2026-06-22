@@ -19,12 +19,13 @@ New-WindowsRecoveryBootEntry -BootImagePath <FileInfo> [-Name <String>] [-BootTi
 ```
 
 ## DESCRIPTION
-Creates a BCD boot entry that boots from the supplied WIM image. Existing entries with the same name are not duplicated.
+Creates a BCD boot entry that boots from the supplied WIM image.
+Existing entries with the same name are not duplicated.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 New-WindowsRecoveryBootEntry -BootImagePath 'C:\RecoveryImages\boot.wim' -Name 'Recovery' -PassThru
 ```
 
@@ -42,7 +43,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -103,7 +104,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -118,7 +119,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -163,7 +164,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -178,7 +179,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -194,7 +195,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -220,14 +221,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.IO.FileInfo
-
 ### System.Object
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryBootEntryInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

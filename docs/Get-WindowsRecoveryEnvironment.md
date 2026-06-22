@@ -22,7 +22,7 @@ Queries the active Windows Recovery Environment configuration and returns a stru
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Get-WindowsRecoveryEnvironment
 ```
 
@@ -51,12 +51,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### None
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryEnvironmentInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

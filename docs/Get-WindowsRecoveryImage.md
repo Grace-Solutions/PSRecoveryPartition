@@ -23,7 +23,7 @@ Enumerates WIM files in the supplied path and returns structured information abo
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Get-WindowsRecoveryImage -Path 'C:\RecoveryImages'
 ```
 
@@ -41,7 +41,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -98,12 +98,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.IO.DirectoryInfo
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryImageInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

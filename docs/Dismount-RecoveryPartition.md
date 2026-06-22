@@ -23,7 +23,7 @@ Removes the specified folder mount point from a previously mounted recovery part
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Dismount-RecoveryPartition -MountPath 'C:\Mounts\Recovery'
 ```
 
@@ -56,7 +56,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -101,7 +101,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -117,7 +117,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -143,12 +143,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Int32
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.RecoveryPartitionMountResult
-
 ## NOTES
 
 ## RELATED LINKS
-

@@ -18,12 +18,13 @@ Remove-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> [-Force] [
 ```
 
 ## DESCRIPTION
-Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive.
+Removes a recovery partition.
+Requires -Force or explicit confirmation because the operation is destructive.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Remove-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -Force
 ```
 
@@ -41,7 +42,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -71,7 +72,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -101,7 +102,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -117,7 +118,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -143,12 +144,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Int32
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.RecoveryPartitionInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

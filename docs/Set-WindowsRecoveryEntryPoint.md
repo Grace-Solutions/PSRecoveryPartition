@@ -20,19 +20,20 @@ Set-WindowsRecoveryEntryPoint -EntryPointMode <RecoveryEntryPointMode> [-BootIma
 ```
 
 ## DESCRIPTION
-Combines WindowsRE registration and BCD boot entry creation behind a single high-level surface. EntryPointMode selects which paths are configured.
+Combines WindowsRE registration and BCD boot entry creation behind a single high-level surface.
+EntryPointMode selects which paths are configured.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Set-WindowsRecoveryEntryPoint -EntryPointMode Both -BootImagePath 'C:\RecoveryImages\boot.wim' -WindowsREImagePath 'C:\RecoveryImages\winre.wim' -BootTimeout ([timespan]'00:00:10') -PassThru
 ```
 
 Configures both push-button reset and a recovery boot entry in a single call.
 
 ### Example 2: Splatted parameters with OrderedDictionary
-```powershell
+```
 $SetWindowsRecoveryEntryPointParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $SetWindowsRecoveryEntryPointParameters.EntryPointMode = 'Both'
     $SetWindowsRecoveryEntryPointParameters.BootImagePath = 'C:\RecoveryImages\boot.wim'
@@ -108,7 +109,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -139,7 +140,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -184,7 +185,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -214,7 +215,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -230,7 +231,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -271,14 +272,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.IO.FileInfo
-
 ### System.Object
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryEntryPointResult
-
 ## NOTES
 
 ## RELATED LINKS
-

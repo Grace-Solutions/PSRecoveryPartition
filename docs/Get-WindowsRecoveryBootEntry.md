@@ -18,12 +18,13 @@ Get-WindowsRecoveryBootEntry [-Name <String>] [-BootImagePath <FileInfo>] [-Incl
 ```
 
 ## DESCRIPTION
-Enumerates Boot Configuration Data entries and returns those that look like recovery boot entries. Use -IncludeAll to return every entry regardless of recovery heuristics.
+Enumerates Boot Configuration Data entries and returns those that look like recovery boot entries.
+Use -IncludeAll to return every entry regardless of recovery heuristics.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Get-WindowsRecoveryBootEntry
 ```
 
@@ -56,7 +57,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -71,7 +72,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -112,14 +113,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.String
-
 ### System.IO.FileInfo
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryBootEntryInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

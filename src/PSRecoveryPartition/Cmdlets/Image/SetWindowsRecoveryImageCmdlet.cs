@@ -16,11 +16,8 @@ namespace PSRecoveryPartition.Cmdlets
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true)]
         public FileInfo SourceImagePath { get; set; }
 
-        [Parameter(Mandatory = true)]
-        public DirectoryInfo DestinationDirectory { get; set; }
-
-        [Parameter]
-        public string DestinationFileName { get; set; }
+        [Parameter(Mandatory = true, Position = 0)]
+        public FileInfo DestinationPath { get; set; }
 
         [Parameter]
         public SwitchParameter Force { get; set; }
@@ -35,20 +32,18 @@ namespace PSRecoveryPartition.Cmdlets
             {
                 throw new FileNotFoundException("Source recovery image was not found.", SourceImagePath != null ? SourceImagePath.FullName : "<null>");
             }
-            if (!DestinationDirectory.Exists) { DestinationDirectory.Create(); }
 
-            var destName = string.IsNullOrEmpty(DestinationFileName) ? SourceImagePath.Name : DestinationFileName;
-            var destPath = Path.Combine(DestinationDirectory.FullName, destName);
-            var destFile = new FileInfo(destPath);
+            var destFile = DestinationPathResolver.Resolve(DestinationPath, SourceImagePath.Name);
+            DestinationPathResolver.EnsureParentDirectoryExists(destFile);
 
             var skip = !Force.IsPresent && destFile.Exists
                 && destFile.Length == SourceImagePath.Length
                 && destFile.LastWriteTimeUtc == SourceImagePath.LastWriteTimeUtc;
 
-            var target = SourceImagePath.FullName + " -> " + destPath;
+            var target = SourceImagePath.FullName + " -> " + destFile.FullName;
             if (!skip && ShouldProcess(target, "Copy recovery image"))
             {
-                File.Copy(SourceImagePath.FullName, destPath, true);
+                File.Copy(SourceImagePath.FullName, destFile.FullName, true);
                 destFile.Refresh();
             }
 

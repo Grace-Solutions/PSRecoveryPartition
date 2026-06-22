@@ -23,7 +23,7 @@ Enables the Windows Recovery Environment and returns the resulting configuration
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Enable-WindowsRecoveryEnvironment -PassThru
 ```
 
@@ -41,7 +41,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -56,7 +56,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -72,7 +72,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -98,12 +98,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### None
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryEnvironmentInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

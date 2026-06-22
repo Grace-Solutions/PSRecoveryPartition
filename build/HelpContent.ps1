@@ -104,14 +104,14 @@ Write-Output -InputObject ($GetRecoveryPartitionPlanResult)
     'Set-WindowsRecoveryImage' = @{
         Synopsis    = 'Copies or updates a Windows RE or Windows PE image.'
         Description = 'Copies the supplied source image to a destination folder. The copy is skipped when the destination already matches the source by size and last-write timestamp.'
-        OneLiner    = "Set-WindowsRecoveryImage -SourceImagePath 'C:\RecoveryImages\winre.wim' -DestinationDirectory 'D:\Recovery' -PassThru"
-        OneLinerDescription = 'Copies winre.wim to the recovery volume and returns the staged image record.'
+        OneLiner    = "Set-WindowsRecoveryImage -SourceImagePath 'C:\RecoveryImages\winre.wim' -DestinationPath 'D:\Recovery\winre.wim' -PassThru"
+        OneLinerDescription = 'Copies winre.wim to the recovery volume and returns the staged image record. When DestinationPath ends with a directory separator or names an existing directory, the source leaf name is appended; otherwise the destination is treated as a full file path and the source is renamed on copy.'
     }
     'Save-RecoveryBootImage' = @{
         Synopsis    = 'Downloads or copies a recovery boot image to a local destination.'
-        Description = 'Downloads a WIM from an HTTPS source or copies it from a local or UNC path to the supplied destination folder. Idempotent when the destination already matches the source.'
-        OneLiner    = "Save-RecoveryBootImage -SourceUri 'https://example.com/boot.wim' -DestinationDirectory 'C:\RecoveryImages'"
-        OneLinerDescription = 'Downloads the boot image from the supplied URI to C:\RecoveryImages.'
+        Description = 'Downloads a WIM from an HTTPS source or copies it from a local or UNC path to the supplied destination. When DestinationPath names an existing directory or ends with a directory separator the source leaf name is appended; otherwise it is treated as the target file path. Idempotent when the destination already matches the source.'
+        OneLiner    = "Save-RecoveryBootImage -SourceUri 'https://example.com/boot.wim' -DestinationPath 'C:\RecoveryImages\boot.wim'"
+        OneLinerDescription = 'Downloads the boot image from the supplied URI to C:\RecoveryImages\boot.wim.'
     }
     'Get-WindowsRecoveryEnvironment' = @{
         Synopsis    = 'Returns the current Windows Recovery Environment configuration.'

@@ -31,12 +31,13 @@ Remove-WindowsRecoveryBootEntry -Name <String> [-PassThru] [-Force] [-ProgressAc
 ```
 
 ## DESCRIPTION
-Removes a BCD boot entry by identifier, name, or pipeline input. Requires -Force or explicit confirmation because the operation is destructive.
+Removes a BCD boot entry by identifier, name, or pipeline input.
+Requires -Force or explicit confirmation because the operation is destructive.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Remove-WindowsRecoveryBootEntry -Name 'Recovery' -Force
 ```
 
@@ -54,7 +55,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -69,7 +70,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -129,7 +130,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -145,7 +146,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -171,12 +172,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryBootEntryInfo
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryBootEntryInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

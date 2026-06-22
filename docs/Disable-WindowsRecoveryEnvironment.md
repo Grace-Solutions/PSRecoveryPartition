@@ -18,12 +18,13 @@ Disable-WindowsRecoveryEnvironment [-PassThru] [-Force] [-ProgressAction <Action
 ```
 
 ## DESCRIPTION
-Disables the Windows Recovery Environment. Requires -Force or explicit confirmation because the operation is high-impact.
+Disables the Windows Recovery Environment.
+Requires -Force or explicit confirmation because the operation is high-impact.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Disable-WindowsRecoveryEnvironment -Force -PassThru
 ```
 
@@ -41,7 +42,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -56,7 +57,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -71,7 +72,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -87,7 +88,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -113,12 +114,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### None
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryEnvironmentInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

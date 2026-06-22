@@ -25,12 +25,14 @@ Resize-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> -SizePerce
 ```
 
 ## DESCRIPTION
-Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.
+Resizes a recovery partition.
+Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing.
+The two are mutually exclusive parameter sets.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 Resize-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -SizeBytes 2147483648
 ```
 
@@ -48,7 +50,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -93,7 +95,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -139,7 +141,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -165,12 +167,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Int32
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.RecoveryPartitionInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

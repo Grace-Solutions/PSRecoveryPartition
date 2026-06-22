@@ -34,19 +34,21 @@ New-RecoveryPartition -DiskNumber <Int32> -SizePercent <Int32> [-Label <String>]
 ```
 
 ## DESCRIPTION
-Creates a recovery partition on the specified disk and optionally stages a WindowsRE image into it. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.
+Creates a recovery partition on the specified disk and optionally stages a WindowsRE image into it.
+Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing.
+The two are mutually exclusive parameter sets.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
+```
 New-RecoveryPartition -DiskNumber 0 -SizeBytes 1073741824 -WindowsREImagePath 'C:\RecoveryImages\Winre.wim' -PassThru
 ```
 
 Creates a 1 GiB recovery partition on disk 0 and stages the supplied WindowsRE image.
 
 ### Example 2: Splatted parameters with OrderedDictionary
-```powershell
+```
 $NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $NewRecoveryPartitionParameters.DiskNumber = 0
     $NewRecoveryPartitionParameters.SizePercent = 2
@@ -74,7 +76,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -120,7 +122,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -150,7 +152,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -196,7 +198,7 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -237,12 +239,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Int32
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.RecoveryPartitionInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

@@ -14,29 +14,29 @@ Downloads or copies a recovery boot image to a local destination.
 
 ### ByUri (Default)
 ```
-Save-RecoveryBootImage [-SourceUri] <Uri> [-DestinationDirectory] <DirectoryInfo>
- [-DestinationFileName <String>] [-ImageKind <String>] [-Force] [-PassThru]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Save-RecoveryBootImage [-SourceUri] <Uri> -DestinationPath <FileInfo> [-ImageKind <String>] [-Force]
+ [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Save-RecoveryBootImage [-SourcePath] <FileInfo> [-DestinationDirectory] <DirectoryInfo>
- [-DestinationFileName <String>] [-ImageKind <String>] [-Force] [-PassThru]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Save-RecoveryBootImage [-SourcePath] <FileInfo> -DestinationPath <FileInfo> [-ImageKind <String>] [-Force]
+ [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Downloads a WIM from an HTTPS source or copies it from a local or UNC path to the supplied destination folder. Idempotent when the destination already matches the source.
+Downloads a WIM from an HTTPS source or copies it from a local or UNC path to the supplied destination.
+When DestinationPath names an existing directory or ends with a directory separator the source leaf name is appended; otherwise it is treated as the target file path.
+Idempotent when the destination already matches the source.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```powershell
-Save-RecoveryBootImage -SourceUri 'https://example.com/boot.wim' -DestinationDirectory 'C:\RecoveryImages'
+```
+Save-RecoveryBootImage -SourceUri 'https://example.com/boot.wim' -DestinationPath 'C:\RecoveryImages\boot.wim'
 ```
 
-Downloads the boot image from the supplied URI to C:\RecoveryImages.
+Downloads the boot image from the supplied URI to C:\RecoveryImages\boot.wim.
 
 ## PARAMETERS
 
@@ -50,37 +50,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DestinationDirectory
-{{ Fill DestinationDirectory Description }}
-
-```yaml
-Type: DirectoryInfo
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DestinationFileName
-{{ Fill DestinationFileName Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -95,7 +65,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -125,7 +95,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -171,6 +141,21 @@ Aliases: wi
 
 Required: False
 Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DestinationPath
+{{ Fill DestinationPath Description }}
+
+```yaml
+Type: FileInfo
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -197,14 +182,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.Uri
-
 ### System.IO.FileInfo
-
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryImageInfo
-
 ## NOTES
 
 ## RELATED LINKS
-

@@ -93,3 +93,19 @@ Describe 'BootEntryVisibility enum' {
         [enum]::GetNames($param.ParameterType) | Should -Contain 'Hidden'
     }
 }
+
+Describe 'DestinationPath parameter' {
+    It 'Set-WindowsRecoveryImage exposes -DestinationPath instead of -DestinationDirectory' {
+        $params = (Get-Command Set-WindowsRecoveryImage).Parameters.Keys
+        $params | Should -Contain 'DestinationPath'
+        $params | Should -Not -Contain 'DestinationDirectory'
+        $params | Should -Not -Contain 'DestinationFileName'
+    }
+
+    It 'Save-RecoveryBootImage exposes -DestinationPath instead of -DestinationDirectory' {
+        $params = (Get-Command Save-RecoveryBootImage).Parameters.Keys
+        $params | Should -Contain 'DestinationPath'
+        $params | Should -Not -Contain 'DestinationDirectory'
+        $params | Should -Not -Contain 'DestinationFileName'
+    }
+}

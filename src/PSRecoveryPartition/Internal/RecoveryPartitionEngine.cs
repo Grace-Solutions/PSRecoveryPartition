@@ -15,9 +15,11 @@ namespace PSRecoveryPartition
     internal sealed class RecoveryPartitionEngine
     {
         private readonly StorageInvoker _storage;
+        private readonly PSCmdlet _owner;
 
         public RecoveryPartitionEngine(PSCmdlet owner)
         {
+            _owner = owner;
             _storage = new StorageInvoker(owner);
         }
 
@@ -61,6 +63,10 @@ namespace PSRecoveryPartition
             else if (string.Equals(partitionStyle, "MBR", StringComparison.OrdinalIgnoreCase))
             {
                 newPartitionArgs["MbrType"] = "IFS";
+                if (_owner != null)
+                {
+                    _owner.WriteWarning("MBR disk " + diskNumber + ": the Storage module cannot natively assign the Windows recovery MBR type 0x27. The partition will be created as IFS and tagged with the RECOVERY label; downstream tooling that relies on the 0x27 byte must run diskpart 'SET ID=27' or equivalent.");
+                }
             }
 
             var partition = _storage.InvokeSingle("New-Partition", newPartitionArgs);

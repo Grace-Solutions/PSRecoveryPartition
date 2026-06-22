@@ -94,6 +94,42 @@ Describe 'BootEntryVisibility enum' {
     }
 }
 
+Describe 'Recovery partition defaults and discovery' {
+    It 'defaults the recovery partition label to RECOVERY' {
+        $asm = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1
+        $type = $asm.GetType('PSRecoveryPartition.RecoveryPartitionConstants', $false)
+        $type | Should -Not -BeNullOrEmpty
+        $field = $type.GetField('DefaultLabel', [Reflection.BindingFlags]'Public,Static,NonPublic')
+        $field | Should -Not -BeNullOrEmpty
+        $field.GetValue($null) | Should -BeExactly 'RECOVERY'
+    }
+
+    It 'matches MBR type 0x27 as a recovery partition' {
+        $asm = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1
+        $type = $asm.GetType('PSRecoveryPartition.PartitionMapper', $false)
+        $type | Should -Not -BeNullOrEmpty
+        $method = $type.GetMethod('IsRecoveryMbrType', [Reflection.BindingFlags]'Public,Static', $null, @([int64]), $null)
+        $method | Should -Not -BeNullOrEmpty
+        $method.Invoke($null, @([int64]0x27)) | Should -BeTrue
+        $method.Invoke($null, @([int64]0x07)) | Should -BeFalse
+    }
+
+    It 'matches the recovery GPT type GUID case-insensitively' {
+        $asm = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1
+        $type = $asm.GetType('PSRecoveryPartition.PartitionMapper', $false)
+        $method = $type.GetMethod('IsRecoveryGptType')
+        $method.Invoke($null, @('{DE94BBA4-06D1-4D40-A16A-BFD50179D6AC}')) | Should -BeTrue
+        $method.Invoke($null, @('de94bba4-06d1-4d40-a16a-bfd50179d6ac')) | Should -BeTrue
+        $method.Invoke($null, @('{00000000-0000-0000-0000-000000000000}')) | Should -BeFalse
+    }
+}
+
 Describe 'DestinationPath parameter' {
     It 'Set-WindowsRecoveryImage exposes -DestinationPath instead of -DestinationDirectory' {
         $params = (Get-Command Set-WindowsRecoveryImage).Parameters.Keys

@@ -54,7 +54,8 @@ namespace PSRecoveryPartition
             }
 
             info.IsRecoveryPartition = IsRecoveryGptType(info.GptType)
-                || info.MbrType == "Recovery"
+                || IsRecoveryMbrType(info.MbrType)
+                || IsRecoveryMbrType(GetLong(partition, "MbrType"))
                 || string.Equals(info.Label, RecoveryPartitionConstants.DefaultLabel, StringComparison.OrdinalIgnoreCase);
 
             return info;
@@ -66,6 +67,24 @@ namespace PSRecoveryPartition
             return string.Equals(gptType.Trim('{', '}'),
                 RecoveryPartitionConstants.GptTypeRecovery.Trim('{', '}'),
                 StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsRecoveryMbrType(string mbrType)
+        {
+            if (string.IsNullOrEmpty(mbrType)) { return false; }
+            if (string.Equals(mbrType, "Recovery", StringComparison.OrdinalIgnoreCase)) { return true; }
+            if (string.Equals(mbrType, "WinRE", StringComparison.OrdinalIgnoreCase)) { return true; }
+            long parsed;
+            if (long.TryParse(mbrType, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out parsed))
+            {
+                return parsed == RecoveryPartitionConstants.MbrTypeRecovery;
+            }
+            return false;
+        }
+
+        public static bool IsRecoveryMbrType(long mbrTypeNumber)
+        {
+            return mbrTypeNumber == RecoveryPartitionConstants.MbrTypeRecovery;
         }
 
         private static string GetString(PSObject obj, string name)

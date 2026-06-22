@@ -16,7 +16,7 @@ namespace PSRecoveryPartition
         // we expose individual flags here for the Storage cmdlet path.
         public const long GptAttributesRecovery = unchecked((long)0x8000000000000001UL);
 
-        public const string DefaultLabel = "Recovery";
+        public const string DefaultLabel = "RECOVERY";
         public const long DefaultSizeBytes = 1024L * 1024L * 1024L; // 1 GiB
         public const int DefaultSizePercentMax = 10;
     }

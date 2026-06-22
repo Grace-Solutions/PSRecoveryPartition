@@ -30,6 +30,9 @@ namespace PSRecoveryPartition.Cmdlets
         [Parameter]
         public SwitchParameter PassThru { get; set; }
 
+        [Parameter]
+        public SwitchParameter Force { get; set; }
+
         protected override void ProcessRecord()
         {
             var diskSize = SizeResolver.GetDiskSizeBytes(this, DiskNumber);
@@ -39,6 +42,17 @@ namespace PSRecoveryPartition.Cmdlets
                 ParameterSetName == SizeResolver.ParameterSetExplicitSize ? SizeBytes : (long?)null,
                 ParameterSetName == SizeResolver.ParameterSetPercentSize ? SizePercent : (int?)null,
                 diskSize, out mode);
+
+            var layout = RecoveryPartitionLayoutAnalyzer.Analyze(
+                new StorageInvoker(this), DiskNumber, PartitionNumber, resolved);
+            foreach (var warning in layout.Warnings) { WriteWarning(warning); }
+            if (!Force.IsPresent && !layout.CanGrowInPlace)
+            {
+                throw new System.InvalidOperationException(
+                    "Refusing to resize Disk " + DiskNumber + " Partition " + PartitionNumber +
+                    " because the requested size (" + resolved + " bytes) cannot fit in the available trailing free space (" +
+                    layout.TrailingFreeSpaceBytes + " bytes); pass -Force to override.");
+            }
 
             var target = "Disk " + DiskNumber + " Partition " + PartitionNumber + " -> " + resolved + " bytes";
             if (!ShouldProcess(target, "Resize recovery partition")) { return; }

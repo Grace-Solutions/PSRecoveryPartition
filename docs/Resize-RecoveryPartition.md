@@ -14,18 +14,18 @@ Resizes a recovery partition to the requested size.
 
 ### ExplicitSize (Default)
 ```
-Resize-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> -SizeBytes <Int64> [-PassThru] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Resize-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> -SizeBytes <Int64> [-PassThru] [-Force]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### PercentSize
 ```
-Resize-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> -SizePercent <Int32> [-PassThru]
+Resize-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> -SizePercent <Int32> [-PassThru] [-Force]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.
+Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets. The cmdlet inspects the surrounding partition layout and refuses to grow when there is not enough trailing free space unless -Force is supplied.
 
 ## EXAMPLES
 
@@ -140,6 +140,21 @@ Aliases: wi
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+{{ Fill Force Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

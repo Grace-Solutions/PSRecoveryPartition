@@ -44,13 +44,13 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)
     }
     'Resize-RecoveryPartition' = @{
         Synopsis    = 'Resizes a recovery partition to the requested size.'
-        Description = 'Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.'
+        Description = 'Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets. The cmdlet inspects the surrounding partition layout and refuses to grow when there is not enough trailing free space unless -Force is supplied.'
         OneLiner    = 'Resize-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -SizeBytes 2147483648'
         OneLinerDescription = 'Resizes the recovery partition on disk 0 partition 5 to 2 GiB.'
     }
     'Remove-RecoveryPartition' = @{
         Synopsis    = 'Removes a recovery partition.'
-        Description = 'Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive.'
+        Description = 'Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive. The cmdlet inspects the surrounding partition layout and refuses to remove when the immediately following partition is the OS partition unless -Force is supplied.'
         OneLiner    = 'Remove-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -Force'
         OneLinerDescription = 'Removes the recovery partition on disk 0 partition 5 without prompting.'
     }

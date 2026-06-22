@@ -2613,7 +2613,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive.</maml:para>
+      <maml:para>Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive. The cmdlet inspects the surrounding partition layout and refuses to remove when the immediately following partition is the OS partition unless -Force is supplied.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -3121,7 +3121,7 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.</maml:para>
+      <maml:para>Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets. The cmdlet inspects the surrounding partition layout and refuses to grow when there is not enough trailing free space unless -Force is supplied.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -3195,6 +3195,17 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill Force Description }}</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Resize-RecoveryPartition</maml:name>
@@ -3260,6 +3271,17 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
           <maml:name>WhatIf</maml:name>
           <maml:description>
             <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill Force Description }}</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -3346,6 +3368,18 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
         <maml:name>WhatIf</maml:name>
         <maml:description>
           <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill Force Description }}</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>

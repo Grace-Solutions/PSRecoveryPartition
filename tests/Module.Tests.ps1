@@ -159,6 +159,40 @@ Describe 'New-RecoveryPartitionPlan surface' {
     }
 }
 
+Describe 'Recovery partition layout analysis' {
+    BeforeAll {
+        $script:RecoveryAssembly = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1
+    }
+
+    It 'exposes the RecoveryPartitionLayoutAnalysis result type' {
+        $type = $RecoveryAssembly.GetType('PSRecoveryPartition.RecoveryPartitionLayoutAnalysis', $false)
+        $type | Should -Not -BeNullOrEmpty
+        foreach ($name in @('DiskNumber','PartitionNumber','Position','OsPartitionNumber','PrecedingPartitionNumber','FollowingPartitionNumber','LeadingFreeSpaceBytes','TrailingFreeSpaceBytes','CanGrowInPlace','CanShrinkInPlace','CanRemoveSafely','Warnings')) {
+            $type.GetProperty($name) | Should -Not -BeNullOrEmpty -Because "expected property '$name'"
+        }
+    }
+
+    It 'exposes the RecoveryPartitionLayoutPosition enum values' {
+        $type = $RecoveryAssembly.GetType('PSRecoveryPartition.RecoveryPartitionLayoutPosition', $false)
+        $type | Should -Not -BeNullOrEmpty
+        foreach ($value in @('Unknown','Standalone','BeforeOs','AfterOs','SameAsOs')) {
+            [System.Enum]::IsDefined($type, $value) | Should -BeTrue -Because "expected enum value '$value'"
+        }
+    }
+
+    It 'attaches a LayoutAnalysis property to RecoveryPartitionPlan' {
+        $type = $RecoveryAssembly.GetType('PSRecoveryPartition.RecoveryPartitionPlan', $false)
+        $type.GetProperty('LayoutAnalysis') | Should -Not -BeNullOrEmpty
+    }
+
+    It 'exposes -Force on Resize-RecoveryPartition for risky operations' {
+        $params = (Get-Command Resize-RecoveryPartition).Parameters.Keys
+        $params | Should -Contain 'Force'
+    }
+}
+
 Describe 'DestinationPath parameter' {
     It 'Set-WindowsRecoveryImage exposes -DestinationPath instead of -DestinationDirectory' {
         $params = (Get-Command Set-WindowsRecoveryImage).Parameters.Keys

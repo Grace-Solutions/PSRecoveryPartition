@@ -73,6 +73,11 @@ namespace PSRecoveryPartition.Cmdlets
 
             var engine = new RecoveryPartitionEngine(this);
             var existing = engine.Get(DiskNumber, recoveryOnly: true).FirstOrDefault();
+            var layout = RecoveryPartitionLayoutAnalyzer.Analyze(
+                new StorageInvoker(this),
+                DiskNumber,
+                existing != null ? (int?)existing.PartitionNumber : null,
+                resolved);
 
             var plan = new RecoveryPartitionPlan
             {
@@ -93,11 +98,14 @@ namespace PSRecoveryPartition.Cmdlets
                 PushButtonAction = PushButtonAction,
                 CreatedAtUtc = DateTimeOffset.UtcNow,
                 ExistingPartitionNumber = existing != null ? (int?)existing.PartitionNumber : null,
-                ExistingPartitionSizeBytes = existing != null ? (long?)existing.SizeBytes : null
+                ExistingPartitionSizeBytes = existing != null ? (long?)existing.SizeBytes : null,
+                LayoutAnalysis = layout
             };
             ExecutionMethod = RecoveryExecutionMethod.Storage;
 
-            RecoveryPlanBuilder.AddPartitionSteps(plan, existing, resolved);
+            foreach (var warning in layout.Warnings) { WriteWarning(warning); }
+
+            RecoveryPlanBuilder.AddPartitionSteps(plan, existing, resolved, layout);
             RecoveryPlanBuilder.AddImageSteps(plan);
             RecoveryPlanBuilder.AddEntryPointSteps(plan);
 

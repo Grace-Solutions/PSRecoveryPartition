@@ -76,6 +76,7 @@ namespace PSRecoveryPartition
         public long? ExistingPartitionSizeBytes { get; set; }
         public bool Changed { get; set; }
         public IList<RecoveryPartitionPlanStep> Steps { get; set; }
+        public RecoveryPartitionLayoutAnalysis LayoutAnalysis { get; set; }
         public DateTimeOffset CreatedAtUtc { get; set; }
     }
 }

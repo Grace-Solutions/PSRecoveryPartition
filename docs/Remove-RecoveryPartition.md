@@ -18,7 +18,7 @@ Remove-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> [-Force] [
 ```
 
 ## DESCRIPTION
-Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive.
+Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive. The cmdlet inspects the surrounding partition layout and refuses to remove when the immediately following partition is the OS partition unless -Force is supplied.
 
 ## EXAMPLES
 

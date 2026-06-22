@@ -27,6 +27,17 @@ namespace PSRecoveryPartition.Cmdlets
         protected override void ProcessRecord()
         {
             var target = "Disk " + DiskNumber + " Partition " + PartitionNumber;
+
+            var layout = RecoveryPartitionLayoutAnalyzer.Analyze(
+                new StorageInvoker(this), DiskNumber, PartitionNumber, 0L);
+            foreach (var warning in layout.Warnings) { WriteWarning(warning); }
+            if (!Force.IsPresent && !layout.CanRemoveSafely)
+            {
+                throw new System.InvalidOperationException(
+                    "Refusing to remove " + target +
+                    " because the following partition is the OS partition; pass -Force to override.");
+            }
+
             if (!Force.IsPresent && !ShouldContinue("Permanently remove " + target + "?", "Remove recovery partition"))
             {
                 return;

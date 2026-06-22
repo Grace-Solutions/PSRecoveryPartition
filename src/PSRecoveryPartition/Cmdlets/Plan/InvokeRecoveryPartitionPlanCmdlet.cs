@@ -32,6 +32,11 @@ namespace PSRecoveryPartition.Cmdlets
             var target = "Disk " + InputObject.DiskNumber + " (" + InputObject.Steps.Count + " step(s))";
             if (!Force.IsPresent && !ShouldProcess(target, "Invoke recovery partition plan")) { return; }
 
+            if (InputObject.LayoutAnalysis != null)
+            {
+                foreach (var warning in InputObject.LayoutAnalysis.Warnings) { WriteWarning(warning); }
+            }
+
             var engine = new RecoveryPartitionEngine(this);
             RecoveryPartitionInfo resolved = null;
             foreach (var step in InputObject.Steps)

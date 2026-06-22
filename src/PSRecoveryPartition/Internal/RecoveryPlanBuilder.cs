@@ -11,7 +11,7 @@ namespace PSRecoveryPartition
     /// </summary>
     internal static class RecoveryPlanBuilder
     {
-        public static void AddPartitionSteps(RecoveryPartitionPlan plan, RecoveryPartitionInfo existing, long resolvedSize)
+        public static void AddPartitionSteps(RecoveryPartitionPlan plan, RecoveryPartitionInfo existing, long resolvedSize, RecoveryPartitionLayoutAnalysis layout = null)
         {
             if (existing == null)
             {
@@ -40,11 +40,15 @@ namespace PSRecoveryPartition
             }
             else if (existing.SizeBytes < resolvedSize)
             {
+                var risky = layout != null && !layout.CanGrowInPlace;
                 plan.Steps.Add(new RecoveryPartitionPlanStep
                 {
-                    Action = RecoveryPartitionPlanActions.ResizePartition,
+                    Action = risky ? RecoveryPartitionPlanActions.Skip : RecoveryPartitionPlanActions.ResizePartition,
                     Target = "Disk " + plan.DiskNumber + " Partition " + existing.PartitionNumber,
-                    Description = "Resize partition from " + existing.SizeBytes + " to " + resolvedSize + " bytes.",
+                    Description = risky
+                        ? "Refusing in-place resize from " + existing.SizeBytes + " to " + resolvedSize + " bytes; trailing free space is " + layout.TrailingFreeSpaceBytes + " bytes."
+                        : "Resize partition from " + existing.SizeBytes + " to " + resolvedSize + " bytes.",
+                    AlreadySatisfied = risky,
                     Parameters = new Dictionary<string, object>
                     {
                         { "DiskNumber", plan.DiskNumber },

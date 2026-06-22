@@ -830,3 +830,44 @@ PowerShell documentation examples use New-Object.
 PowerShell documentation examples do not use ::new().
 Expanded examples preserve the requested indentation style.
 ```
+
+---
+
+## Partition Layout Anticipation
+
+The module inspects on-disk partition geometry around a recovery partition (existing or proposed) before any destructive or growth-style operation and surfaces a `RecoveryPartitionLayoutAnalysis` object so callers can see whether the change is safe in place.
+
+The analyzer reports:
+
+```text
+DiskNumber
+PartitionNumber
+Position (Unknown | Standalone | BeforeOs | AfterOs | SameAsOs)
+OsPartitionNumber / OsPartitionOffset / OsPartitionSizeBytes
+PrecedingPartitionNumber / PrecedingPartitionType / PrecedingPartitionIsOs
+FollowingPartitionNumber / FollowingPartitionType / FollowingPartitionIsOs
+LeadingFreeSpaceBytes
+TrailingFreeSpaceBytes
+CanGrowInPlace
+CanShrinkInPlace
+CanRemoveSafely
+Warnings
+```
+
+The OS partition is identified by `IsBoot=$true` on the Storage partition object or by a drive letter that matches `$env:SystemDrive`.
+
+Behaviour rules:
+
+- `New-RecoveryPartitionPlan` attaches the analysis to the plan and emits each warning via `Write-Warning`. A `Resize-Partition` step is converted to a `Skip` step when `CanGrowInPlace` is false.
+- `Invoke-RecoveryPartitionPlan` re-emits the warnings before executing the plan.
+- `Resize-RecoveryPartition` throws when `CanGrowInPlace` is false unless `-Force` is supplied.
+- `Remove-RecoveryPartition` throws when `CanRemoveSafely` is false (immediately followed by the OS partition) unless `-Force` is supplied.
+
+Warning catalogue (non-exhaustive):
+
+```text
+Recovery partition is immediately followed by the OS partition; growing or removing it cannot be done in place without first relocating the OS.
+Requested size (X bytes) exceeds the available trailing free space (Y bytes); the resize would fail without shrinking a neighbour first.
+Recovery partition is located before the OS partition; any size change will shift the OS partition offset and is not supported in place.
+```
+

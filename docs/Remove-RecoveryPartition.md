@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -13,18 +13,17 @@ Removes a recovery partition.
 ## SYNTAX
 
 ```
-Remove-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> [-Force] [-PassThru]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> [-Force] [-PassThru] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Removes a recovery partition.
-Requires -Force or explicit confirmation because the operation is destructive.
+Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
+```powershell
 Remove-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -Force
 ```
 
@@ -123,21 +122,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -150,3 +134,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

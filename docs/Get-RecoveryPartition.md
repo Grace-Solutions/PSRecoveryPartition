@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -14,24 +14,23 @@ Discovers recovery partitions on local disks.
 
 ```
 Get-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [-IncludeNonRecovery]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Enumerates physical disks and emits a RecoveryPartitionInfo object for each partition that carries the Windows recovery partition type GUID.
-Use -IncludeNonRecovery to widen the search to non-recovery partitions for diagnostics.
+Enumerates physical disks and emits a RecoveryPartitionInfo object for each partition that carries the Windows recovery partition type GUID. Use -IncludeNonRecovery to widen the search to non-recovery partitions for diagnostics.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
+```powershell
 Get-RecoveryPartition -DiskNumber 0
 ```
 
 Lists every recovery partition on disk 0.
 
 ### Example 2: Splatted parameters with OrderedDictionary
-```
+```powershell
 $GetRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $GetRecoveryPartitionParameters.DiskNumber = 0
     $GetRecoveryPartitionParameters.IncludeNonRecovery = $False
@@ -91,21 +90,6 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -118,3 +102,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

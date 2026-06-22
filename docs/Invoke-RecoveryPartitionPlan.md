@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -8,27 +8,26 @@ schema: 2.0.0
 # Invoke-RecoveryPartitionPlan
 
 ## SYNOPSIS
-Executes a recovery partition plan.
+Executes a recovery partition plan idempotently.
 
 ## SYNTAX
 
 ```
-Invoke-RecoveryPartitionPlan -InputObject <RecoveryPartitionPlan> [-PassThru] [-Force]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Invoke-RecoveryPartitionPlan -InputObject <RecoveryPartitionPlan> [-PassThru] [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Executes the steps in a recovery partition plan produced by Get-RecoveryPartitionPlan.
-Honours -WhatIf and -Confirm and returns a structured result.
+Applies the steps in a plan produced by New-RecoveryPartitionPlan. Steps are processed in order and each step checks current state before applying changes. Honours -WhatIf and -Confirm and returns the resulting recovery partition when -PassThru is supplied.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
-Get-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru
+```powershell
+New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru
 ```
 
-Builds a plan and applies it on disk 0 then emits the plan result.
+Builds and applies the plan on disk 0 and emits the resulting recovery partition.
 
 ## PARAMETERS
 
@@ -108,21 +107,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -135,3 +119,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

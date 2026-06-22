@@ -1,19 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 
 namespace PSRecoveryPartition.Cmdlets
 {
     /// <summary>
-    /// Creates a recovery partition plan without applying changes. Useful for
-    /// reviewing exactly which actions <c>Invoke-RecoveryPartitionPlan</c> will
-    /// take given the supplied inputs.
+    /// Builds an idempotent recovery partition plan without applying changes.
+    /// The plan captures every step needed to stand up a recovery partition
+    /// end-to-end: create or resize the partition, copy a WindowsRE image,
+    /// copy a boot image, register WinRE, create a BCD recovery boot entry,
+    /// and configure push-button reset. Use <c>Invoke-RecoveryPartitionPlan</c>
+    /// to apply the plan.
     /// </summary>
-    [Cmdlet(VerbsCommon.Get, "RecoveryPartitionPlan",
+    [Cmdlet(VerbsCommon.New, "RecoveryPartitionPlan",
         DefaultParameterSetName = SizeResolver.ParameterSetDefaultSize)]
     [OutputType(typeof(RecoveryPartitionPlan))]
-    public sealed class GetRecoveryPartitionPlanCmdlet : RecoveryCmdletBase
+    public sealed class NewRecoveryPartitionPlanCmdlet : RecoveryCmdletBase
     {
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true)]
         public int DiskNumber { get; set; }
@@ -36,6 +40,27 @@ namespace PSRecoveryPartition.Cmdlets
         [Parameter]
         public FileInfo WindowsREImagePath { get; set; }
 
+        [Parameter]
+        public FileInfo BootImagePath { get; set; }
+
+        [Parameter]
+        public string BootEntryName { get; set; } = "Grace Solutions Recovery";
+
+        [Parameter]
+        public TimeSpan BootTimeout { get; set; } = TimeSpan.FromSeconds(10);
+
+        [Parameter]
+        public RecoveryBootEntryVisibility BootEntryVisibility { get; set; } = RecoveryBootEntryVisibility.Visible;
+
+        [Parameter]
+        public SwitchParameter SetDefaultBootEntry { get; set; }
+
+        [Parameter]
+        public RecoveryEntryPointMode EntryPointMode { get; set; } = RecoveryEntryPointMode.None;
+
+        [Parameter]
+        public string PushButtonAction { get; set; }
+
         protected override void ProcessRecord()
         {
             var diskSize = SizeResolver.GetDiskSizeBytes(this, DiskNumber);
@@ -47,7 +72,7 @@ namespace PSRecoveryPartition.Cmdlets
                 diskSize, out mode);
 
             var engine = new RecoveryPartitionEngine(this);
-            var existing = engine.Get(DiskNumber, recoveryOnly: true);
+            var existing = engine.Get(DiskNumber, recoveryOnly: true).FirstOrDefault();
 
             var plan = new RecoveryPartitionPlan
             {
@@ -59,45 +84,24 @@ namespace PSRecoveryPartition.Cmdlets
                 Label = Label,
                 FileSystem = FileSystem,
                 WindowsREImagePath = WindowsREImagePath,
+                BootImagePath = BootImagePath,
+                BootEntryName = BootEntryName,
+                BootTimeout = BootTimeout,
+                BootEntryVisibility = BootEntryVisibility,
+                SetDefaultBootEntry = SetDefaultBootEntry.IsPresent,
+                EntryPointMode = EntryPointMode,
+                PushButtonAction = PushButtonAction,
                 CreatedAtUtc = DateTimeOffset.UtcNow,
-                Changed = existing.Count == 0
+                ExistingPartitionNumber = existing != null ? (int?)existing.PartitionNumber : null,
+                ExistingPartitionSizeBytes = existing != null ? (long?)existing.SizeBytes : null
             };
             ExecutionMethod = RecoveryExecutionMethod.Storage;
 
-            if (existing.Count == 0)
-            {
-                plan.Steps.Add(new RecoveryPartitionPlanStep
-                {
-                    Action = "CreatePartition",
-                    Target = "Disk " + DiskNumber,
-                    Description = "Create a new recovery partition of " + resolved + " bytes.",
-                    Parameters = new Dictionary<string, object>
-                    {
-                        { "DiskNumber", DiskNumber },
-                        { "SizeBytes", resolved },
-                        { "Label", Label },
-                        { "FileSystem", FileSystem }
-                    }
-                });
-                if (WindowsREImagePath != null)
-                {
-                    plan.Steps.Add(new RecoveryPartitionPlanStep
-                    {
-                        Action = "CopyWinREImage",
-                        Target = WindowsREImagePath.FullName,
-                        Description = "Copy WindowsRE image onto the new partition."
-                    });
-                }
-            }
-            else
-            {
-                plan.Steps.Add(new RecoveryPartitionPlanStep
-                {
-                    Action = "Skip",
-                    Target = "Disk " + DiskNumber,
-                    Description = "Recovery partition already exists; no creation required."
-                });
-            }
+            RecoveryPlanBuilder.AddPartitionSteps(plan, existing, resolved);
+            RecoveryPlanBuilder.AddImageSteps(plan);
+            RecoveryPlanBuilder.AddEntryPointSteps(plan);
+
+            plan.Changed = plan.Steps.Any(s => !s.AlreadySatisfied && s.Action != RecoveryPartitionPlanActions.Skip);
 
             Stamp(plan);
             WriteObject(plan);

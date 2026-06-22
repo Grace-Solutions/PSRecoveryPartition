@@ -26,7 +26,7 @@ Describe 'PSRecoveryPartition module' {
         $expected = @(
             'Get-RecoveryPartition','New-RecoveryPartition','Set-RecoveryPartition','Resize-RecoveryPartition',
             'Remove-RecoveryPartition','Mount-RecoveryPartition','Dismount-RecoveryPartition','Test-RecoveryPartition',
-            'Get-RecoveryPartitionPlan','Invoke-RecoveryPartitionPlan',
+            'New-RecoveryPartitionPlan','Invoke-RecoveryPartitionPlan',
             'Get-WindowsRecoveryImage','Set-WindowsRecoveryImage','Save-RecoveryBootImage',
             'Get-WindowsRecoveryEnvironment','Set-WindowsRecoveryEnvironment',
             'Enable-WindowsRecoveryEnvironment','Disable-WindowsRecoveryEnvironment',
@@ -127,6 +127,35 @@ Describe 'Recovery partition defaults and discovery' {
         $method.Invoke($null, @('{DE94BBA4-06D1-4D40-A16A-BFD50179D6AC}')) | Should -BeTrue
         $method.Invoke($null, @('de94bba4-06d1-4d40-a16a-bfd50179d6ac')) | Should -BeTrue
         $method.Invoke($null, @('{00000000-0000-0000-0000-000000000000}')) | Should -BeFalse
+    }
+}
+
+Describe 'New-RecoveryPartitionPlan surface' {
+    It 'replaces Get-RecoveryPartitionPlan with New-RecoveryPartitionPlan' {
+        Get-Command -Module PSRecoveryPartition -Name 'Get-RecoveryPartitionPlan' -ErrorAction SilentlyContinue |
+            Should -BeNullOrEmpty
+        Get-Command -Module PSRecoveryPartition -Name 'New-RecoveryPartitionPlan' -ErrorAction Stop |
+            Should -Not -BeNullOrEmpty
+    }
+
+    It 'exposes the expanded plan parameters' {
+        $params = (Get-Command New-RecoveryPartitionPlan).Parameters.Keys
+        $params | Should -Contain 'BootImagePath'
+        $params | Should -Contain 'WindowsREImagePath'
+        $params | Should -Contain 'EntryPointMode'
+        $params | Should -Contain 'BootEntryName'
+        $params | Should -Contain 'PushButtonAction'
+    }
+
+    It 'surfaces the new plan-step action constants on the assembly' {
+        $asm = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1
+        $type = $asm.GetType('PSRecoveryPartition.RecoveryPartitionPlanActions', $false)
+        $type | Should -Not -BeNullOrEmpty
+        foreach ($name in @('CreatePartition','ResizePartition','CopyWinREImage','CopyBootImage','RegisterWinRE','EnableWinRE','CreateBootEntry','ConfigurePushButton','Skip')) {
+            $type.GetField($name) | Should -Not -BeNullOrEmpty -Because "expected plan action constant '$name'"
+        }
     }
 }
 

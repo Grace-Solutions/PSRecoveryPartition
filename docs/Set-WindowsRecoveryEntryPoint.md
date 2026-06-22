@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -16,24 +16,23 @@ Configures push-button reset, a boot entry, or both as recovery entry points.
 Set-WindowsRecoveryEntryPoint -EntryPointMode <RecoveryEntryPointMode> [-BootImagePath <FileInfo>]
  [-WindowsREImagePath <FileInfo>] [-PushButtonAction <String>] [-Name <String>] [-BootTimeout <TimeSpan>]
  [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault] [-InputObject <Object>] [-Force]
- [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Combines WindowsRE registration and BCD boot entry creation behind a single high-level surface.
-EntryPointMode selects which paths are configured.
+Combines WindowsRE registration and BCD boot entry creation behind a single high-level surface. EntryPointMode selects which paths are configured.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
+```powershell
 Set-WindowsRecoveryEntryPoint -EntryPointMode Both -BootImagePath 'C:\RecoveryImages\boot.wim' -WindowsREImagePath 'C:\RecoveryImages\winre.wim' -BootTimeout ([timespan]'00:00:10') -PassThru
 ```
 
 Configures both push-button reset and a recovery boot entry in a single call.
 
 ### Example 2: Splatted parameters with OrderedDictionary
-```
+```powershell
 $SetWindowsRecoveryEntryPointParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $SetWindowsRecoveryEntryPointParameters.EntryPointMode = 'Both'
     $SetWindowsRecoveryEntryPointParameters.BootImagePath = 'C:\RecoveryImages\boot.wim'
@@ -251,21 +250,6 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -279,3 +263,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

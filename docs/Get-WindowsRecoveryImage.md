@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -13,8 +13,7 @@ Discovers Windows RE or Windows PE image files.
 ## SYNTAX
 
 ```
-Get-WindowsRecoveryImage [-Path <DirectoryInfo>] [-ImageKind <String>] [-ComputeHash]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-WindowsRecoveryImage [-Path <DirectoryInfo>] [-ImageKind <String>] [-ComputeHash] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +22,7 @@ Enumerates WIM files in the supplied path and returns structured information abo
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
+```powershell
 Get-WindowsRecoveryImage -Path 'C:\RecoveryImages'
 ```
 
@@ -77,21 +76,6 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -104,3 +88,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

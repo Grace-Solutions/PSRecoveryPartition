@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -15,17 +15,16 @@ Creates a recovery boot entry idempotently.
 ```
 New-WindowsRecoveryBootEntry -BootImagePath <FileInfo> [-Name <String>] [-BootTimeout <TimeSpan>]
  [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault] [-AddLast] [-InputObject <Object>] [-Force]
- [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Creates a BCD boot entry that boots from the supplied WIM image.
-Existing entries with the same name are not duplicated.
+Creates a BCD boot entry that boots from the supplied WIM image. Existing entries with the same name are not duplicated.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
+```powershell
 New-WindowsRecoveryBootEntry -BootImagePath 'C:\RecoveryImages\boot.wim' -Name 'Recovery' -PassThru
 ```
 
@@ -200,21 +199,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -228,3 +212,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

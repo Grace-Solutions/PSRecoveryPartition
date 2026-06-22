@@ -72,28 +72,32 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)
         OneLiner    = 'Test-RecoveryPartition -DiskNumber 0 -PartitionNumber 5'
         OneLinerDescription = 'Validates the recovery partition on disk 0 partition 5.'
     }
-    'Get-RecoveryPartitionPlan' = @{
-        Synopsis    = 'Produces an idempotent plan for the requested recovery layout.'
-        Description = 'Compares the current disk layout to the requested recovery layout and returns a structured plan describing the steps required to converge.'
-        OneLiner    = 'Get-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2'
-        OneLinerDescription = 'Returns the plan required to provision a 2 percent recovery partition on disk 0.'
+    'New-RecoveryPartitionPlan' = @{
+        Synopsis    = 'Builds an idempotent recovery partition plan.'
+        Description = 'Compares the current disk layout to the requested recovery topology and returns a plan covering partition create or resize, image staging, WindowsRE registration, BCD boot entry creation, and push-button reset configuration. Use Invoke-RecoveryPartitionPlan to apply the plan.'
+        OneLiner    = 'New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 -WindowsREImagePath ''C:\RecoveryImages\winre.wim'' -BootImagePath ''C:\RecoveryImages\boot.wim'' -EntryPointMode Both'
+        OneLinerDescription = 'Builds the end-to-end plan for a 2 percent recovery partition with WindowsRE registration and a recovery boot entry.'
         Splat       = @'
-$GetRecoveryPartitionPlanParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
-    $GetRecoveryPartitionPlanParameters.DiskNumber = 0
-    $GetRecoveryPartitionPlanParameters.SizeBytes = 1073741824
-    $GetRecoveryPartitionPlanParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
-    $GetRecoveryPartitionPlanParameters.Verbose = $True
+$NewRecoveryPartitionPlanParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewRecoveryPartitionPlanParameters.DiskNumber = 0
+    $NewRecoveryPartitionPlanParameters.SizeBytes = 1073741824
+    $NewRecoveryPartitionPlanParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
+    $NewRecoveryPartitionPlanParameters.BootImagePath = 'C:\RecoveryImages\boot.wim'
+    $NewRecoveryPartitionPlanParameters.EntryPointMode = 'Both'
+    $NewRecoveryPartitionPlanParameters.BootEntryName = 'Grace Solutions Recovery'
+    $NewRecoveryPartitionPlanParameters.BootTimeout = [Timespan]::FromSeconds(10)
+    $NewRecoveryPartitionPlanParameters.Verbose = $True
 
-$GetRecoveryPartitionPlanResult = Get-RecoveryPartitionPlan @GetRecoveryPartitionPlanParameters
-Write-Output -InputObject ($GetRecoveryPartitionPlanResult)
+$NewRecoveryPartitionPlanResult = New-RecoveryPartitionPlan @NewRecoveryPartitionPlanParameters
+Write-Output -InputObject ($NewRecoveryPartitionPlanResult)
 '@
-        SplatDescription = 'Builds a plan to create a 1 GiB recovery partition staged with the supplied WindowsRE image.'
+        SplatDescription = 'Builds a plan that creates a 1 GiB recovery partition, registers the WindowsRE image, and adds a recovery boot entry.'
     }
     'Invoke-RecoveryPartitionPlan' = @{
-        Synopsis    = 'Executes a recovery partition plan.'
-        Description = 'Executes the steps in a recovery partition plan produced by Get-RecoveryPartitionPlan. Honours -WhatIf and -Confirm and returns a structured result.'
-        OneLiner    = 'Get-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru'
-        OneLinerDescription = 'Builds a plan and applies it on disk 0 then emits the plan result.'
+        Synopsis    = 'Executes a recovery partition plan idempotently.'
+        Description = 'Applies the steps in a plan produced by New-RecoveryPartitionPlan. Steps are processed in order and each step checks current state before applying changes. Honours -WhatIf and -Confirm and returns the resulting recovery partition when -PassThru is supplied.'
+        OneLiner    = 'New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru'
+        OneLinerDescription = 'Builds and applies the plan on disk 0 and emits the resulting recovery partition.'
     }
     'Get-WindowsRecoveryImage' = @{
         Synopsis    = 'Discovers Windows RE or Windows PE image files.'

@@ -20,7 +20,7 @@
         'Mount-RecoveryPartition'
         'Dismount-RecoveryPartition'
         'Test-RecoveryPartition'
-        'Get-RecoveryPartitionPlan'
+        'New-RecoveryPartitionPlan'
         'Invoke-RecoveryPartitionPlan'
         'Get-WindowsRecoveryImage'
         'Set-WindowsRecoveryImage'

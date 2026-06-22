@@ -604,8 +604,8 @@ Required section:
 | [Remove-RecoveryPartition](docs/Remove-RecoveryPartition.md) | Removes a recovery partition safely. |
 | [Mount-RecoveryPartition](docs/Mount-RecoveryPartition.md) | Adds a temporary access path to a recovery partition. |
 | [Dismount-RecoveryPartition](docs/Dismount-RecoveryPartition.md) | Removes a temporary access path from a recovery partition. |
-| [Get-RecoveryPartitionPlan](docs/Get-RecoveryPartitionPlan.md) | Creates a recovery partition plan without applying changes. |
-| [Invoke-RecoveryPartitionPlan](docs/Invoke-RecoveryPartitionPlan.md) | Applies a recovery partition plan. |
+| [New-RecoveryPartitionPlan](docs/New-RecoveryPartitionPlan.md) | Builds an idempotent end-to-end recovery partition plan. |
+| [Invoke-RecoveryPartitionPlan](docs/Invoke-RecoveryPartitionPlan.md) | Applies a recovery partition plan idempotently. |
 | [Get-WindowsRecoveryImage](docs/Get-WindowsRecoveryImage.md) | Finds Windows RE or Windows PE images. |
 | [Set-WindowsRecoveryImage](docs/Set-WindowsRecoveryImage.md) | Copies or updates a Windows RE or Windows PE image. |
 | [Get-WindowsRecoveryEnvironment](docs/Get-WindowsRecoveryEnvironment.md) | Gets Windows Recovery Environment configuration. |
@@ -776,7 +776,7 @@ Remove-RecoveryPartition
 Mount-RecoveryPartition
 Dismount-RecoveryPartition
 Test-RecoveryPartition
-Get-RecoveryPartitionPlan
+New-RecoveryPartitionPlan
 Invoke-RecoveryPartitionPlan
 Get-WindowsRecoveryImage
 Set-WindowsRecoveryImage

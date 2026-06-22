@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -13,8 +13,7 @@ Tests a recovery partition for size, layout, and contents.
 ## SYNTAX
 
 ```
-Test-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Test-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +22,7 @@ Inspects a recovery partition and returns a structured pass/fail report covering
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
+```powershell
 Test-RecoveryPartition -DiskNumber 0 -PartitionNumber 5
 ```
 
@@ -61,21 +60,6 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -88,3 +72,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

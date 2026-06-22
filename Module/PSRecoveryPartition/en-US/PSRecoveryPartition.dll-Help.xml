@@ -609,280 +609,6 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-RecoveryPartitionPlan</command:name>
-      <command:verb>Get</command:verb>
-      <command:noun>RecoveryPartitionPlan</command:noun>
-      <maml:description>
-        <maml:para>Produces an idempotent plan for the requested recovery layout.</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>Compares the current disk layout to the requested recovery layout and returns a structured plan describing the steps required to converge.</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Get-RecoveryPartitionPlan</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
-          <maml:name>DiskNumber</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-          <dev:type>
-            <maml:name>Int32</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>FileSystem</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill FileSystem Description }}</maml:para>
-          </maml:description>
-          <command:parameterValueGroup>
-            <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
-            <command:parameterValue required="false" command:variableLength="false">FAT32</command:parameterValue>
-            <command:parameterValue required="false" command:variableLength="false">ReFS</command:parameterValue>
-          </command:parameterValueGroup>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Label</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill Label Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>SizeBytes</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill SizeBytes Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
-          <dev:type>
-            <maml:name>Int64</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>WindowsREImagePath</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
-          <dev:type>
-            <maml:name>FileInfo</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-      <command:syntaxItem>
-        <maml:name>Get-RecoveryPartitionPlan</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
-          <maml:name>DiskNumber</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-          <dev:type>
-            <maml:name>Int32</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>FileSystem</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill FileSystem Description }}</maml:para>
-          </maml:description>
-          <command:parameterValueGroup>
-            <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
-            <command:parameterValue required="false" command:variableLength="false">FAT32</command:parameterValue>
-            <command:parameterValue required="false" command:variableLength="false">ReFS</command:parameterValue>
-          </command:parameterValueGroup>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Label</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill Label Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>SizePercent</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill SizePercent Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-          <dev:type>
-            <maml:name>Int32</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>WindowsREImagePath</maml:name>
-          <maml:description>
-            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
-          <dev:type>
-            <maml:name>FileInfo</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
-        <maml:name>DiskNumber</maml:name>
-        <maml:description>
-          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-        <dev:type>
-          <maml:name>Int32</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>FileSystem</maml:name>
-        <maml:description>
-          <maml:para>{{ Fill FileSystem Description }}</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Label</maml:name>
-        <maml:description>
-          <maml:para>{{ Fill Label Description }}</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>SizeBytes</maml:name>
-        <maml:description>
-          <maml:para>{{ Fill SizeBytes Description }}</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
-        <dev:type>
-          <maml:name>Int64</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>SizePercent</maml:name>
-        <maml:description>
-          <maml:para>{{ Fill SizePercent Description }}</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-        <dev:type>
-          <maml:name>Int32</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>WindowsREImagePath</maml:name>
-        <maml:description>
-          <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
-        <dev:type>
-          <maml:name>FileInfo</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-    </command:parameters>
-    <command:inputTypes>
-      <command:inputType>
-        <dev:type>
-          <maml:name>System.Int32</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:inputType>
-    </command:inputTypes>
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>PSRecoveryPartition.RecoveryPartitionPlan</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para></maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
-        <dev:code>Get-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2</dev:code>
-        <dev:remarks>
-          <maml:para>Returns the plan required to provision a 2 percent recovery partition on disk 0.</maml:para>
-        </dev:remarks>
-      </command:example>
-      <command:example>
-        <maml:title>---- Example 2: Splatted parameters with OrderedDictionary ----</maml:title>
-        <dev:code>$GetRecoveryPartitionPlanParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
-    $GetRecoveryPartitionPlanParameters.DiskNumber = 0
-    $GetRecoveryPartitionPlanParameters.SizeBytes = 1073741824
-    $GetRecoveryPartitionPlanParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
-    $GetRecoveryPartitionPlanParameters.Verbose = $True
-
-$GetRecoveryPartitionPlanResult = Get-RecoveryPartitionPlan @GetRecoveryPartitionPlanParameters
-Write-Output -InputObject ($GetRecoveryPartitionPlanResult)</dev:code>
-        <dev:remarks>
-          <maml:para>Builds a plan to create a 1 GiB recovery partition staged with the supplied WindowsRE image.</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks />
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
       <command:name>Get-WindowsRecoveryBootEntry</command:name>
       <command:verb>Get</command:verb>
       <command:noun>WindowsRecoveryBootEntry</command:noun>
@@ -1230,11 +956,11 @@ Write-Output -InputObject ($GetRecoveryPartitionPlanResult)</dev:code>
       <command:verb>Invoke</command:verb>
       <command:noun>RecoveryPartitionPlan</command:noun>
       <maml:description>
-        <maml:para>Executes a recovery partition plan.</maml:para>
+        <maml:para>Executes a recovery partition plan idempotently.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Executes the steps in a recovery partition plan produced by Get-RecoveryPartitionPlan. Honours -WhatIf and -Confirm and returns a structured result.</maml:para>
+      <maml:para>Applies the steps in a plan produced by New-RecoveryPartitionPlan. Steps are processed in order and each step checks current state before applying changes. Honours -WhatIf and -Confirm and returns the resulting recovery partition when -PassThru is supplied.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -1387,9 +1113,9 @@ Write-Output -InputObject ($GetRecoveryPartitionPlanResult)</dev:code>
     <command:examples>
       <command:example>
         <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
-        <dev:code>Get-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru</dev:code>
+        <dev:code>New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru</dev:code>
         <dev:remarks>
-          <maml:para>Builds a plan and applies it on disk 0 then emits the plan result.</maml:para>
+          <maml:para>Builds and applies the plan on disk 0 and emits the resulting recovery partition.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -1999,6 +1725,554 @@ $NewRecoveryPartitionResult = New-RecoveryPartition @NewRecoveryPartitionParamet
 Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <dev:remarks>
           <maml:para>Creates a percentage-sized recovery partition with a friendly label and stages a WindowsRE image.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>New-RecoveryPartitionPlan</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>RecoveryPartitionPlan</command:noun>
+      <maml:description>
+        <maml:para>Builds an idempotent recovery partition plan.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Compares the current disk layout to the requested recovery topology and returns a plan covering partition create or resize, image staging, WindowsRE registration, BCD boot entry creation, and push-button reset configuration. Use Invoke-RecoveryPartitionPlan to apply the plan.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>New-RecoveryPartitionPlan</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootEntryName</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootEntryName Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootEntryVisibility</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">Visible</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">Hidden</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">RecoveryBootEntryVisibility</command:parameterValue>
+          <dev:type>
+            <maml:name>RecoveryBootEntryVisibility</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootImagePath</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootTimeout</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
+          <dev:type>
+            <maml:name>TimeSpan</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>DiskNumber</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>EntryPointMode</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">None</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">PushButtonReset</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">BootEntry</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">Both</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">RecoveryEntryPointMode</command:parameterValue>
+          <dev:type>
+            <maml:name>RecoveryEntryPointMode</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FileSystem</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill FileSystem Description }}</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">FAT32</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">ReFS</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Label</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill Label Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PushButtonAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>SetDefaultBootEntry</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill SetDefaultBootEntry Description }}</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>SizeBytes</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
+          <dev:type>
+            <maml:name>Int64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>WindowsREImagePath</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>New-RecoveryPartitionPlan</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootEntryName</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootEntryName Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootEntryVisibility</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">Visible</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">Hidden</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">RecoveryBootEntryVisibility</command:parameterValue>
+          <dev:type>
+            <maml:name>RecoveryBootEntryVisibility</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootImagePath</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BootTimeout</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
+          <dev:type>
+            <maml:name>TimeSpan</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>DiskNumber</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>EntryPointMode</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">None</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">PushButtonReset</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">BootEntry</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">Both</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">RecoveryEntryPointMode</command:parameterValue>
+          <dev:type>
+            <maml:name>RecoveryEntryPointMode</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FileSystem</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill FileSystem Description }}</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">NTFS</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">FAT32</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">ReFS</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Label</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill Label Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PushButtonAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>SetDefaultBootEntry</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill SetDefaultBootEntry Description }}</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>SizePercent</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill SizePercent Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>WindowsREImagePath</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BootEntryName</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill BootEntryName Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BootEntryVisibility</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill BootEntryVisibility Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">RecoveryBootEntryVisibility</command:parameterValue>
+        <dev:type>
+          <maml:name>RecoveryBootEntryVisibility</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BootImagePath</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill BootImagePath Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+        <dev:type>
+          <maml:name>FileInfo</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BootTimeout</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill BootTimeout Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">TimeSpan</command:parameterValue>
+        <dev:type>
+          <maml:name>TimeSpan</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <maml:name>DiskNumber</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill DiskNumber Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>EntryPointMode</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill EntryPointMode Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">RecoveryEntryPointMode</command:parameterValue>
+        <dev:type>
+          <maml:name>RecoveryEntryPointMode</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>FileSystem</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill FileSystem Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Label</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill Label Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PushButtonAction</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill PushButtonAction Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>SetDefaultBootEntry</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill SetDefaultBootEntry Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>SizeBytes</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill SizeBytes Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int64</command:parameterValue>
+        <dev:type>
+          <maml:name>Int64</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>SizePercent</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill SizePercent Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>WindowsREImagePath</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill WindowsREImagePath Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+        <dev:type>
+          <maml:name>FileInfo</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Int32</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>PSRecoveryPartition.RecoveryPartitionPlan</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
+        <dev:code>New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 -WindowsREImagePath 'C:\RecoveryImages\winre.wim' -BootImagePath 'C:\RecoveryImages\boot.wim' -EntryPointMode Both</dev:code>
+        <dev:remarks>
+          <maml:para>Builds the end-to-end plan for a 2 percent recovery partition with WindowsRE registration and a recovery boot entry.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>---- Example 2: Splatted parameters with OrderedDictionary ----</maml:title>
+        <dev:code>$NewRecoveryPartitionPlanParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewRecoveryPartitionPlanParameters.DiskNumber = 0
+    $NewRecoveryPartitionPlanParameters.SizeBytes = 1073741824
+    $NewRecoveryPartitionPlanParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
+    $NewRecoveryPartitionPlanParameters.BootImagePath = 'C:\RecoveryImages\boot.wim'
+    $NewRecoveryPartitionPlanParameters.EntryPointMode = 'Both'
+    $NewRecoveryPartitionPlanParameters.BootEntryName = 'Grace Solutions Recovery'
+    $NewRecoveryPartitionPlanParameters.BootTimeout = [Timespan]::FromSeconds(10)
+    $NewRecoveryPartitionPlanParameters.Verbose = $True
+
+$NewRecoveryPartitionPlanResult = New-RecoveryPartitionPlan @NewRecoveryPartitionPlanParameters
+Write-Output -InputObject ($NewRecoveryPartitionPlanResult)</dev:code>
+        <dev:remarks>
+          <maml:para>Builds a plan that creates a 1 GiB recovery partition, registers the WindowsRE image, and adds a recovery boot entry.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

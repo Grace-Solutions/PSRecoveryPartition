@@ -1,4 +1,4 @@
----
+﻿---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -15,40 +15,35 @@ Creates a recovery partition on a target disk.
 ### DefaultSize (Default)
 ```
 New-RecoveryPartition -DiskNumber <Int32> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ExplicitSize
 ```
 New-RecoveryPartition -DiskNumber <Int32> -SizeBytes <Int64> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### PercentSize
 ```
 New-RecoveryPartition -DiskNumber <Int32> -SizePercent <Int32> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Creates a recovery partition on the specified disk and optionally stages a WindowsRE image into it.
-Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing.
-The two are mutually exclusive parameter sets.
+Creates a recovery partition on the specified disk and optionally stages a WindowsRE image into it. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
-```
+```powershell
 New-RecoveryPartition -DiskNumber 0 -SizeBytes 1073741824 -WindowsREImagePath 'C:\RecoveryImages\Winre.wim' -PassThru
 ```
 
 Creates a 1 GiB recovery partition on disk 0 and stages the supplied WindowsRE image.
 
 ### Example 2: Splatted parameters with OrderedDictionary
-```
+```powershell
 $NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $NewRecoveryPartitionParameters.DiskNumber = 0
     $NewRecoveryPartitionParameters.SizePercent = 2
@@ -218,21 +213,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -245,3 +225,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

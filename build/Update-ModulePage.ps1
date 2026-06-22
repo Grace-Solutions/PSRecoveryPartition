@@ -5,19 +5,21 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $docsDir = Join-Path $repoRoot 'docs'
 $modulePath = Join-Path $docsDir 'PSRecoveryPartition.md'
 $helpContent = & (Join-Path $PSScriptRoot 'HelpContent.ps1')
+$manifestPath = Join-Path $repoRoot 'Module/PSRecoveryPartition/PSRecoveryPartition.psd1'
+$manifest = Import-PowerShellDataFile -LiteralPath $manifestPath
 
 $lines = New-Object System.Collections.Generic.List[string]
 $lines.Add('---')
 $lines.Add('Module Name: PSRecoveryPartition')
-$lines.Add('Module Guid: d6d6f0b8-2a4b-4a8d-9d2a-7c0f4c2b5e9a')
+$lines.Add("Module Guid: $($manifest.GUID)")
 $lines.Add('Download Help Link: https://github.com/GraceSolutions/PSRecoveryPartition')
-$lines.Add('Help Version: 0.1.0')
+$lines.Add("Help Version: $($manifest.ModuleVersion)")
 $lines.Add('Locale: en-US')
 $lines.Add('---')
 $lines.Add('')
 $lines.Add('# PSRecoveryPartition Module')
 $lines.Add('## Description')
-$lines.Add('PowerShell module for managing Windows recovery partitions, Windows Recovery Environment, and recovery boot entries. Uses native Windows APIs, Storage objects, CIM, WMI, and controlled Microsoft inbox process fallback where required.')
+$lines.Add($manifest.Description)
 $lines.Add('')
 $lines.Add('## PSRecoveryPartition Cmdlets')
 foreach ($name in ($helpContent.Keys | Sort-Object)) {

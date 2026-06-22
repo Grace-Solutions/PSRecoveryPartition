@@ -70,6 +70,36 @@ namespace PSRecoveryPartition.Native
             }
         }
 
+        /// <summary>
+        /// Reads the disk's bytes-per-sector value via IOCTL_DISK_GET_DRIVE_GEOMETRY.
+        /// Used by the resize path to convert byte counts to sector counts for
+        /// FSCTL_EXTEND_VOLUME / FSCTL_SHRINK_VOLUME.
+        /// </summary>
+        public static int ReadBytesPerSector(int diskNumber)
+        {
+            using (var handle = DeviceHandleFactory.OpenPhysicalDisk(diskNumber, readOnly: true))
+            {
+                var size = Marshal.SizeOf<DISK_GEOMETRY>();
+                var buffer = Marshal.AllocHGlobal(size);
+                try
+                {
+                    int returned;
+                    var ok = NativeMethods.DeviceIoControl(
+                        handle, NativeConstants.IOCTL_DISK_GET_DRIVE_GEOMETRY,
+                        IntPtr.Zero, 0, buffer, size, out returned, IntPtr.Zero);
+                    if (!ok)
+                    {
+                        throw new Win32Exception(
+                            Marshal.GetLastWin32Error(),
+                            "IOCTL_DISK_GET_DRIVE_GEOMETRY failed for disk " + diskNumber + ".");
+                    }
+                    var geom = Marshal.PtrToStructure<DISK_GEOMETRY>(buffer);
+                    return geom.BytesPerSector > 0 ? geom.BytesPerSector : 512;
+                }
+                finally { Marshal.FreeHGlobal(buffer); }
+            }
+        }
+
         private static long ReadLength(SafeFileHandle handle)
         {
             var length = default(GET_LENGTH_INFORMATION);

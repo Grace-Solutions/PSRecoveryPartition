@@ -138,4 +138,27 @@ namespace PSRecoveryPartition.Native
         public PartitionStyle PartitionStyle;
         public byte PartitionType;
     }
+
+    /// <summary>
+    /// FSCTL_SHRINK_VOLUME request kinds, matching ntddvol.h.
+    /// </summary>
+    internal enum SHRINK_VOLUME_REQUEST_TYPES : int
+    {
+        ShrinkPrepare = 1,
+        ShrinkCommit  = 2,
+        ShrinkAbort   = 3,
+    }
+
+    /// <summary>
+    /// FSCTL_SHRINK_VOLUME input buffer. ShrinkPrepare sets NewNumberOfSectors
+    /// to the desired post-shrink volume size; ShrinkCommit and ShrinkAbort
+    /// take NewNumberOfSectors=0 (the prepared size is reused).
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct SHRINK_VOLUME_INFORMATION
+    {
+        public SHRINK_VOLUME_REQUEST_TYPES ShrinkRequestType;
+        public ulong Flags;
+        public long  NewNumberOfSectors;
+    }
 }

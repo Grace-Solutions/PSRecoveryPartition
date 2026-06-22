@@ -105,9 +105,11 @@ namespace PSRecoveryPartition
 
         public RecoveryPartitionInfo Resize(int diskNumber, int partitionNumber, long newSizeBytes)
         {
-            throw new NotImplementedException(
-                "Resize-RecoveryPartition is pending the Phase 17d IOCTL_DISK_GROW_PARTITION + " +
-                "FSCTL_EXTEND_VOLUME / FSCTL_SHRINK_VOLUME implementation.");
+            var resized = Win32PartitionWriter.Resize(diskNumber, partitionNumber, newSizeBytes);
+            if (resized == null) { return ReadInfo(diskNumber, partitionNumber); }
+            var vol = Win32VolumeMapper.FindForPartition(
+                Win32VolumeMapper.EnumerateAll(), diskNumber, resized.StartingOffset);
+            return PartitionMapper.FromNative(resized, vol);
         }
 
         public void Remove(int diskNumber, int partitionNumber)

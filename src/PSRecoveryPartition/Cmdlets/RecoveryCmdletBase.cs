@@ -13,7 +13,7 @@ namespace PSRecoveryPartition
         private readonly List<RecoveryProcessExecutionResult> _processResults = new List<RecoveryProcessExecutionResult>();
 
         internal bool ProcessFallbackUsed { get; private set; }
-        internal RecoveryExecutionMethod ExecutionMethod { get; set; } = RecoveryExecutionMethod.Storage;
+        internal RecoveryExecutionMethod ExecutionMethod { get; set; } = RecoveryExecutionMethod.Native;
 
         internal void RecordProcessResult(RecoveryProcessExecutionResult result)
         {

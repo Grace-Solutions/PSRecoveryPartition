@@ -101,7 +101,7 @@ namespace PSRecoveryPartition.Cmdlets
                 ExistingPartitionSizeBytes = existing != null ? (long?)existing.SizeBytes : null,
                 LayoutAnalysis = layout
             };
-            ExecutionMethod = RecoveryExecutionMethod.Storage;
+            ExecutionMethod = RecoveryExecutionMethod.Native;
 
             foreach (var warning in layout.Warnings) { WriteWarning(warning); }
 

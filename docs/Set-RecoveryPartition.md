@@ -47,7 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-Number of the physical disk to operate on, as reported by Get-Disk.
+Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -103,7 +103,7 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-Number of the partition on the target disk, as reported by Get-Partition.
+Number of the partition on the target disk (matches `Get-RecoveryPartition.PartitionNumber`; enumerated natively from the disk's partition table via `IOCTL_DISK_GET_DRIVE_LAYOUT_EX`).
 ```yaml
 Type: Int32
 Parameter Sets: (All)

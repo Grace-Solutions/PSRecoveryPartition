@@ -126,7 +126,7 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-Number of the physical disk to operate on, as reported by Get-Disk.
+Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
 ```yaml
 Type: Int32
 Parameter Sets: (All)

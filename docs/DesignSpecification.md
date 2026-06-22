@@ -862,7 +862,7 @@ The OS partition is identified by a drive letter that matches `$env:SystemDrive`
 
 Behaviour rules:
 
-- `New-RecoveryPartitionPlan` attaches the analysis to the plan and emits each warning via `Write-Warning`. A `Resize-Partition` step is converted to a `Skip` step when `CanGrowInPlace` is false.
+- `New-RecoveryPartitionPlan` attaches the analysis to the plan and emits each warning via `Write-Warning`. A `ResizePartition` step is converted to a `Skip` step when `CanGrowInPlace` is false.
 - `Invoke-RecoveryPartitionPlan` re-emits the warnings before executing the plan.
 - `Resize-RecoveryPartition` throws when `CanGrowInPlace` is false unless `-Force` is supplied.
 - `Remove-RecoveryPartition` throws when `CanRemoveSafely` is false (immediately followed by the OS partition) unless `-Force` is supplied.

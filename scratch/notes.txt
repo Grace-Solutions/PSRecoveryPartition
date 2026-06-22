@@ -1,0 +1,2 @@
+the destination path can be a fileinfo and if the filename is different then we infer the rename and can drop the additional parameter.
+The Invoke plan cmdlet I want to try and make this process fairly easy so we can just do New- instead of Get- and set everything up and Invoke- or Execute- idempotently and we copy the boot image to the partition and wire everything up and I want everything else to not super overlap because right now it seems to.

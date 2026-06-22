@@ -1,6 +1,6 @@
 # PSRecoveryPartition
 
-PowerShell module for managing Windows recovery partitions, Windows Recovery Environment (WinRE), and recovery boot entries on Windows 10, Windows 11, and Windows Server. The module prefers native Windows APIs, the Storage module, CIM, and WMI and falls back to controlled execution of Microsoft inbox tools (`reagentc.exe`, `bcdedit.exe`) only where no first-class API is available. The shell-out decision is hidden from the caller; no public cmdlet exposes `-AllowShellOut`.
+PowerShell module for managing Windows recovery partitions, Windows Recovery Environment (WinRE), and recovery boot entries on Windows 10, Windows 11, and Windows Server. The module prefers native Windows APIs, the Storage module, CIM, and WMI and falls back to controlled execution of Microsoft inbox tools (`reagentc.exe`, `bcdedit.exe`) only where no first-class API is available.
 
 ## Requirements
 

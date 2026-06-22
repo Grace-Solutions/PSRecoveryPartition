@@ -1,6 +1,6 @@
 # PSRecoveryPartition
 
-PowerShell module for managing Windows recovery partitions, Windows Recovery Environment (WinRE), and recovery boot entries on Windows 10, Windows 11, and Windows Server. The module prefers native Windows APIs, the Storage module, CIM, and WMI and falls back to controlled execution of Microsoft inbox tools (`reagentc.exe`, `bcdedit.exe`) only where no first-class API is available.
+PowerShell module for managing Windows recovery partitions, Windows Recovery Environment (WinRE), and recovery boot entries on Windows 10, Windows 11, and Windows Server. Partition operations are driven directly against `\\.\PhysicalDriveN` and `\\?\Volume{...}` handles using Win32 IOCTLs (`IOCTL_DISK_GET_DRIVE_LAYOUT_EX`, `IOCTL_DISK_SET_DRIVE_LAYOUT_EX`, `IOCTL_DISK_GROW_PARTITION`, `FSCTL_EXTEND_VOLUME`, `FSCTL_SHRINK_VOLUME`) and `fmifs!FormatEx`; the module falls back to controlled execution of Microsoft inbox tools (`reagentc.exe`, `bcdedit.exe`, and the sanctioned `diskpart.exe` exception for the MBR `0x27` type byte) only where no first-class API is available.
 
 ## Requirements
 
@@ -41,25 +41,34 @@ Cmdlets are thin C# shells over a small internal engine layer:
 - `RecoveryPartitionLayoutAnalyzer` inspects disk geometry around the target partition and emits a `RecoveryPartitionLayoutAnalysis` with `CanGrowInPlace`, `CanShrinkInPlace`, `CanRemoveSafely`, neighbour information, leading/trailing free space, and human-readable warnings.
 - `RecoveryPlanBuilder` translates the layout, requested size, and image inputs into a `RecoveryPartitionPlan` whose steps are dispatched by `Invoke-RecoveryPartitionPlan`.
 
-Every result object discloses `ExecutionMethod` (Native, Storage, Cim, Wmi, PInvoke, or Process) and `ProcessFallbackUsed` so callers can audit which path was taken.
+Every result object discloses `ExecutionMethod` (Native, PInvoke, or ProcessFallback) and `ProcessFallbackUsed` so callers can audit which path was taken. The default for partition operations is `Native`.
 
-### Storage module dependency
+### Native IOCTL architecture
 
-Partition operations currently flow through the in-box `Storage` module (`Get-Disk`, `New-Partition`, `Format-Volume`, `Set-Partition`, `Resize-Partition`, `Remove-Partition`, `Add-PartitionAccessPath`) invoked from C# via `StorageInvoker`. The `Storage` module ships with every supported Windows version and is itself a thin wrapper around the `MSFT_Disk`, `MSFT_Partition`, and `MSFT_Volume` CIM classes in `ROOT\Microsoft\Windows\Storage`. The module can therefore be hardened over time to call those CIM classes directly through `Microsoft.Management.Infrastructure` and drop the Storage module dependency without changing public behaviour. The preferred call order documented in [docs/DesignSpecification.md](docs/DesignSpecification.md) is:
+Partition operations are driven directly against Win32 device handles. There is no dependency on the in-box `Storage` module, on CIM (`MSFT_Disk`, `MSFT_Partition`, `MSFT_Volume`), or on `Get-Partition` / `New-Partition` / `Resize-Partition` / `Remove-Partition` / `Format-Volume` cmdlets at runtime — those cmdlets are not consulted and their `PSObject` outputs are not accepted as input. The native layer lives under `src/PSRecoveryPartition/Native/`:
+
+- `Win32DiskInfoReader` enumerates disks and reads partition tables through `IOCTL_DISK_GET_DRIVE_LAYOUT_EX`, `IOCTL_DISK_GET_DRIVE_GEOMETRY_EX`, and `IOCTL_DISK_GET_LENGTH_INFO`.
+- `Win32VolumeMapper` walks `FindFirstVolumeW` / `FindNextVolumeW`, calls `IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS`, and associates each `\\?\Volume{GUID}\` with its hosting `(disk, starting offset)` partition.
+- `Win32PartitionWriter` mutates the partition table via `IOCTL_DISK_SET_DRIVE_LAYOUT_EX`, grows partitions via `IOCTL_DISK_GROW_PARTITION`, and extends or shrinks file systems via `FSCTL_EXTEND_VOLUME` and the `FSCTL_SHRINK_VOLUME` prepare / commit / abort sequence.
+- `Win32VolumeFormatter` performs synchronous formatting through `fmifs!FormatEx`.
+- `DeviceHandleFactory` opens `\\.\PhysicalDriveN` and `\\?\Volume{GUID}` handles with the correct sharing and FSCTL access masks.
+
+All partition offsets and lengths are aligned to a 1 MiB (1,048,576-byte) grid. The preferred call order is:
 
 ```text
-Native C# API
-PowerShell Storage objects (current default for partition operations)
-CIM / WMI (MSFT_Partition, MSFT_Disk, MSFT_Volume)
-Windows API / PInvoke (IOCTL_DISK_*)
-Internal process fallback (reagentc.exe, bcdedit.exe, mountvol.exe)
+Win32 IOCTL / FSCTL on \\.\PhysicalDriveN and \\?\Volume{GUID}\ handles
+fmifs!FormatEx (volume formatting)
+SetVolumeMountPointW / DeleteVolumeMountPointW (mount management)
+Internal process fallback (reagentc.exe, bcdedit.exe, mountvol.exe, and diskpart.exe only for the MBR 0x27 exception)
 ```
 
-`diskpart.exe` is intentionally **not** in the fallback list: it is script-file driven, has no machine-readable output, no structured error propagation, and is difficult to invoke deterministically from a service context.
+`diskpart.exe` is otherwise avoided: it is script-file driven, has no machine-readable output, no structured error propagation, and is difficult to invoke deterministically from a service context.
 
 ### MBR partition type 0x27
 
-On GPT disks the recovery partition is created with the well-known GPT type GUID `{de94bba4-06d1-4d40-a16a-bfd50179d6ac}` directly, and no warning is emitted. On MBR disks the PowerShell `Storage` module's `New-Partition -MbrType` parameter does not include `0x27` (Windows Recovery) in its enum; the valid values are `FAT12`, `FAT16`, `Extended`, `Huge`, `IFS`, `FAT32`, `ExtendedLBA`. The module therefore creates the partition as `IFS` (`0x07`), assigns the `RECOVERY` label, and emits a warning that the on-disk MBR type byte is `0x07` rather than `0x27`. Functionally the partition is still recognised by the module (it matches by label and falls back to GPT type for discovery), but downstream tooling that keys strictly on the `0x27` byte will not see it. A future enhancement will write the type byte directly via CIM (`Set-CimInstance` on `MSFT_Partition`) or `IOCTL_DISK_SET_PARTITION_INFO_EX`; until then the warning documents the gap honestly. The module does not shell out to `diskpart.exe` to set the type for the reasons listed above.
+On GPT disks the recovery partition is created with the well-known GPT type GUID `{de94bba4-06d1-4d40-a16a-bfd50179d6ac}` written directly into the partition entry through `IOCTL_DISK_SET_DRIVE_LAYOUT_EX`. The `GPT_BASIC_DATA_ATTRIBUTE_NO_DRIVE_LETTER`, `GPT_BASIC_DATA_ATTRIBUTE_HIDDEN`, and `GPT_BASIC_DATA_ATTRIBUTE_NO_AUTOMOUNT` attribute bits are set in the same call, so the Windows volume manager does not auto-assign a drive letter to the partition.
+
+On MBR disks the module writes the partition type byte `0x27` (Windows Recovery) directly into the MBR entry via `IOCTL_DISK_SET_DRIVE_LAYOUT_EX`. If the kernel rejects the IOCTL on a given platform (older builds reject non-recognized MBR type bytes for slot 1 on system disks), `DiskpartMbrTypeSetter` is invoked as the single sanctioned `diskpart.exe` fallback. The fallback emits a one-line script (`select disk N` / `select partition M` / `set id=27 override`) through the standard `ProcessExecution` helper and the resulting `RecoveryProcessExecutionResult` is attached to the cmdlet output and surfaces as `ExecutionMethod = ProcessFallback`.
 
 ## Cmdlet index
 

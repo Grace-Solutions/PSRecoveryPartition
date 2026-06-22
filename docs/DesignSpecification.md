@@ -12,27 +12,27 @@ Remove this parameter from all public cmdlets:
 
 Shell-out behavior is an implementation detail, not a public module contract.
 
-The module should still prefer this order:
+The module prefers this order for partition operations:
 
 ```text
-Native C# API
-PowerShell Storage object integration
-CIM/WMI
-Windows API / PInvoke where practical
-Internal process fallback
+Win32 IOCTL / FSCTL on \\.\PhysicalDriveN and \\?\Volume{GUID}\ handles
+fmifs!FormatEx for volume formatting
+SetVolumeMountPointW / DeleteVolumeMountPointW for mount management
+Internal process fallback (reagentc.exe, bcdedit.exe, mountvol.exe, and diskpart.exe only for the MBR 0x27 exception)
 ```
 
-If the only practical method for a required operation is a Microsoft inbox executable such as `reagentc.exe`, `bcdedit.exe`, or `mountvol.exe`, the module may use the internal process fallback without exposing that decision to the user.
+The in-box `Storage` module and the `MSFT_Disk` / `MSFT_Partition` / `MSFT_Volume` CIM classes are no longer consulted at runtime, and `PSObject` outputs from `Get-Partition` / `Get-Disk` / `Get-Volume` are not accepted as input to this module's cmdlets.
+
+If the only practical method for a required operation is a Microsoft inbox executable such as `reagentc.exe`, `bcdedit.exe`, or `mountvol.exe`, the module may use the internal process fallback without exposing that decision to the user. `diskpart.exe` is reserved for the single sanctioned exception of writing the MBR `0x27` partition type byte on platforms where `IOCTL_DISK_SET_DRIVE_LAYOUT_EX` rejects that byte for a system disk.
 
 The result object must still disclose the implementation path:
 
 ```text
 ExecutionMethod = Native
-ExecutionMethod = Storage
-ExecutionMethod = CIM
-ExecutionMethod = WMI
 ExecutionMethod = ProcessFallback
 ```
+
+The `Storage`, `CIM`, and `WMI` enum values are retained on `RecoveryExecutionMethod` for source compatibility but are no longer produced by the engine.
 
 Example result fields:
 
@@ -803,7 +803,11 @@ No public cmdlet should include:
 
 ```text
 No public cmdlet exposes -AllowShellOut.
-Internal process fallback is allowed when native/CIM/WMI methods are unavailable.
+Partition operations are driven through Win32 IOCTLs and FSCTLs on \\.\PhysicalDriveN and \\?\Volume{GUID}\ handles; the Storage PowerShell module and MSFT_* CIM classes are not consulted at runtime.
+Volume formatting is performed through fmifs!FormatEx.
+Mount management is performed through SetVolumeMountPointW and DeleteVolumeMountPointW.
+diskpart.exe is invoked only as a sanctioned fallback for writing the MBR 0x27 partition type byte.
+Internal process fallback is allowed when no native or PInvoke method is available.
 Internal process fallback uses ProcessStartInfo.
 Internal process fallback redirects standard output and standard error.
 Internal process fallback uses CreateNoWindow.
@@ -854,7 +858,7 @@ CanRemoveSafely
 Warnings
 ```
 
-The OS partition is identified by `IsBoot=$true` on the Storage partition object or by a drive letter that matches `$env:SystemDrive`.
+The OS partition is identified by a drive letter that matches `$env:SystemDrive` once the volume → partition mapping has been resolved by `Win32VolumeMapper` against the disk extents reported through `IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS`.
 
 Behaviour rules:
 

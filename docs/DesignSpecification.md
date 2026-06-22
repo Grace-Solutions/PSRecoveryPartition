@@ -32,7 +32,7 @@ ExecutionMethod = Native
 ExecutionMethod = ProcessFallback
 ```
 
-The `Storage`, `CIM`, and `WMI` enum values are retained on `RecoveryExecutionMethod` for source compatibility but are no longer produced by the engine.
+The `Storage`, `CIM`, and `WMI` enum values are retained on `RecoveryExecutionMethod` for source compatibility, marked with `[Obsolete]` (compiler warning only), and will be removed in a future major version. They are never produced by the engine.
 
 Example result fields:
 

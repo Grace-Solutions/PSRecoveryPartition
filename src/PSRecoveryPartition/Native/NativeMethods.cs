@@ -87,6 +87,10 @@ namespace PSRecoveryPartition.Native
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteVolumeMountPointW(string lpszVolumeMountPoint);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetVolumeLabelW(string lpRootPathName, string lpVolumeName);
+
         // fmifs!FormatEx is the inbox formatting entry point used by
         // format.com. It is undocumented but ABI-stable since NT 4.0. Callers
         // supply a callback that receives progress and status notifications.

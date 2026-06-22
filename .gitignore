@@ -1,0 +1,36 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+
+# Module staged binaries (built artifacts copied during build.ps1)
+Module/PSRecoveryPartition/*.dll
+Module/PSRecoveryPartition/*.pdb
+Module/PSRecoveryPartition/*.xml
+!Module/PSRecoveryPartition/PSRecoveryPartition.psd1
+!Module/PSRecoveryPartition/PSRecoveryPartition.psm1
+!Module/PSRecoveryPartition/en-US/
+
+# Packaged release zips
+*.zip
+
+# NuGet
+.nuget/
+packages/
+*.nupkg
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+
+# OS
+Thumbs.db
+.DS_Store
+
+# PlatyPS staging
+docs/cab/

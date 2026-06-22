@@ -29,7 +29,7 @@ namespace PSRecoveryPartition.Cmdlets
             var target = "Disk " + DiskNumber + " Partition " + PartitionNumber;
 
             var layout = RecoveryPartitionLayoutAnalyzer.Analyze(
-                new StorageInvoker(this), DiskNumber, PartitionNumber, 0L);
+                this, DiskNumber, PartitionNumber, 0L);
             foreach (var warning in layout.Warnings) { WriteWarning(warning); }
             if (!Force.IsPresent && !layout.CanRemoveSafely)
             {

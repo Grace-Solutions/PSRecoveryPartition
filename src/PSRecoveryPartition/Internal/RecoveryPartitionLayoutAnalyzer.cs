@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using PSRecoveryPartition.Native;
 
 namespace PSRecoveryPartition
 {
@@ -13,45 +13,54 @@ namespace PSRecoveryPartition
     /// </summary>
     internal static class RecoveryPartitionLayoutAnalyzer
     {
-        // EFI System Partition GPT type GUID.
-        private const string GptTypeEsp = "c12a7328-f81f-11d2-ba4b-00a0c93ec93b";
-        // Microsoft Reserved Partition GPT type GUID.
-        private const string GptTypeMsr = "e3c9e316-0b5c-4db8-817d-f92df00215ae";
-        // Basic Data Partition GPT type GUID (used by Windows OS volumes).
-        private const string GptTypeBasicData = "ebd0a0a2-b9e5-4433-87c0-68b6b72699c7";
-
-        public static RecoveryPartitionLayoutAnalysis Analyze(StorageInvoker storage, int diskNumber, int? partitionNumber, long proposedSizeBytes)
+        public static RecoveryPartitionLayoutAnalysis Analyze(
+            PSCmdlet cmdlet, int diskNumber, int? partitionNumber, long proposedSizeBytes)
         {
+            var disk = Win32DiskInfoReader.Read(diskNumber);
+            var volumes = Win32VolumeMapper.EnumerateAll();
+            return Analyze(disk, volumes, partitionNumber, proposedSizeBytes);
+        }
+
+        /// <summary>
+        /// Pure overload that takes already-read native descriptors. Used by
+        /// the cmdlet overload above and intended for unit testing.
+        /// </summary>
+        public static RecoveryPartitionLayoutAnalysis Analyze(
+            Win32DiskInfo disk,
+            IList<Win32VolumeInfo> volumes,
+            int? partitionNumber,
+            long proposedSizeBytes)
+        {
+            if (disk == null) { throw new ArgumentNullException("disk"); }
+
             var analysis = new RecoveryPartitionLayoutAnalysis
             {
-                DiskNumber = diskNumber,
+                DiskNumber = disk.DiskNumber,
                 PartitionNumber = partitionNumber
             };
 
-            var disk = storage.InvokeSingle("Get-Disk", new Hashtable { { "Number", diskNumber } });
-            long diskSize = disk == null ? 0L : GetLong(disk, "Size");
-
-            var partitions = storage.Invoke("Get-Partition", new Hashtable { { "DiskNumber", diskNumber } })
-                .Where(p => GetLong(p, "Size") > 0)
-                .OrderBy(p => GetLong(p, "Offset"))
+            var partitions = disk.Partitions
+                .Where(p => p.LengthBytes > 0)
+                .OrderBy(p => p.StartingOffset)
                 .ToList();
 
-            var os = partitions.FirstOrDefault(IsOsPartition);
+            var systemDrive = Environment.GetEnvironmentVariable("SystemDrive");
+            var os = partitions.FirstOrDefault(p => IsOsPartition(p, volumes, systemDrive));
             if (os != null)
             {
-                analysis.OsPartitionNumber = GetInt(os, "PartitionNumber");
-                analysis.OsPartitionOffset = GetLong(os, "Offset");
-                analysis.OsPartitionSizeBytes = GetLong(os, "Size");
+                analysis.OsPartitionNumber   = os.PartitionNumber;
+                analysis.OsPartitionOffset   = os.StartingOffset;
+                analysis.OsPartitionSizeBytes = os.LengthBytes;
             }
 
-            PSObject self = null;
+            Win32PartitionInfo self = null;
             if (partitionNumber.HasValue)
             {
-                self = partitions.FirstOrDefault(p => GetInt(p, "PartitionNumber") == partitionNumber.Value);
+                self = partitions.FirstOrDefault(p => p.PartitionNumber == partitionNumber.Value);
             }
 
-            long selfOffset = self != null ? GetLong(self, "Offset") : 0L;
-            long selfSize   = self != null ? GetLong(self, "Size")   : proposedSizeBytes;
+            long selfOffset = self != null ? self.StartingOffset : 0L;
+            long selfSize   = self != null ? self.LengthBytes    : proposedSizeBytes;
             long selfEnd    = selfOffset + selfSize;
 
             if (self == null && os == null)
@@ -78,15 +87,15 @@ namespace PSRecoveryPartition
             if (self != null)
             {
                 var preceding = partitions
-                    .Where(p => GetLong(p, "Offset") + GetLong(p, "Size") <= selfOffset)
-                    .OrderByDescending(p => GetLong(p, "Offset"))
+                    .Where(p => p.StartingOffset + p.LengthBytes <= selfOffset)
+                    .OrderByDescending(p => p.StartingOffset)
                     .FirstOrDefault();
                 if (preceding != null)
                 {
-                    analysis.PrecedingPartitionNumber = GetInt(preceding, "PartitionNumber");
+                    analysis.PrecedingPartitionNumber = preceding.PartitionNumber;
                     analysis.PrecedingPartitionType   = DescribeType(preceding);
-                    analysis.PrecedingPartitionIsOs   = IsOsPartition(preceding);
-                    analysis.LeadingFreeSpaceBytes    = selfOffset - (GetLong(preceding, "Offset") + GetLong(preceding, "Size"));
+                    analysis.PrecedingPartitionIsOs   = IsOsPartition(preceding, volumes, systemDrive);
+                    analysis.LeadingFreeSpaceBytes    = selfOffset - (preceding.StartingOffset + preceding.LengthBytes);
                 }
                 else
                 {
@@ -94,26 +103,26 @@ namespace PSRecoveryPartition
                 }
 
                 var following = partitions
-                    .Where(p => GetLong(p, "Offset") >= selfEnd)
-                    .OrderBy(p => GetLong(p, "Offset"))
+                    .Where(p => p.StartingOffset >= selfEnd)
+                    .OrderBy(p => p.StartingOffset)
                     .FirstOrDefault();
                 if (following != null)
                 {
-                    analysis.FollowingPartitionNumber = GetInt(following, "PartitionNumber");
+                    analysis.FollowingPartitionNumber = following.PartitionNumber;
                     analysis.FollowingPartitionType   = DescribeType(following);
-                    analysis.FollowingPartitionIsOs   = IsOsPartition(following);
-                    analysis.TrailingFreeSpaceBytes   = GetLong(following, "Offset") - selfEnd;
+                    analysis.FollowingPartitionIsOs   = IsOsPartition(following, volumes, systemDrive);
+                    analysis.TrailingFreeSpaceBytes   = following.StartingOffset - selfEnd;
                 }
                 else
                 {
-                    analysis.TrailingFreeSpaceBytes = Math.Max(0L, diskSize - selfEnd);
+                    analysis.TrailingFreeSpaceBytes = Math.Max(0L, disk.SizeBytes - selfEnd);
                 }
             }
 
             var growBy = Math.Max(0L, proposedSizeBytes - selfSize);
-            analysis.CanGrowInPlace  = self == null || analysis.TrailingFreeSpaceBytes >= growBy;
+            analysis.CanGrowInPlace   = self == null || analysis.TrailingFreeSpaceBytes >= growBy;
             analysis.CanShrinkInPlace = self == null || proposedSizeBytes <= selfSize;
-            analysis.CanRemoveSafely = !analysis.FollowingPartitionIsOs;
+            analysis.CanRemoveSafely  = !analysis.FollowingPartitionIsOs;
 
             if (analysis.FollowingPartitionIsOs)
             {
@@ -130,62 +139,42 @@ namespace PSRecoveryPartition
                 analysis.Warnings.Add(
                     "Recovery partition is located before the OS partition; any size change will shift the OS partition offset and is not supported in place.");
             }
-
             return analysis;
         }
 
-        private static bool IsOsPartition(PSObject partition)
+        private static bool IsOsPartition(
+            Win32PartitionInfo partition, IList<Win32VolumeInfo> volumes, string systemDrive)
         {
-            if (partition == null) { return false; }
-            if (GetBool(partition, "IsBoot")) { return true; }
-            var driveLetter = GetString(partition, "DriveLetter");
-            var systemDrive = Environment.GetEnvironmentVariable("SystemDrive");
-            if (!string.IsNullOrEmpty(driveLetter) && !string.IsNullOrEmpty(systemDrive)
-                && systemDrive.StartsWith(driveLetter, StringComparison.OrdinalIgnoreCase))
+            if (partition == null || string.IsNullOrEmpty(systemDrive)) { return false; }
+            // GPT boot partitions are Basic Data; MBR boot partitions carry
+            // the boot indicator. Combine both with a drive-letter match so we
+            // catch the common single-OS host without depending on the
+            // Storage module's computed IsBoot property.
+            if (partition.PartitionStyle == PartitionStyle.Mbr && partition.BootIndicator) { return true; }
+            var volume = volumes == null ? null
+                : Win32VolumeMapper.FindForPartition(volumes, partition.DiskNumber, partition.StartingOffset);
+            if (volume == null || string.IsNullOrEmpty(volume.DriveLetter)) { return false; }
+            return systemDrive.StartsWith(volume.DriveLetter, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string DescribeType(Win32PartitionInfo p)
+        {
+            if (p.PartitionStyle == PartitionStyle.Gpt)
             {
-                return true;
+                var g = p.GptType.ToString("D").ToLowerInvariant();
+                if (g == NativeConstants.GPT_PARTITION_TYPE_EFI_SYSTEM)         { return "EFI System"; }
+                if (g == NativeConstants.GPT_PARTITION_TYPE_MICROSOFT_RESERVED) { return "Microsoft Reserved"; }
+                if (g == NativeConstants.GPT_PARTITION_TYPE_BASIC_DATA)         { return "Basic Data"; }
+                if (g == NativeConstants.GPT_PARTITION_TYPE_MICROSOFT_RECOVERY) { return "Recovery"; }
+                return g;
             }
-            return false;
-        }
-
-        private static string DescribeType(PSObject partition)
-        {
-            var gpt = NormalizeGuid(GetString(partition, "GptType"));
-            if (!string.IsNullOrEmpty(gpt))
+            if (p.PartitionStyle == PartitionStyle.Mbr)
             {
-                if (gpt.Equals(GptTypeEsp, StringComparison.OrdinalIgnoreCase)) { return "EFI System"; }
-                if (gpt.Equals(GptTypeMsr, StringComparison.OrdinalIgnoreCase)) { return "Microsoft Reserved"; }
-                if (gpt.Equals(GptTypeBasicData, StringComparison.OrdinalIgnoreCase)) { return "Basic Data"; }
-                if (PartitionMapper.IsRecoveryGptType(gpt)) { return "Recovery"; }
-                return gpt;
+                return p.MbrType == NativeConstants.PARTITION_RECOVERY_MBR
+                    ? "Recovery"
+                    : "0x" + p.MbrType.ToString("X2", System.Globalization.CultureInfo.InvariantCulture);
             }
-            var mbr = GetString(partition, "MbrType");
-            return string.IsNullOrEmpty(mbr) ? "Unknown" : mbr;
-        }
-
-        private static string NormalizeGuid(string value)
-        {
-            return value == null ? null : value.Trim('{', '}');
-        }
-
-        private static string GetString(PSObject o, string n)
-        {
-            var p = o.Properties[n]; return p == null || p.Value == null ? null : p.Value.ToString();
-        }
-        private static int GetInt(PSObject o, string n)
-        {
-            var p = o.Properties[n]; if (p == null || p.Value == null) { return 0; }
-            try { return Convert.ToInt32(p.Value); } catch { return 0; }
-        }
-        private static long GetLong(PSObject o, string n)
-        {
-            var p = o.Properties[n]; if (p == null || p.Value == null) { return 0L; }
-            try { return Convert.ToInt64(p.Value); } catch { return 0L; }
-        }
-        private static bool GetBool(PSObject o, string n)
-        {
-            var p = o.Properties[n]; if (p == null || p.Value == null) { return false; }
-            try { return Convert.ToBoolean(p.Value); } catch { return false; }
+            return "Unknown";
         }
     }
 }

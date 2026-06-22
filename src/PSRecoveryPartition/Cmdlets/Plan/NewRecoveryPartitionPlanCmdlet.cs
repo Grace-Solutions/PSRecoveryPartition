@@ -74,7 +74,7 @@ namespace PSRecoveryPartition.Cmdlets
             var engine = new RecoveryPartitionEngine(this);
             var existing = engine.Get(DiskNumber, recoveryOnly: true).FirstOrDefault();
             var layout = RecoveryPartitionLayoutAnalyzer.Analyze(
-                new StorageInvoker(this),
+                this,
                 DiskNumber,
                 existing != null ? (int?)existing.PartitionNumber : null,
                 resolved);

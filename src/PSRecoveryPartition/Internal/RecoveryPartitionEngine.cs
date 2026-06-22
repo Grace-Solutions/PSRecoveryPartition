@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using PSRecoveryPartition.Native;
 
 namespace PSRecoveryPartition
 {
@@ -25,21 +26,20 @@ namespace PSRecoveryPartition
 
         public IList<RecoveryPartitionInfo> Get(int? diskNumber = null, bool recoveryOnly = true)
         {
-            var args = new Hashtable();
-            if (diskNumber.HasValue) { args["DiskNumber"] = diskNumber.Value; }
-            var partitions = _storage.Invoke("Get-Partition", args);
+            var disks = diskNumber.HasValue
+                ? new List<Win32DiskInfo> { Win32DiskInfoReader.Read(diskNumber.Value) }
+                : Win32DiskInfoReader.EnumerateAll();
+            var volumes = Win32VolumeMapper.EnumerateAll();
+
             var result = new List<RecoveryPartitionInfo>();
-            foreach (var p in partitions)
+            foreach (var disk in disks)
             {
-                PSObject volume = null;
-                try
+                foreach (var part in disk.Partitions)
                 {
-                    var vol = _storage.Invoke("Get-Volume", new Hashtable { { "Partition", p } });
-                    if (vol.Count > 0) { volume = vol[0]; }
+                    var vol = Win32VolumeMapper.FindForPartition(volumes, part.DiskNumber, part.StartingOffset);
+                    var info = PartitionMapper.FromNative(part, vol);
+                    if (!recoveryOnly || info.IsRecoveryPartition) { result.Add(info); }
                 }
-                catch { /* not every partition has a volume */ }
-                var info = PartitionMapper.FromPartition(p, volume);
-                if (!recoveryOnly || info.IsRecoveryPartition) { result.Add(info); }
             }
             return result;
         }

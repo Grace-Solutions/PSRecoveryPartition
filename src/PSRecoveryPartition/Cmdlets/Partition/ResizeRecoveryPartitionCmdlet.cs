@@ -44,7 +44,7 @@ namespace PSRecoveryPartition.Cmdlets
                 diskSize, out mode);
 
             var layout = RecoveryPartitionLayoutAnalyzer.Analyze(
-                new StorageInvoker(this), DiskNumber, PartitionNumber, resolved);
+                this, DiskNumber, PartitionNumber, resolved);
             foreach (var warning in layout.Warnings) { WriteWarning(warning); }
             if (!Force.IsPresent && !layout.CanGrowInPlace)
             {

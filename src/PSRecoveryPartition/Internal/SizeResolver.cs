@@ -1,6 +1,7 @@
 using System;
-using System.Collections;
+using System.ComponentModel;
 using System.Management.Automation;
+using PSRecoveryPartition.Native;
 
 namespace PSRecoveryPartition
 {
@@ -48,12 +49,14 @@ namespace PSRecoveryPartition
 
         public static long GetDiskSizeBytes(PSCmdlet cmdlet, int diskNumber)
         {
-            var storage = new StorageInvoker(cmdlet);
-            var disk = storage.InvokeSingle("Get-Disk", new Hashtable { { "Number", diskNumber } });
-            if (disk == null) { throw new InvalidOperationException("Disk " + diskNumber + " was not found."); }
-            var sizeProp = disk.Properties["Size"];
-            if (sizeProp == null || sizeProp.Value == null) { return 0L; }
-            return Convert.ToInt64(sizeProp.Value);
+            try
+            {
+                return Win32DiskInfoReader.ReadLengthOnly(diskNumber);
+            }
+            catch (Win32Exception ex) when (ex.NativeErrorCode == 2 || ex.NativeErrorCode == 3)
+            {
+                throw new InvalidOperationException("Disk " + diskNumber + " was not found.", ex);
+            }
         }
     }
 }

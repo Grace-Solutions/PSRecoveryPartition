@@ -81,11 +81,9 @@ if ($GenerateHelp -or $UpdateHelp -or $ValidateHelp) {
         Update-MarkdownHelpModule -Path $DocsSource -RefreshModulePage -AlphabeticParamsOrder -ErrorAction Stop | Out-Null
     }
     if ($GenerateHelp) {
-        $existing = Get-ChildItem -Path $DocsSource -Filter '*.md' -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -ne 'DesignSpecification.md' }
-        if (-not $existing) {
-            New-MarkdownHelp -Module $ModuleName -OutputFolder $DocsSource -WithModulePage -Force -ErrorAction Stop | Out-Null
-        }
+        New-MarkdownHelp -Module $ModuleName -OutputFolder $DocsSource -WithModulePage -Force -ErrorAction Stop | Out-Null
+        & (Join-Path $RepoRoot 'build/Apply-HelpContent.ps1')
+        & (Join-Path $RepoRoot 'build/Update-ModulePage.ps1')
     }
     if ($ValidateHelp) {
         $ReadmePath = Join-Path $RepoRoot 'README.md'

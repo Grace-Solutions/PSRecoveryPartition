@@ -193,6 +193,89 @@ Describe 'Recovery partition layout analysis' {
     }
 }
 
+Describe 'Native IOCTL / FSCTL constants' {
+    BeforeAll {
+        $script:NativeAssembly = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1
+        $script:NativeConstants = $script:NativeAssembly.GetType('PSRecoveryPartition.Native.NativeConstants', $false)
+
+        function script:Get-CtlCode {
+            param(
+                [Parameter(Mandatory)][uint32]$DeviceType,
+                [Parameter(Mandatory)][uint32]$Access,
+                [Parameter(Mandatory)][uint32]$Function,
+                [Parameter(Mandatory)][uint32]$Method
+            )
+            return [uint32](($DeviceType -shl 16) -bor ($Access -shl 14) -bor ($Function -shl 2) -bor $Method)
+        }
+
+        function script:Get-ConstValue {
+            param([Parameter(Mandatory)][string]$Name)
+            $field = $script:NativeConstants.GetField($Name, [Reflection.BindingFlags]'Public,Static,NonPublic')
+            if (-not $field) { throw "NativeConstants.$Name not found" }
+            return [uint32]$field.GetValue($null)
+        }
+    }
+
+    It 'exposes the internal NativeConstants type' {
+        $script:NativeConstants | Should -Not -BeNullOrEmpty
+    }
+
+    # FILE_DEVICE_DISK = 0x07, FILE_READ_ACCESS = 1, FILE_WRITE_ACCESS = 2, METHOD_BUFFERED = 0
+    It 'encodes IOCTL_DISK_GET_DRIVE_GEOMETRY correctly' {
+        Get-ConstValue 'IOCTL_DISK_GET_DRIVE_GEOMETRY' | Should -Be (Get-CtlCode 0x07 0 0x000 0)
+    }
+    It 'encodes IOCTL_DISK_GET_DRIVE_GEOMETRY_EX correctly' {
+        Get-ConstValue 'IOCTL_DISK_GET_DRIVE_GEOMETRY_EX' | Should -Be (Get-CtlCode 0x07 0 0x028 0)
+    }
+    It 'encodes IOCTL_DISK_GET_LENGTH_INFO correctly' {
+        Get-ConstValue 'IOCTL_DISK_GET_LENGTH_INFO' | Should -Be (Get-CtlCode 0x07 1 0x017 0)
+    }
+    It 'encodes IOCTL_DISK_GET_PARTITION_INFO_EX correctly' {
+        Get-ConstValue 'IOCTL_DISK_GET_PARTITION_INFO_EX' | Should -Be (Get-CtlCode 0x07 0 0x012 0)
+    }
+    It 'encodes IOCTL_DISK_SET_PARTITION_INFO_EX correctly' {
+        Get-ConstValue 'IOCTL_DISK_SET_PARTITION_INFO_EX' | Should -Be (Get-CtlCode 0x07 3 0x013 0)
+    }
+    It 'encodes IOCTL_DISK_GET_DRIVE_LAYOUT_EX correctly' {
+        Get-ConstValue 'IOCTL_DISK_GET_DRIVE_LAYOUT_EX' | Should -Be (Get-CtlCode 0x07 0 0x014 0)
+    }
+    It 'encodes IOCTL_DISK_SET_DRIVE_LAYOUT_EX correctly' {
+        Get-ConstValue 'IOCTL_DISK_SET_DRIVE_LAYOUT_EX' | Should -Be (Get-CtlCode 0x07 3 0x015 0)
+    }
+    It 'encodes IOCTL_DISK_UPDATE_PROPERTIES correctly' {
+        Get-ConstValue 'IOCTL_DISK_UPDATE_PROPERTIES' | Should -Be (Get-CtlCode 0x07 0 0x050 0)
+    }
+    It 'encodes IOCTL_DISK_GROW_PARTITION correctly' {
+        Get-ConstValue 'IOCTL_DISK_GROW_PARTITION' | Should -Be (Get-CtlCode 0x07 3 0x034 0)
+    }
+
+    # FILE_DEVICE_MASS_STORAGE / VOLUME = 0x56
+    It 'encodes IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS correctly' {
+        Get-ConstValue 'IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS' | Should -Be (Get-CtlCode 0x56 0 0x000 0)
+    }
+
+    # FILE_DEVICE_FILE_SYSTEM = 0x09 - the constants that caused the resize regression
+    It 'encodes FSCTL_EXTEND_VOLUME correctly (regression: was 0x0009C334)' {
+        Get-ConstValue 'FSCTL_EXTEND_VOLUME' | Should -Be (Get-CtlCode 0x09 0 60  0)
+        Get-ConstValue 'FSCTL_EXTEND_VOLUME' | Should -Be ([uint32]0x000900F0)
+    }
+    It 'encodes FSCTL_SHRINK_VOLUME correctly (regression: was 0x0009C340)' {
+        Get-ConstValue 'FSCTL_SHRINK_VOLUME' | Should -Be (Get-CtlCode 0x09 0 108 0)
+        Get-ConstValue 'FSCTL_SHRINK_VOLUME' | Should -Be ([uint32]0x000901B0)
+    }
+    It 'encodes FSCTL_LOCK_VOLUME correctly' {
+        Get-ConstValue 'FSCTL_LOCK_VOLUME' | Should -Be (Get-CtlCode 0x09 0 6 0)
+    }
+    It 'encodes FSCTL_UNLOCK_VOLUME correctly' {
+        Get-ConstValue 'FSCTL_UNLOCK_VOLUME' | Should -Be (Get-CtlCode 0x09 0 7 0)
+    }
+    It 'encodes FSCTL_DISMOUNT_VOLUME correctly' {
+        Get-ConstValue 'FSCTL_DISMOUNT_VOLUME' | Should -Be (Get-CtlCode 0x09 0 8 0)
+    }
+}
+
 Describe 'DestinationPath parameter' {
     It 'Set-WindowsRecoveryImage exposes -DestinationPath instead of -DestinationDirectory' {
         $params = (Get-Command Set-WindowsRecoveryImage).Parameters.Keys

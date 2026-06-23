@@ -91,6 +91,12 @@ namespace PSRecoveryPartition.Native
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetVolumeLabelW(string lpRootPathName, string lpVolumeName);
 
+        // Bitmask of in-use DOS drive letters (bit 0 = A:, bit 25 = Z:). Used to
+        // pick a free letter when fmifs!FormatEx needs a DOS root because it
+        // does not accept \\?\Volume{guid}\ device paths.
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern uint GetLogicalDrives();
+
         // fmifs!FormatEx is the inbox formatting entry point used by
         // format.com. It is undocumented but ABI-stable since NT 4.0. Callers
         // supply a callback that receives progress and status notifications.

@@ -200,7 +200,7 @@ namespace PSRecoveryPartition.Native
                 p.GptType       = ex.Gpt.PartitionType;
                 p.GptId         = ex.Gpt.PartitionId;
                 p.GptAttributes = ex.Gpt.Attributes;
-                p.GptName       = ex.Gpt.Name;
+                p.GptName       = ex.Gpt.Name.ToManagedString();
             }
             return p;
         }

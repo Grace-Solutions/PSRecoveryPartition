@@ -49,6 +49,32 @@ namespace PSRecoveryPartition.Native
             return Open(trimmed, readOnly);
         }
 
+        /// <summary>
+        /// Opens the partition device at <c>\\.\Harddisk{disk}Partition{part}</c>
+        /// directly. This bypasses the Volume Manager / mountmgr layer and is
+        /// the only reliable way to address hidden recovery partitions whose
+        /// GPT type prevents a <c>\\?\Volume{guid}</c> name from ever being
+        /// surfaced by FindFirstVolumeW. The kernel partition device still has
+        /// the file system mounted on it, so volume-scoped FSCTLs continue to
+        /// work against this handle.
+        /// </summary>
+        public static SafeFileHandle OpenHarddiskPartition(int diskNumber, int partitionNumber, bool readOnly)
+        {
+            if (diskNumber < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "diskNumber", diskNumber, "Physical disk number must be non-negative.");
+            }
+            if (partitionNumber <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "partitionNumber", partitionNumber, "Partition number must be positive.");
+            }
+            var path = string.Format(
+                CultureInfo.InvariantCulture, @"\\.\Harddisk{0}Partition{1}", diskNumber, partitionNumber);
+            return Open(path, readOnly);
+        }
+
         private static SafeFileHandle Open(string path, bool readOnly)
         {
             var access = readOnly

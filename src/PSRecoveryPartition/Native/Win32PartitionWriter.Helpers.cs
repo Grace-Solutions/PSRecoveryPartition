@@ -75,7 +75,7 @@ namespace PSRecoveryPartition.Native
                         PartitionType = p.GptType,
                         PartitionId   = p.GptId,
                         Attributes    = p.GptAttributes,
-                        Name          = p.GptName ?? string.Empty,
+                        Name          = PARTITION_GPT_NAME.FromString(p.GptName),
                     };
                 }
                 else if (p.PartitionStyle == PartitionStyle.Mbr)

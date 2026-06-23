@@ -84,7 +84,7 @@ namespace PSRecoveryPartition.Native
             var part = disk.Partitions.FirstOrDefault(p => p.PartitionNumber == partitionNumber);
             if (part == null) { return; }
             var bps = Win32DiskInfoReader.ReadBytesPerSector(diskNumber);
-            ExtendFileSystem(diskNumber, part.StartingOffset, part.LengthBytes / Math.Max(1, bps));
+            ExtendFileSystem(diskNumber, partitionNumber, part.StartingOffset, part.LengthBytes / Math.Max(1, bps));
         }
 
         public static void Shrink(int diskNumber, int partitionNumber, long newSizeBytes)
@@ -100,7 +100,7 @@ namespace PSRecoveryPartition.Native
 
             var bps = Win32DiskInfoReader.ReadBytesPerSector(diskNumber);
             var newSectors = newSizeBytes / Math.Max(1, bps);
-            ShrinkFileSystem(diskNumber, part.StartingOffset, newSectors);
+            ShrinkFileSystem(diskNumber, partitionNumber, part.StartingOffset, newSectors);
 
             // Rewrite the layout to reduce PartitionLength to the new size.
             var entries = BuildExistingEntries(disk);

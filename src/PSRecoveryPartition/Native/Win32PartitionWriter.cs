@@ -50,7 +50,7 @@ namespace PSRecoveryPartition.Native
                     PartitionType = gptType,
                     PartitionId   = Guid.NewGuid(),
                     Attributes    = gptAttributes,
-                    Name          = string.IsNullOrEmpty(gptName) ? string.Empty : gptName,
+                    Name          = PARTITION_GPT_NAME.FromString(gptName),
                 };
             }
             else
@@ -92,7 +92,7 @@ namespace PSRecoveryPartition.Native
                     PartitionType = Guid.Empty,
                     PartitionId   = Guid.Empty,
                     Attributes    = 0,
-                    Name          = string.Empty,
+                    Name          = default(PARTITION_GPT_NAME),
                 };
             }
             else
@@ -129,7 +129,7 @@ namespace PSRecoveryPartition.Native
             var gpt = entry.Gpt;
             gpt.Attributes = attributes;
             if (newGptType.HasValue) { gpt.PartitionType = newGptType.Value; }
-            if (newGptName != null)  { gpt.Name = newGptName; }
+            if (newGptName != null)  { gpt.Name = PARTITION_GPT_NAME.FromString(newGptName); }
             entry.Gpt = gpt;
             entry.RewritePartition = true;
             entries[idx] = entry;

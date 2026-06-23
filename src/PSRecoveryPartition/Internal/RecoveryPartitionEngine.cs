@@ -54,13 +54,20 @@ namespace PSRecoveryPartition
             var resolvedLabel = string.IsNullOrEmpty(label) ? RecoveryPartitionConstants.DefaultLabel : label;
             var resolvedFs    = string.IsNullOrEmpty(fileSystem) ? "NTFS" : fileSystem;
 
-            // Step 1: create with PLATFORM_REQUIRED only so Windows surfaces a
-            // mountable volume root we can format. The hidden / no-auto-mount
-            // attributes are applied after format and image copy.
+            // Step 1: create as a plain Basic Data partition with no special
+            // attributes so the Windows volume manager surfaces a mountable
+            // volume root we can format. The recovery GPT type GUID and the
+            // full attribute mask (PLATFORM_REQUIRED | HIDDEN | NO_DRIVE_LETTER)
+            // are stamped in step 5 once the file system exists. This mirrors
+            // the standard diskpart WinRE recipe (create -> format -> set id ->
+            // gpt attributes) and avoids volume manager skipping the partition
+            // because of a non-basic type.
+            var basicDataType = new Guid(NativeConstants.GPT_PARTITION_TYPE_BASIC_DATA);
+            var initialGptType = disk.PartitionStyle == PartitionStyle.Gpt ? basicDataType : Guid.Empty;
             var created = Win32PartitionWriter.Create(
-                diskNumber, sizeBytes, gptType,
-                NativeConstants.PARTITION_RECOVERY_MBR,
-                NativeConstants.GPT_ATTRIBUTE_PLATFORM_REQUIRED,
+                diskNumber, sizeBytes, initialGptType,
+                NativeConstants.PARTITION_IFS,
+                0UL,
                 resolvedLabel);
             if (created == null)
             {
@@ -88,7 +95,14 @@ namespace PSRecoveryPartition
                 CopyImageOnto(volume.VolumeName, windowsREImagePath);
             }
 
-            // Step 5: stamp the final recovery attribute set (or MBR 0x27).
+            // Step 5: strip any drive-letter mount the volume manager auto-
+            // assigned while the partition was a plain Basic Data entry. The
+            // final recovery attribute set carries NO_DRIVE_LETTER, but that
+            // only governs future auto-mount decisions; an already-assigned
+            // letter persists in the mountmgr database until we delete it.
+            StripDriveLetters(diskNumber, created.StartingOffset);
+
+            // Step 6: stamp the final recovery attribute set (or MBR 0x27).
             if (disk.PartitionStyle == PartitionStyle.Gpt)
             {
                 Win32PartitionWriter.SetGptAttributes(
@@ -101,6 +115,25 @@ namespace PSRecoveryPartition
             }
 
             return ReadInfo(diskNumber, created.PartitionNumber) ?? PartitionMapper.FromNative(created, volume);
+        }
+
+        private static void StripDriveLetters(int diskNumber, long startingOffset)
+        {
+            try
+            {
+                var vol = Win32VolumeMapper.FindForPartition(
+                    Win32VolumeMapper.EnumerateAll(), diskNumber, startingOffset);
+                if (vol == null || vol.MountPoints == null) { return; }
+                foreach (var mp in vol.MountPoints)
+                {
+                    if (string.IsNullOrEmpty(mp)) { continue; }
+                    if (mp.Length == 3 && mp[1] == ':' && (mp[2] == '\\' || mp[2] == '/'))
+                    {
+                        try { NativeMethods.DeleteVolumeMountPointW(mp); } catch { /* best effort */ }
+                    }
+                }
+            }
+            catch { /* best effort - the GPT NO_DRIVE_LETTER attr is still applied below */ }
         }
 
         public RecoveryPartitionInfo Resize(int diskNumber, int partitionNumber, long newSizeBytes)

@@ -47,6 +47,15 @@ namespace PSRecoveryPartition.Native
     internal struct VOLUME_DISK_EXTENTS_HEADER
     {
         public int NumberOfDiskExtents;
+        // Native VOLUME_DISK_EXTENTS embeds DISK_EXTENT[] directly after
+        // NumberOfDiskExtents. Because DISK_EXTENT contains LARGE_INTEGER
+        // fields, the array is 8-byte aligned in the kernel buffer, so the
+        // first extent lives at offset 8 (not 4). This explicit padding makes
+        // Marshal.SizeOf<VOLUME_DISK_EXTENTS_HEADER>() report 8 and keeps the
+        // stride math correct without a hard-coded magic number.
+#pragma warning disable 0169
+        private int _padding;
+#pragma warning restore 0169
         // Followed by DISK_EXTENT[NumberOfDiskExtents]. We marshal extents
         // manually to support multi-extent volumes (spanned / striped sets).
     }
@@ -61,14 +70,45 @@ namespace PSRecoveryPartition.Native
         public Guid PartitionId; // Win10+, zero on older OS.
     }
 
+    // 36 UTF-16 code units (72 bytes), held as raw blittable bytes so the
+    // surrounding struct contains no managed object references and may be
+    // overlaid against PARTITION_INFORMATION_MBR via LayoutKind.Explicit
+    // without tripping the CLR's "object field overlaps non-object field"
+    // type-load check.
+    [StructLayout(LayoutKind.Sequential, Size = 72)]
+    internal struct PARTITION_GPT_NAME
+    {
+        private ulong _w0, _w1, _w2, _w3, _w4, _w5, _w6, _w7, _w8;
+
+        public unsafe string ToManagedString()
+        {
+            fixed (ulong* p = &_w0)
+            {
+                var chars = (char*)p;
+                int len = 0;
+                while (len < 36 && chars[len] != '\0') { len++; }
+                return new string(chars, 0, len);
+            }
+        }
+
+        public static unsafe PARTITION_GPT_NAME FromString(string value)
+        {
+            var result = default(PARTITION_GPT_NAME);
+            if (string.IsNullOrEmpty(value)) { return result; }
+            var src = value.Length > 35 ? value.Substring(0, 35) : value;
+            var chars = (char*)&result._w0;
+            for (int i = 0; i < src.Length; i++) { chars[i] = src[i]; }
+            return result;
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct PARTITION_INFORMATION_GPT
     {
         public Guid PartitionType;
         public Guid PartitionId;
         public ulong Attributes;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 36)]
-        public string Name;
+        public PARTITION_GPT_NAME Name;
     }
 
     // PARTITION_INFORMATION_EX uses a C union of MBR/GPT variants. We overlay

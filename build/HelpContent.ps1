@@ -1,0 +1,229 @@
+@{
+    '__Common' = @{
+        DiskNumber              = 'Number of the physical disk to operate on, as reported by Get-Disk.'
+        PartitionNumber         = 'Number of the partition on the target disk, as reported by Get-Partition.'
+        SizeBytes               = 'Explicit partition size in bytes. Mutually exclusive with -SizePercent.'
+        SizePercent              = 'Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.'
+        Label                   = 'File system label assigned to the recovery volume. Defaults to RECOVERY.'
+        FileSystem              = 'File system used to format the recovery partition. Defaults to NTFS.'
+        WindowsREImagePath      = 'Path to a WindowsRE WIM image that should be staged into the recovery partition.'
+        BootImagePath           = 'Path to a boot WIM image used by the BCD recovery entry.'
+        BootEntryName           = 'Friendly name applied to the recovery BCD boot entry.'
+        BootEntryVisibility     = 'Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.'
+        BootTimeout             = 'Boot menu timeout applied when a new recovery boot entry is configured.'
+        EntryPointMode          = 'Selects which recovery entry points to configure: PushButton, BootEntry, or Both.'
+        PushButtonAction        = 'Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).'
+        AccessPath              = 'Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.'
+        NoDefaultDriveLetter    = 'When set, prevents Windows from automatically assigning a drive letter to the partition.'
+        IsHidden                = 'When set, marks the partition as hidden so it is omitted from common UI surfaces.'
+        IncludeNonRecovery      = 'When set, the discovery surface also returns partitions that do not look like recovery partitions; useful for diagnostics.'
+        IncludeAll              = 'When set, returns every BCD entry instead of only those that match recovery heuristics.'
+        IncludeHidden           = 'When set, returns boot entries that are flagged as hidden in BCD.'
+        Path                    = 'File-system path to search for WIM images.'
+        ImageKind               = 'Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.'
+        ComputeHash             = 'When set, computes a SHA-256 hash of each discovered image. Slower but useful for change detection.'
+        InputObject             = 'Object received from the pipeline that the cmdlet should act on.'
+        Identifier              = 'BCD GUID identifier of the target boot entry.'
+        Name                    = 'Friendly display name of the target boot entry.'
+        DestinationPath         = 'Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.'
+        SourceImagePath         = 'Source WIM file that should be copied or staged.'
+        SourcePath              = 'Source file path on a local or UNC volume used as the input to the copy.'
+        SourceUri               = 'HTTPS URI from which the recovery image should be downloaded.'
+        BootToRE                = 'When set, schedules the system to boot into the Windows Recovery Environment on the next restart.'
+        Target                  = 'Reagentc target identifier used when registering or scheduling a WindowsRE boot.'
+        AddLast                 = 'When set, appends the new BCD entry to the end of the boot order instead of the default position.'
+        SetDefault              = 'When set, marks the new boot entry as the default in BCD.'
+        SetDefaultBootEntry     = 'When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.'
+        Force                   = 'Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.'
+        PassThru                = 'Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.'
+    }
+    'Get-RecoveryPartition' = @{
+        Synopsis    = 'Discovers recovery partitions on local disks.'
+        Description = 'Enumerates physical disks and emits a RecoveryPartitionInfo object for each partition that carries the Windows recovery partition type GUID. Use -IncludeNonRecovery to widen the search to non-recovery partitions for diagnostics.'
+        OneLiner    = 'Get-RecoveryPartition -DiskNumber 0'
+        OneLinerDescription = 'Lists every recovery partition on disk 0.'
+        Parameters  = @{
+            DiskNumber      = 'Optional disk filter. When omitted, every physical disk is searched.'
+            PartitionNumber = 'Optional partition filter applied to the results of the disk-level enumeration.'
+        }
+        Splat       = @'
+$GetRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $GetRecoveryPartitionParameters.DiskNumber = 0
+    $GetRecoveryPartitionParameters.IncludeNonRecovery = $False
+    $GetRecoveryPartitionParameters.Verbose = $True
+
+$GetRecoveryPartitionResult = Get-RecoveryPartition @GetRecoveryPartitionParameters
+
+Write-Output -InputObject ($GetRecoveryPartitionResult)
+'@
+        SplatDescription = 'Discovers recovery partitions on disk 0 using a splatted OrderedDictionary parameter set.'
+    }
+    'New-RecoveryPartition' = @{
+        Synopsis    = 'Creates a recovery partition on a target disk.'
+        Description = 'Creates a recovery partition on the specified disk and optionally stages a WindowsRE image into it. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.'
+        OneLiner    = "New-RecoveryPartition -DiskNumber 0 -SizeBytes 1073741824 -WindowsREImagePath 'C:\RecoveryImages\Winre.wim' -PassThru"
+        OneLinerDescription = 'Creates a 1 GiB recovery partition on disk 0 and stages the supplied WindowsRE image.'
+        Splat       = @'
+$NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewRecoveryPartitionParameters.DiskNumber = 0
+    $NewRecoveryPartitionParameters.SizePercent = 2
+    $NewRecoveryPartitionParameters.Label = 'Windows RE tools'
+    $NewRecoveryPartitionParameters.FileSystem = 'NTFS'
+    $NewRecoveryPartitionParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
+    $NewRecoveryPartitionParameters.PassThru = $True
+    $NewRecoveryPartitionParameters.Verbose = $True
+
+$NewRecoveryPartitionResult = New-RecoveryPartition @NewRecoveryPartitionParameters
+Write-Output -InputObject ($NewRecoveryPartitionResult)
+'@
+        SplatDescription = 'Creates a percentage-sized recovery partition with a friendly label and stages a WindowsRE image.'
+    }
+    'Set-RecoveryPartition' = @{
+        Synopsis    = 'Updates the metadata of an existing recovery partition.'
+        Description = 'Updates editable metadata such as the friendly label of an existing recovery partition.'
+        OneLiner    = "Set-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -Label 'Windows RE tools'"
+        OneLinerDescription = 'Renames the recovery partition on disk 0 partition 5.'
+    }
+    'Resize-RecoveryPartition' = @{
+        Synopsis    = 'Resizes a recovery partition to the requested size.'
+        Description = 'Resizes a recovery partition. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets. The cmdlet inspects the surrounding partition layout and refuses to grow when there is not enough trailing free space unless -Force is supplied.'
+        OneLiner    = 'Resize-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -SizeBytes 2147483648'
+        OneLinerDescription = 'Resizes the recovery partition on disk 0 partition 5 to 2 GiB.'
+    }
+    'Remove-RecoveryPartition' = @{
+        Synopsis    = 'Removes a recovery partition.'
+        Description = 'Removes a recovery partition. Requires -Force or explicit confirmation because the operation is destructive. The cmdlet inspects the surrounding partition layout and refuses to remove when the immediately following partition is the OS partition unless -Force is supplied.'
+        OneLiner    = 'Remove-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -Force'
+        OneLinerDescription = 'Removes the recovery partition on disk 0 partition 5 without prompting.'
+    }
+    'Mount-RecoveryPartition' = @{
+        Synopsis    = 'Mounts a recovery partition at a folder mount point.'
+        Description = 'Assigns a folder mount point so the recovery partition can be inspected from Explorer or other tooling.'
+        OneLiner    = "Mount-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -MountPath 'C:\Mounts\Recovery'"
+        OneLinerDescription = 'Mounts the recovery partition on disk 0 partition 5 at the specified folder.'
+    }
+    'Dismount-RecoveryPartition' = @{
+        Synopsis    = 'Removes a folder mount point from a recovery partition.'
+        Description = 'Removes the specified folder mount point from a previously mounted recovery partition.'
+        OneLiner    = "Dismount-RecoveryPartition -MountPath 'C:\Mounts\Recovery'"
+        OneLinerDescription = 'Dismounts the recovery partition mount point at the specified folder.'
+    }
+    'Test-RecoveryPartition' = @{
+        Synopsis    = 'Tests a recovery partition for size, layout, and contents.'
+        Description = 'Inspects a recovery partition and returns a structured pass/fail report covering size, layout, and presence of a WindowsRE image.'
+        OneLiner    = 'Test-RecoveryPartition -DiskNumber 0 -PartitionNumber 5'
+        OneLinerDescription = 'Validates the recovery partition on disk 0 partition 5.'
+    }
+    'New-RecoveryPartitionPlan' = @{
+        Synopsis    = 'Builds an idempotent recovery partition plan.'
+        Description = 'Compares the current disk layout to the requested recovery topology and returns a plan covering partition create or resize, image staging, WindowsRE registration, BCD boot entry creation, and push-button reset configuration. Use Invoke-RecoveryPartitionPlan to apply the plan.'
+        OneLiner    = 'New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 -WindowsREImagePath ''C:\RecoveryImages\winre.wim'' -BootImagePath ''C:\RecoveryImages\boot.wim'' -EntryPointMode Both'
+        OneLinerDescription = 'Builds the end-to-end plan for a 2 percent recovery partition with WindowsRE registration and a recovery boot entry.'
+        Splat       = @'
+$NewRecoveryPartitionPlanParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewRecoveryPartitionPlanParameters.DiskNumber = 0
+    $NewRecoveryPartitionPlanParameters.SizeBytes = 1073741824
+    $NewRecoveryPartitionPlanParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
+    $NewRecoveryPartitionPlanParameters.BootImagePath = 'C:\RecoveryImages\boot.wim'
+    $NewRecoveryPartitionPlanParameters.EntryPointMode = 'Both'
+    $NewRecoveryPartitionPlanParameters.BootEntryName = 'Grace Solutions Recovery'
+    $NewRecoveryPartitionPlanParameters.BootTimeout = [Timespan]::FromSeconds(10)
+    $NewRecoveryPartitionPlanParameters.Verbose = $True
+
+$NewRecoveryPartitionPlanResult = New-RecoveryPartitionPlan @NewRecoveryPartitionPlanParameters
+Write-Output -InputObject ($NewRecoveryPartitionPlanResult)
+'@
+        SplatDescription = 'Builds a plan that creates a 1 GiB recovery partition, registers the WindowsRE image, and adds a recovery boot entry.'
+    }
+    'Invoke-RecoveryPartitionPlan' = @{
+        Synopsis    = 'Executes a recovery partition plan idempotently.'
+        Description = 'Applies the steps in a plan produced by New-RecoveryPartitionPlan. Steps are processed in order and each step checks current state before applying changes. Honours -WhatIf and -Confirm and returns the resulting recovery partition when -PassThru is supplied.'
+        OneLiner    = 'New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 | Invoke-RecoveryPartitionPlan -PassThru'
+        OneLinerDescription = 'Builds and applies the plan on disk 0 and emits the resulting recovery partition.'
+        Parameters  = @{
+            InputObject = 'RecoveryPartitionPlan produced by New-RecoveryPartitionPlan. Accepted from the pipeline.'
+        }
+    }
+    'Get-WindowsRecoveryImage' = @{
+        Synopsis    = 'Discovers Windows RE or Windows PE image files.'
+        Description = 'Enumerates WIM files in the supplied path and returns structured information about each candidate recovery image.'
+        OneLiner    = "Get-WindowsRecoveryImage -Path 'C:\RecoveryImages'"
+        OneLinerDescription = 'Lists WIM files in the specified folder.'
+    }
+    'Set-WindowsRecoveryImage' = @{
+        Synopsis    = 'Copies or updates a Windows RE or Windows PE image.'
+        Description = 'Copies the supplied source image to a destination folder. The copy is skipped when the destination already matches the source by size and last-write timestamp.'
+        OneLiner    = "Set-WindowsRecoveryImage -SourceImagePath 'C:\RecoveryImages\winre.wim' -DestinationPath 'D:\Recovery\winre.wim' -PassThru"
+        OneLinerDescription = 'Copies winre.wim to the recovery volume and returns the staged image record. When DestinationPath ends with a directory separator or names an existing directory, the source leaf name is appended; otherwise the destination is treated as a full file path and the source is renamed on copy.'
+    }
+    'Save-RecoveryBootImage' = @{
+        Synopsis    = 'Downloads or copies a recovery boot image to a local destination.'
+        Description = 'Downloads a WIM from an HTTPS source or copies it from a local or UNC path to the supplied destination. When DestinationPath names an existing directory or ends with a directory separator the source leaf name is appended; otherwise it is treated as the target file path. Idempotent when the destination already matches the source.'
+        OneLiner    = "Save-RecoveryBootImage -SourceUri 'https://example.com/boot.wim' -DestinationPath 'C:\RecoveryImages\boot.wim'"
+        OneLinerDescription = 'Downloads the boot image from the supplied URI to C:\RecoveryImages\boot.wim.'
+    }
+    'Get-WindowsRecoveryEnvironment' = @{
+        Synopsis    = 'Returns the current Windows Recovery Environment configuration.'
+        Description = 'Queries the active Windows Recovery Environment configuration and returns a structured WindowsRecoveryEnvironmentInfo object.'
+        OneLiner    = 'Get-WindowsRecoveryEnvironment'
+        OneLinerDescription = 'Returns the current WinRE configuration.'
+    }
+    'Set-WindowsRecoveryEnvironment' = @{
+        Synopsis    = 'Registers a WindowsRE image and/or schedules a boot to RE.'
+        Description = 'Registers a WindowsRE image with the operating system and optionally schedules a boot into Windows RE on the next restart.'
+        OneLiner    = "Set-WindowsRecoveryEnvironment -WindowsREImagePath 'C:\RecoveryImages\winre.wim' -PassThru"
+        OneLinerDescription = 'Registers the supplied WindowsRE image and returns the updated configuration.'
+    }
+    'Enable-WindowsRecoveryEnvironment' = @{
+        Synopsis    = 'Enables Windows Recovery Environment.'
+        Description = 'Enables the Windows Recovery Environment and returns the resulting configuration.'
+        OneLiner    = 'Enable-WindowsRecoveryEnvironment -PassThru'
+        OneLinerDescription = 'Enables WinRE and returns the new state.'
+    }
+    'Disable-WindowsRecoveryEnvironment' = @{
+        Synopsis    = 'Disables Windows Recovery Environment.'
+        Description = 'Disables the Windows Recovery Environment. Requires -Force or explicit confirmation because the operation is high-impact.'
+        OneLiner    = 'Disable-WindowsRecoveryEnvironment -Force -PassThru'
+        OneLinerDescription = 'Disables WinRE without prompting and returns the new state.'
+    }
+    'Get-WindowsRecoveryBootEntry' = @{
+        Synopsis    = 'Discovers recovery boot entries.'
+        Description = 'Enumerates Boot Configuration Data entries and returns those that look like recovery boot entries. Use -IncludeAll to return every entry regardless of recovery heuristics.'
+        OneLiner    = 'Get-WindowsRecoveryBootEntry'
+        OneLinerDescription = 'Lists the recovery boot entries currently registered in BCD.'
+    }
+    'New-WindowsRecoveryBootEntry' = @{
+        Synopsis    = 'Creates a recovery boot entry idempotently.'
+        Description = 'Creates a BCD boot entry that boots from the supplied WIM image. Existing entries with the same name are not duplicated.'
+        OneLiner    = "New-WindowsRecoveryBootEntry -BootImagePath 'C:\RecoveryImages\boot.wim' -Name 'Recovery' -PassThru"
+        OneLinerDescription = 'Creates a recovery boot entry that boots boot.wim.'
+    }
+    'Remove-WindowsRecoveryBootEntry' = @{
+        Synopsis    = 'Removes a recovery boot entry idempotently.'
+        Description = 'Removes a BCD boot entry by identifier, name, or pipeline input. Requires -Force or explicit confirmation because the operation is destructive.'
+        OneLiner    = "Remove-WindowsRecoveryBootEntry -Name 'Recovery' -Force"
+        OneLinerDescription = 'Removes the recovery boot entry with the friendly name "Recovery".'
+    }
+    'Set-WindowsRecoveryEntryPoint' = @{
+        Synopsis    = 'Configures push-button reset, a boot entry, or both as recovery entry points.'
+        Description = 'Combines WindowsRE registration and BCD boot entry creation behind a single high-level surface. EntryPointMode selects which paths are configured.'
+        OneLiner    = "Set-WindowsRecoveryEntryPoint -EntryPointMode Both -BootImagePath 'C:\RecoveryImages\boot.wim' -WindowsREImagePath 'C:\RecoveryImages\winre.wim' -BootTimeout ([timespan]'00:00:10') -PassThru"
+        OneLinerDescription = 'Configures both push-button reset and a recovery boot entry in a single call.'
+        Splat       = @'
+$SetWindowsRecoveryEntryPointParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $SetWindowsRecoveryEntryPointParameters.EntryPointMode = 'Both'
+    $SetWindowsRecoveryEntryPointParameters.BootImagePath = 'C:\RecoveryImages\boot.wim'
+    $SetWindowsRecoveryEntryPointParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
+    $SetWindowsRecoveryEntryPointParameters.PushButtonAction = 'BootToRE'
+    $SetWindowsRecoveryEntryPointParameters.Name = 'Grace Solutions Recovery'
+    $SetWindowsRecoveryEntryPointParameters.BootTimeout = [Timespan]::FromSeconds(10)
+    $SetWindowsRecoveryEntryPointParameters.BootEntryVisibility = 'Visible'
+    $SetWindowsRecoveryEntryPointParameters.PassThru = $True
+    $SetWindowsRecoveryEntryPointParameters.Verbose = $True
+
+$SetWindowsRecoveryEntryPointResult = Set-WindowsRecoveryEntryPoint @SetWindowsRecoveryEntryPointParameters
+Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)
+'@
+        SplatDescription = 'Splatted OrderedDictionary example for the combined entry-point configuration.'
+    }
+}

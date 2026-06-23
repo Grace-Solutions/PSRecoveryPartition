@@ -1,0 +1,345 @@
+name: Publish to PowerShell Gallery
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'LICENSE'
+      - 'docs/**'
+      - 'tests/**'
+      - 'build.ps1'
+      - 'build/**'
+      - 'Module/**'
+      - '**/*.sln'
+      - '**/*.csproj'
+      - '.gitea/workflows/**'
+      - '.github/workflows/**'
+      - '.gitignore'
+      - '.gitattributes'
+
+env:
+  MODULE_NAME: PSRecoveryPartition
+
+jobs:
+  build:
+    if: github.event.pull_request.merged == true
+    runs-on: powershell-linux
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify host prerequisites (pwsh, dotnet)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $missing = @()
+          if (-not (Get-Command pwsh   -ErrorAction SilentlyContinue)) { $missing += 'pwsh'   }
+          if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) { $missing += 'dotnet' }
+          if ($missing.Count -gt 0) {
+              throw "Host runner is missing required tool(s): $($missing -join ', '). Provision them on the runner host."
+          }
+          Write-Host ("pwsh:   " + (pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'))
+          Write-Host ("dotnet: " + (dotnet --version))
+          Write-Host '--- dotnet --info ---'
+          dotnet --info
+          Write-Host '--- disk free ---'
+          df -h .
+          Write-Host '--- memory ---'
+          free -m
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Write-Host '==> dotnet restore'
+          dotnet restore --verbosity normal
+          if ($LASTEXITCODE -ne 0) { throw "Restore failed with exit code $LASTEXITCODE" }
+
+      - name: Build module
+        shell: pwsh
+        env:
+          PSGALLERY_PROJECT_URI: ${{ vars.PSGALLERY_PROJECT_URI }}
+        run: ./build.ps1
+
+      - name: Validate module manifest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $manifestPath = Join-Path $PWD "Module/${env:MODULE_NAME}/${env:MODULE_NAME}.psd1"
+          $manifest = Test-ModuleManifest -Path $manifestPath
+          Write-Host "Manifest OK: $($manifest.Name) $($manifest.Version)"
+
+      - name: Upload module artifact
+        uses: christopherhx/gitea-upload-artifact@v4
+        with:
+          name: ${{ env.MODULE_NAME }}-module
+          path: Module/${{ env.MODULE_NAME }}
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    needs: build
+    if: ${{ success() && github.event.pull_request.merged == true }}
+    runs-on: powershell-linux
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify host prerequisites (pwsh)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+              throw "Host runner is missing required tool: pwsh. Provision it on the runner host."
+          }
+          Write-Host ("pwsh: " + (pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'))
+
+      - name: Download module artifact
+        uses: christopherhx/gitea-download-artifact@v4
+        with:
+          name: ${{ env.MODULE_NAME }}-module
+          path: Module/${{ env.MODULE_NAME }}
+
+      - name: Resolve module version and tag
+        id: meta
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $manifestPath = Join-Path $PWD "Module/${env:MODULE_NAME}/${env:MODULE_NAME}.psd1"
+          $manifest = Test-ModuleManifest -Path $manifestPath
+          $version = $manifest.Version.ToString()
+          $tag = $version
+          Write-Host "Module version: $version"
+          Write-Host "Release tag:    $tag"
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "tag=$tag"         | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Package module as release asset
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zipPath = Join-Path $PWD "$($env:MODULE_NAME)-$($env:VERSION).zip"
+          if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+          Compress-Archive -Path "Module/$($env:MODULE_NAME)/*" -DestinationPath $zipPath -Force
+          Write-Host "Created: $zipPath ($([math]::Round((Get-Item $zipPath).Length / 1KB, 1)) KB)"
+
+      - name: Create Gitea release
+        shell: pwsh
+        env:
+          GITEA_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          COMMIT_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          SERVER_URL: ${{ github.server_url }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version Latest
+          trap { Write-Host "==> RELEASE STEP FAILED: $($_ | Out-String)"; Write-Host ($_.ScriptStackTrace); exit 1 }
+
+          Write-Host "==> [1/8] Validating inputs"
+          Write-Host "       MODULE_NAME=$($env:MODULE_NAME)"
+          Write-Host "       TAG=$($env:TAG)"
+          Write-Host "       VERSION=$($env:VERSION)"
+          Write-Host "       REPO=$($env:REPO)"
+          Write-Host "       API_URL=$($env:API_URL)"
+          Write-Host "       SERVER_URL=$($env:SERVER_URL)"
+          Write-Host "       PR_NUMBER=$($env:PR_NUMBER)"
+          Write-Host "       RUN_ID=$($env:RUN_ID)"
+          if ([string]::IsNullOrWhiteSpace($env:GITEA_TOKEN)) { throw "github.token is empty." }
+          if ([string]::IsNullOrWhiteSpace($env:TAG))         { throw "TAG is empty." }
+          if ([string]::IsNullOrWhiteSpace($env:VERSION))     { throw "VERSION is empty." }
+          if ([string]::IsNullOrWhiteSpace($env:API_URL))     { throw "API_URL is empty." }
+          if ([string]::IsNullOrWhiteSpace($env:REPO))        { throw "REPO is empty." }
+          if ([string]::IsNullOrWhiteSpace($env:COMMIT_SHA))  { throw "COMMIT_SHA is empty." }
+
+          Write-Host "==> [2/8] Deriving metadata"
+          $shortSha = $env:COMMIT_SHA.Substring(0, [Math]::Min(12, $env:COMMIT_SHA.Length))
+          $buildUtc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+          $runUrl   = "$($env:SERVER_URL)/$($env:REPO)/actions/runs/$($env:RUN_ID)"
+          $prUrl    = "$($env:SERVER_URL)/$($env:REPO)/pulls/$($env:PR_NUMBER)"
+          Write-Host "       shortSha=$shortSha"
+
+          Write-Host "==> [3/8] Extracting CHANGELOG section"
+          $changelogSection = ''
+          if (Test-Path 'CHANGELOG.md') {
+              $lines = [System.IO.File]::ReadAllLines('CHANGELOG.md')
+              $start = -1; $end = $lines.Length
+              for ($i = 0; $i -lt $lines.Length; $i++) {
+                  if ($lines[$i] -match "^##\s+$([regex]::Escape($env:VERSION))\s*$") { $start = $i + 1; continue }
+                  if ($start -ge 0 -and $lines[$i] -match '^##\s+') { $end = $i; break }
+              }
+              if ($start -ge 0) {
+                  $changelogSection = ($lines[$start..($end - 1)] -join "`n").Trim()
+              }
+          }
+          Write-Host "       CHANGELOG section length: $($changelogSection.Length) chars"
+
+          Write-Host "==> [4/8] Building release body"
+          $changelogText = if ($changelogSection) { $changelogSection } else { '_No CHANGELOG section found for this version._' }
+          $sb = New-Object System.Text.StringBuilder
+          [void]$sb.AppendLine("**$($env:MODULE_NAME) $($env:VERSION)**")
+          [void]$sb.AppendLine('')
+          [void]$sb.AppendLine('| Field | Value |')
+          [void]$sb.AppendLine('| --- | --- |')
+          [void]$sb.AppendLine("| Version | ``$($env:VERSION)`` |")
+          [void]$sb.AppendLine("| Tag | ``$($env:TAG)`` |")
+          [void]$sb.AppendLine("| Commit | [``$shortSha``]($($env:SERVER_URL)/$($env:REPO)/commit/$($env:COMMIT_SHA)) |")
+          [void]$sb.AppendLine("| Built (UTC) | $buildUtc |")
+          [void]$sb.AppendLine("| Merged PR | [#$($env:PR_NUMBER) $($env:PR_TITLE)]($prUrl) by @$($env:PR_AUTHOR) |")
+          [void]$sb.AppendLine("| Workflow run | [$($env:RUN_ID)]($runUrl) |")
+          [void]$sb.AppendLine('')
+          [void]$sb.AppendLine('## Changes')
+          [void]$sb.AppendLine($changelogText)
+          [void]$sb.AppendLine('')
+          [void]$sb.AppendLine('## Install')
+          [void]$sb.AppendLine('```powershell')
+          [void]$sb.AppendLine("Install-Module -Name $($env:MODULE_NAME) -RequiredVersion $($env:VERSION) -Scope CurrentUser")
+          [void]$sb.AppendLine('```')
+          $body = $sb.ToString()
+          Write-Host "       body length: $($body.Length) chars"
+
+          $headers = @{
+              Authorization = "token $($env:GITEA_TOKEN)"
+              Accept        = 'application/json'
+          }
+          $createUri = "$($env:API_URL)/repos/$($env:REPO)/releases"
+
+          Write-Host "==> [5/8] Checking for existing release tag: $createUri/tags/$($env:TAG)"
+          $existing = $null
+          try {
+              $existing = Invoke-RestMethod -Method Get -Headers $headers `
+                  -Uri "$createUri/tags/$($env:TAG)" -ErrorAction Stop
+          } catch {
+              $status = $null
+              try { $status = $_.Exception.Response.StatusCode.value__ } catch { }
+              if ($status -ne 404) {
+                  Write-Host "       Lookup failed (status=$status): $($_.Exception.Message)"
+                  throw
+              }
+              Write-Host "       No existing release (404)."
+          }
+          if ($existing) {
+              Write-Host "       Release tag '$($env:TAG)' already exists (id=$($existing.id)); skipping creation."
+              return
+          }
+
+          Write-Host "==> [6/8] Creating release"
+          $payload = @{
+              tag_name         = $env:TAG
+              target_commitish = $env:COMMIT_SHA
+              name             = "$($env:MODULE_NAME) $($env:VERSION)"
+              body             = $body
+              draft            = $false
+              prerelease       = $false
+          } | ConvertTo-Json -Depth 4
+          Write-Host "       payload bytes: $([System.Text.Encoding]::UTF8.GetByteCount($payload))"
+
+          $release = Invoke-RestMethod -Method Post -Uri $createUri -Headers $headers `
+              -ContentType 'application/json' -Body $payload
+          Write-Host "       Created release id=$($release.id) at $($release.html_url)"
+
+          Write-Host "==> [7/8] Locating release asset"
+          $assetPath = Join-Path $PWD "$($env:MODULE_NAME)-$($env:VERSION).zip"
+          if (-not (Test-Path $assetPath)) { throw "Release asset not found at: $assetPath" }
+          $fileBytes = [System.IO.File]::ReadAllBytes($assetPath)
+          Write-Host "       Asset: $assetPath ($([math]::Round($fileBytes.Length / 1KB, 1)) KB)"
+
+          Write-Host "==> [8/8] Uploading asset"
+          $uploadUri = "$createUri/$($release.id)/assets?name=$($env:MODULE_NAME)-$($env:VERSION).zip"
+          Invoke-RestMethod -Method Post -Uri $uploadUri -Headers $headers `
+              -ContentType 'application/zip' -Body $fileBytes | Out-Null
+          Write-Host "==> Done: uploaded $($env:MODULE_NAME)-$($env:VERSION).zip"
+
+  publish:
+    needs: release
+    if: ${{ success() && github.event.pull_request.merged == true }}
+    runs-on: powershell-linux
+    steps:
+      - name: Verify host prerequisites (pwsh)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+              throw "Host runner is missing required tool: pwsh. Provision it on the runner host."
+          }
+          Write-Host ("pwsh: " + (pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'))
+
+      - name: Download module artifact
+        uses: christopherhx/gitea-download-artifact@v4
+        with:
+          name: ${{ env.MODULE_NAME }}-module
+          path: Module/${{ env.MODULE_NAME }}
+
+      - name: Bootstrap Microsoft.PowerShell.PSResourceGet
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Get-Module -ListAvailable -Name Microsoft.PowerShell.PSResourceGet)) {
+              throw "Microsoft.PowerShell.PSResourceGet is not installed on the host runner. Provision it (Install-Module Microsoft.PowerShell.PSResourceGet -Scope AllUsers)."
+          }
+          Import-Module Microsoft.PowerShell.PSResourceGet -ErrorAction Stop
+
+          $storeDir = Join-Path $HOME '.local/share/PSResourceGet'
+          if (-not (Test-Path $storeDir)) {
+              Write-Host "==> Creating PSResourceGet store directory: $storeDir"
+              New-Item -ItemType Directory -Path $storeDir -Force | Out-Null
+          }
+
+          $existing = Get-PSResourceRepository -Name PSGallery -ErrorAction SilentlyContinue
+          if (-not $existing) {
+              Write-Host "==> Registering PSGallery repository"
+              Register-PSResourceRepository -PSGallery -Trusted -ErrorAction Stop
+          } else {
+              Write-Host "==> PSGallery already registered; ensuring Trusted + ApiVersion v2"
+              Set-PSResourceRepository -Name PSGallery -Trusted -ApiVersion v2 -ErrorAction Stop
+          }
+          Get-PSResourceRepository -Name PSGallery | Format-Table Name,Uri,Trusted,ApiVersion
+
+      - name: Verify PowerShell Gallery API key is configured
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PSGALLERY_API_KEY)) {
+              throw "Repository secret 'PSGALLERY_API_KEY' is not configured."
+          }
+
+      - name: Re-validate downloaded module manifest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $manifestPath = Join-Path $PWD "Module/${env:MODULE_NAME}/${env:MODULE_NAME}.psd1"
+          $manifest = Test-ModuleManifest -Path $manifestPath
+          Write-Host "Manifest OK: $($manifest.Name) $($manifest.Version)"
+
+      - name: Publish to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $moduleDir = Join-Path $PWD "Module/${env:MODULE_NAME}"
+          Write-Host "Publishing module from: $moduleDir"
+          Publish-PSResource `
+              -Path $moduleDir `
+              -Repository PSGallery `
+              -ApiKey $env:PSGALLERY_API_KEY `
+              -Verbose

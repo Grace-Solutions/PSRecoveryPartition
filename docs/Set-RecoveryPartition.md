@@ -1,0 +1,161 @@
+﻿---
+external help file: PSRecoveryPartition.dll-Help.xml
+Module Name: PSRecoveryPartition
+online version:
+schema: 2.0.0
+---
+
+# Set-RecoveryPartition
+
+## SYNOPSIS
+Updates the metadata of an existing recovery partition.
+
+## SYNTAX
+
+```
+Set-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> [-Label <String>]
+ [-NoDefaultDriveLetter <Boolean>] [-IsHidden <Boolean>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+## DESCRIPTION
+Updates editable metadata such as the friendly label of an existing recovery partition.
+
+## EXAMPLES
+
+### Example 1: Single-line usage
+```powershell
+Set-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -Label 'Windows RE tools'
+```
+
+Renames the recovery partition on disk 0 partition 5.
+
+## PARAMETERS
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DiskNumber
+Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -IsHidden
+When set, marks the partition as hidden so it is omitted from common UI surfaces.
+```yaml
+Type: Boolean
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Label
+File system label assigned to the recovery volume. Defaults to RECOVERY.
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -NoDefaultDriveLetter
+When set, prevents Windows from automatically assigning a drive letter to the partition.
+```yaml
+Type: Boolean
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PartitionNumber
+Number of the partition on the target disk (matches `Get-RecoveryPartition.PartitionNumber`; enumerated natively from the disk's partition table via `IOCTL_DISK_GET_DRIVE_LAYOUT_EX`).
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -PassThru
+Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### System.Int32
+## OUTPUTS
+
+### PSRecoveryPartition.RecoveryPartitionInfo
+## NOTES
+
+## RELATED LINKS
+

@@ -138,7 +138,69 @@ namespace PSRecoveryPartition
 
         public RecoveryPartitionInfo Resize(int diskNumber, int partitionNumber, long newSizeBytes)
         {
-            var resized = Win32PartitionWriter.Resize(diskNumber, partitionNumber, newSizeBytes);
+            var disk = Win32DiskInfoReader.Read(diskNumber);
+            var part = disk.Partitions.FirstOrDefault(p => p.PartitionNumber == partitionNumber);
+            if (part == null)
+            {
+                throw new InvalidOperationException(
+                    "Partition " + partitionNumber + " was not found on disk " + diskNumber + ".");
+            }
+
+            // For GPT recovery partitions the volume manager does not surface a
+            // \\?\Volume{guid} device, so FSCTL_EXTEND_VOLUME / FSCTL_SHRINK_VOLUME
+            // cannot reach the file system. Temporarily flip the partition back
+            // to Basic Data with cleared attributes, wait for the volume to
+            // appear, perform the resize, then restore the recovery identity.
+            // This mirrors the diskpart flow for hidden recovery partitions.
+            var basicDataType = new Guid(NativeConstants.GPT_PARTITION_TYPE_BASIC_DATA);
+            var needsUnhide = disk.PartitionStyle == PartitionStyle.Gpt
+                              && part.GptType != Guid.Empty
+                              && part.GptType != basicDataType;
+            var originalGptType = part.GptType;
+            var originalAttributes = part.GptAttributes;
+            var originalName = part.GptName;
+
+            if (needsUnhide)
+            {
+                Win32PartitionWriter.SetGptAttributes(
+                    diskNumber, partitionNumber, 0UL,
+                    newGptType: basicDataType, newGptName: originalName);
+                // Wait not just for the volume GUID to register, but for a
+                // file system (NTFS) to actually attach above it -- otherwise
+                // FSCTL_EXTEND_VOLUME / FSCTL_SHRINK_VOLUME come back with
+                // ERROR_INVALID_FUNCTION because no FS driver is sitting on
+                // the volume device yet.
+                var surfaced = WaitForVolume(
+                    diskNumber, part.StartingOffset, TimeSpan.FromSeconds(30),
+                    requireMountedFileSystem: true);
+                if ((surfaced == null || string.IsNullOrEmpty(surfaced.FileSystem)) && _owner != null)
+                {
+                    _owner.WriteWarning(
+                        "Disk " + diskNumber + " partition " + partitionNumber +
+                        ": no Windows volume surfaced after un-hiding for resize; FSCTL may fail.");
+                }
+            }
+
+            try
+            {
+                Win32PartitionWriter.Resize(diskNumber, partitionNumber, newSizeBytes);
+            }
+            finally
+            {
+                if (needsUnhide)
+                {
+                    // Restore the original recovery identity even if the resize
+                    // threw, so the partition does not remain exposed as Basic
+                    // Data on disk.
+                    Win32PartitionWriter.SetGptAttributes(
+                        diskNumber, partitionNumber, originalAttributes,
+                        newGptType: originalGptType, newGptName: originalName);
+                    StripDriveLetters(diskNumber, part.StartingOffset);
+                }
+            }
+
+            var refreshed = Win32DiskInfoReader.Read(diskNumber);
+            var resized = refreshed.Partitions.FirstOrDefault(p => p.PartitionNumber == partitionNumber);
             if (resized == null) { return ReadInfo(diskNumber, partitionNumber); }
             var vol = Win32VolumeMapper.FindForPartition(
                 Win32VolumeMapper.EnumerateAll(), diskNumber, resized.StartingOffset);
@@ -337,19 +399,33 @@ namespace PSRecoveryPartition
 
         private static Win32VolumeInfo WaitForVolume(int diskNumber, long startingOffset, TimeSpan timeout)
         {
+            return WaitForVolume(diskNumber, startingOffset, timeout, requireMountedFileSystem: false);
+        }
+
+        private static Win32VolumeInfo WaitForVolume(
+            int diskNumber, long startingOffset, TimeSpan timeout, bool requireMountedFileSystem)
+        {
             var deadline = DateTime.UtcNow + timeout;
+            Win32VolumeInfo last = null;
             while (DateTime.UtcNow < deadline)
             {
                 try
                 {
                     var vol = Win32VolumeMapper.FindForPartition(
                         Win32VolumeMapper.EnumerateAll(), diskNumber, startingOffset);
-                    if (vol != null) { return vol; }
+                    if (vol != null)
+                    {
+                        last = vol;
+                        if (!requireMountedFileSystem || !string.IsNullOrEmpty(vol.FileSystem))
+                        {
+                            return vol;
+                        }
+                    }
                 }
                 catch (Win32Exception) { /* volume manager momentarily unavailable */ }
                 Thread.Sleep(250);
             }
-            return null;
+            return last;
         }
 
         private RecoveryPartitionInfo ReadInfo(int diskNumber, int partitionNumber)

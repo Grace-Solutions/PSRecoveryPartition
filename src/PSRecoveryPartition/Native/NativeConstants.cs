@@ -39,8 +39,10 @@ namespace PSRecoveryPartition.Native
         public const uint IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS = 0x00560000;
 
         // File-system FSCTLs (FILE_DEVICE_FILE_SYSTEM = 0x09).
-        public const uint FSCTL_EXTEND_VOLUME = 0x0009C334;
-        public const uint FSCTL_SHRINK_VOLUME = 0x0009C340;
+        // CTL_CODE(9, 60, METHOD_BUFFERED, FILE_ANY_ACCESS)  -> 0x000900F0
+        // CTL_CODE(9, 108, METHOD_BUFFERED, FILE_ANY_ACCESS) -> 0x000901B0
+        public const uint FSCTL_EXTEND_VOLUME = 0x000900F0;
+        public const uint FSCTL_SHRINK_VOLUME = 0x000901B0;
         public const uint FSCTL_LOCK_VOLUME   = 0x00090018;
         public const uint FSCTL_UNLOCK_VOLUME = 0x0009001C;
         public const uint FSCTL_DISMOUNT_VOLUME = 0x00090020;

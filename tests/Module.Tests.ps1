@@ -291,3 +291,136 @@ Describe 'DestinationPath parameter' {
         $params | Should -Not -Contain 'DestinationFileName'
     }
 }
+
+Describe 'RecoveryPartitionInfo path projections' {
+    BeforeAll {
+        $script:InfoAssembly = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1
+    }
+
+    It 'exposes VolumePath, DevicePath, and GlobalRootPath on RecoveryPartitionInfo' {
+        $type = $InfoAssembly.GetType('PSRecoveryPartition.RecoveryPartitionInfo', $false)
+        $type | Should -Not -BeNullOrEmpty
+        foreach ($name in @('VolumePath','DevicePath','GlobalRootPath')) {
+            $type.GetProperty($name) | Should -Not -BeNullOrEmpty -Because "expected property '$name'"
+        }
+    }
+
+    It 'exposes Source, DiskNumber, PartitionNumber, and VolumePath on WindowsRecoveryImageInfo' {
+        $type = $InfoAssembly.GetType('PSRecoveryPartition.WindowsRecoveryImageInfo', $false)
+        $type | Should -Not -BeNullOrEmpty
+        foreach ($name in @('Source','DiskNumber','PartitionNumber','VolumePath')) {
+            $type.GetProperty($name) | Should -Not -BeNullOrEmpty -Because "expected property '$name'"
+        }
+    }
+}
+
+Describe 'Image cmdlet HTTP and attribute surface' {
+    It 'Save-RecoveryBootImage exposes ByUri and ByPath parameter sets' {
+        $sets = (Get-Command Save-RecoveryBootImage).ParameterSets.Name | Sort-Object
+        $sets | Should -Contain 'ByUri'
+        $sets | Should -Contain 'ByPath'
+    }
+
+    It 'Save-RecoveryBootImage exposes -SourceUri, -Headers, -Hidden, -System' {
+        $params = (Get-Command Save-RecoveryBootImage).Parameters
+        $params.Keys | Should -Contain 'SourceUri'
+        $params.Keys | Should -Contain 'Headers'
+        $params.Keys | Should -Contain 'Hidden'
+        $params.Keys | Should -Contain 'System'
+        $params['Headers'].ParameterType.FullName | Should -Be 'System.Collections.IDictionary'
+        $params['SourceUri'].ParameterType.FullName | Should -Be 'System.Uri'
+    }
+
+    It 'Set-WindowsRecoveryImage exposes -SourceUri, -Headers, -Hidden, -System' {
+        $params = (Get-Command Set-WindowsRecoveryImage).Parameters
+        $params.Keys | Should -Contain 'SourceUri'
+        $params.Keys | Should -Contain 'Headers'
+        $params.Keys | Should -Contain 'Hidden'
+        $params.Keys | Should -Contain 'System'
+        $params['Headers'].ParameterType.FullName | Should -Be 'System.Collections.IDictionary'
+    }
+}
+
+Describe 'Boot entry / entry point -RecoveryPartition parameter' {
+    It 'New-WindowsRecoveryBootEntry exposes a ByRecoveryPartition parameter set' {
+        $sets = (Get-Command New-WindowsRecoveryBootEntry).ParameterSets.Name | Sort-Object
+        $sets | Should -Contain 'ByRecoveryPartition'
+        $sets | Should -Contain 'ByImagePath'
+    }
+
+    It 'New-WindowsRecoveryBootEntry exposes -RecoveryPartition typed as RecoveryPartitionInfo' {
+        $param = (Get-Command New-WindowsRecoveryBootEntry).Parameters['RecoveryPartition']
+        $param | Should -Not -BeNullOrEmpty
+        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionInfo'
+    }
+
+    It 'Set-WindowsRecoveryEntryPoint exposes -RecoveryPartition typed as RecoveryPartitionInfo' {
+        $param = (Get-Command Set-WindowsRecoveryEntryPoint).Parameters['RecoveryPartition']
+        $param | Should -Not -BeNullOrEmpty
+        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionInfo'
+    }
+}
+
+Describe 'Get-WindowsRecoveryImage -Source filter' {
+    It 'exposes -Source with the documented ValidateSet values' {
+        $param = (Get-Command Get-WindowsRecoveryImage).Parameters['Source']
+        $param | Should -Not -BeNullOrEmpty
+        $validate = $param.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateSetAttribute] } | Select-Object -First 1
+        $validate | Should -Not -BeNullOrEmpty
+        foreach ($value in @('UserPath','SystemRoot','Reagent','RecoveryPartition')) {
+            $validate.ValidValues | Should -Contain $value
+        }
+    }
+}
+
+Describe 'DestinationPathResolver UNC rejection' {
+    BeforeAll {
+        $script:ResolverType = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1 |
+            ForEach-Object { $_.GetType('PSRecoveryPartition.DestinationPathResolver', $false) }
+        $script:RejectUnc = $ResolverType.GetMethod('RejectUncShare',
+            [Reflection.BindingFlags]'NonPublic,Static')
+    }
+
+    It 'rejects \\server\share style destination paths' {
+        { $script:RejectUnc.Invoke($null, @([string]'\\fileserver\share\boot.wim')) } | Should -Throw
+    }
+
+    It 'rejects the \\?\UNC\server\share form' {
+        { $script:RejectUnc.Invoke($null, @([string]'\\?\UNC\fileserver\share\boot.wim')) } | Should -Throw
+    }
+
+    It 'allows \\?\Volume{guid}\ destination paths' {
+        { $script:RejectUnc.Invoke($null, @([string]'\\?\Volume{00000000-0000-0000-0000-000000000000}\Recovery\WindowsRE\Winre.wim')) } |
+            Should -Not -Throw
+    }
+
+    It 'allows \\?\GLOBALROOT\Device\HarddiskN\PartitionM paths' {
+        { $script:RejectUnc.Invoke($null, @([string]'\\?\GLOBALROOT\Device\Harddisk0\Partition4\Recovery\WindowsRE\Winre.wim')) } |
+            Should -Not -Throw
+    }
+
+    It 'allows local drive-letter destination paths' {
+        { $script:RejectUnc.Invoke($null, @([string]'C:\Recovery\WindowsRE\Winre.wim')) } |
+            Should -Not -Throw
+    }
+}
+
+Describe 'Native attribute constants' {
+    It 'defines FILE_ATTRIBUTE_HIDDEN = 0x2 and FILE_ATTRIBUTE_SYSTEM = 0x4' {
+        $type = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1 |
+            ForEach-Object { $_.GetType('PSRecoveryPartition.Native.NativeConstants', $false) }
+        $hidden = $type.GetField('FILE_ATTRIBUTE_HIDDEN', [Reflection.BindingFlags]'Public,Static,NonPublic')
+        $system = $type.GetField('FILE_ATTRIBUTE_SYSTEM', [Reflection.BindingFlags]'Public,Static,NonPublic')
+        $hidden | Should -Not -BeNullOrEmpty
+        $system | Should -Not -BeNullOrEmpty
+        [uint32]$hidden.GetValue($null) | Should -Be ([uint32]0x2)
+        [uint32]$system.GetValue($null) | Should -Be ([uint32]0x4)
+    }
+}
+

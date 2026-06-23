@@ -89,10 +89,15 @@ namespace PSRecoveryPartition
             Win32VolumeFormatter.Format(
                 EnsureTrailingSlash(volume.VolumeName), resolvedFs, resolvedLabel, quickFormat: true);
 
-            // Step 4: optional WindowsRE image copy through a temporary mount.
+            // Step 4: optional WindowsRE image staging. Routed through
+            // VolumeStaging so the volume GUID path is used directly when NTFS
+            // is already attached, falling back to a transient directory
+            // junction (no drive letter) only if needed. Recovery payloads are
+            // marked Hidden + System by default - this matches what the
+            // diskpart WinRE recipe leaves on disk.
             if (windowsREImagePath != null && windowsREImagePath.Exists)
             {
-                CopyImageOnto(volume.VolumeName, windowsREImagePath);
+                CopyImageOnto(created.DiskNumber, created.PartitionNumber, windowsREImagePath, hidden: true, system: true);
             }
 
             // Step 5: strip any drive-letter mount the volume manager auto-
@@ -328,32 +333,25 @@ namespace PSRecoveryPartition
             };
         }
 
-        private void CopyImageOnto(string volumeName, FileInfo image)
+        private void CopyImageOnto(int diskNumber, int partitionNumber, FileInfo image, bool hidden, bool system)
         {
-            var tempRoot = Path.Combine(Path.GetTempPath(), "PSRecoveryPartition-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(tempRoot);
-            var mounted = false;
-            try
+            VolumeStaging.WithVolumeRoot(diskNumber, partitionNumber, volumeRoot =>
             {
-                if (!NativeMethods.SetVolumeMountPointW(EnsureTrailingSlash(tempRoot), EnsureTrailingSlash(volumeName)))
+                var recoveryDir = Path.Combine(volumeRoot, "Recovery");
+                var winreDir    = Path.Combine(recoveryDir, "WindowsRE");
+                Directory.CreateDirectory(winreDir);
+                var staged = Path.Combine(winreDir, image.Name);
+                File.Copy(image.FullName, staged, true);
+
+                if (hidden || system)
                 {
-                    throw new Win32Exception(
-                        Marshal.GetLastWin32Error(),
-                        "SetVolumeMountPointW failed for temp mount " + tempRoot + ".");
+                    // Recovery payloads are marked Hidden + System by convention
+                    // so Explorer hides them and chkdsk treats them as protected.
+                    try { VolumeStaging.ApplyAttributes(staged, hidden, system); } catch { /* best effort */ }
+                    try { VolumeStaging.ApplyAttributes(winreDir, hidden, system); } catch { /* best effort */ }
+                    try { VolumeStaging.ApplyAttributes(recoveryDir, hidden, system); } catch { /* best effort */ }
                 }
-                mounted = true;
-                var dest = Path.Combine(tempRoot, "Recovery", "WindowsRE");
-                Directory.CreateDirectory(dest);
-                File.Copy(image.FullName, Path.Combine(dest, image.Name), true);
-            }
-            finally
-            {
-                if (mounted)
-                {
-                    try { NativeMethods.DeleteVolumeMountPointW(EnsureTrailingSlash(tempRoot)); } catch { /* best effort */ }
-                }
-                try { Directory.Delete(tempRoot, true); } catch { /* best effort */ }
-            }
+            });
         }
 
         private void TrySetMbrRecoveryType(int diskNumber, int partitionNumber)

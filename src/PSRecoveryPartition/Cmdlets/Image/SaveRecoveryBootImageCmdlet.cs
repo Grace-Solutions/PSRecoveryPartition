@@ -1,8 +1,7 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Management.Automation;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace PSRecoveryPartition.Cmdlets
 {
@@ -27,6 +26,22 @@ namespace PSRecoveryPartition.Cmdlets
 
         [Parameter]
         public string ImageKind { get; set; } = "WindowsPE";
+
+        // Optional request headers for ByUri downloads. IDictionary so callers
+        // can pass a literal hashtable; values are coerced via Convert.ToString
+        // since headers go over the wire as strings regardless.
+        [Parameter(ParameterSetName = "ByUri")]
+        public IDictionary Headers { get; set; }
+
+        // Apply NTFS Hidden / System attributes to the staged file after copy.
+        // Off by default on the explicit save cmdlet so callers opt in; the
+        // engine staging path inside New-RecoveryPartition applies them by
+        // default since recovery payloads are normally hidden+system.
+        [Parameter]
+        public SwitchParameter Hidden { get; set; }
+
+        [Parameter]
+        public SwitchParameter System { get; set; }
 
         [Parameter]
         public SwitchParameter Force { get; set; }
@@ -69,9 +84,17 @@ namespace PSRecoveryPartition.Cmdlets
             {
                 if (ShouldProcess(SourceUri.ToString() + " -> " + destFile.FullName, "Download recovery boot image"))
                 {
-                    DownloadAsync(SourceUri, destFile.FullName).GetAwaiter().GetResult();
+                    HttpImageDownloader
+                        .DownloadAsync(SourceUri, destFile.FullName, Headers, this, "Save-RecoveryBootImage")
+                        .GetAwaiter().GetResult();
                     destFile.Refresh();
                 }
+            }
+
+            if (destFile.Exists && (Hidden.IsPresent || this.System.IsPresent))
+            {
+                VolumeStaging.ApplyAttributes(destFile.FullName, Hidden.IsPresent, this.System.IsPresent);
+                destFile.Refresh();
             }
 
             if (PassThru.IsPresent)
@@ -88,37 +111,5 @@ namespace PSRecoveryPartition.Cmdlets
             }
         }
 
-        private async Task DownloadAsync(Uri uri, string destPath)
-        {
-            using (var client = new HttpClient())
-            {
-                client.Timeout = TimeSpan.FromMinutes(30);
-                using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
-                {
-                    response.EnsureSuccessStatusCode();
-                    var total = response.Content.Headers.ContentLength ?? -1L;
-                    var progress = new ProgressRecord(1, "Save-RecoveryBootImage", "Downloading " + uri);
-                    using (var src = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                    using (var dst = new FileStream(destPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, true))
-                    {
-                        var buffer = new byte[81920];
-                        long read = 0;
-                        int n;
-                        while ((n = await src.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
-                        {
-                            await dst.WriteAsync(buffer, 0, n).ConfigureAwait(false);
-                            read += n;
-                            if (total > 0)
-                            {
-                                progress.PercentComplete = (int)((read * 100) / total);
-                                WriteProgress(progress);
-                            }
-                        }
-                        progress.RecordType = ProgressRecordType.Completed;
-                        WriteProgress(progress);
-                    }
-                }
-            }
-        }
     }
 }

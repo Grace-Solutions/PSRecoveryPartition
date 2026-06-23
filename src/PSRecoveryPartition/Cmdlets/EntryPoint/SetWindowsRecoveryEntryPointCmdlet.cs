@@ -25,6 +25,15 @@ namespace PSRecoveryPartition.Cmdlets
         [Parameter(ValueFromPipelineByPropertyName = true)]
         public FileInfo WindowsREImagePath { get; set; }
 
+        // When supplied, the recovery partition is transiently mounted on a
+        // free drive letter for the duration of the bcdedit call so the BCD
+        // device element is captured as a persistent NT volume identifier.
+        [Parameter(ValueFromPipeline = true)]
+        public RecoveryPartitionInfo RecoveryPartition { get; set; }
+
+        [Parameter]
+        public string BootImageRelativePath { get; set; } = @"\Recovery\WindowsRE\Winre.wim";
+
         [Parameter]
         public string PushButtonAction { get; set; }
 
@@ -110,12 +119,6 @@ namespace PSRecoveryPartition.Cmdlets
 
             if (configureBootEntry)
             {
-                if (BootImagePath == null || !BootImagePath.Exists)
-                {
-                    throw new FileNotFoundException(
-                        "BootImagePath is required for EntryPointMode '" + EntryPointMode + "' and must exist.",
-                        BootImagePath != null ? BootImagePath.FullName : "<null>");
-                }
                 var bcd = new BcdEditEngine(this);
                 var existing = bcd.Enumerate(includeHidden: true)
                     .FirstOrDefault(e => string.Equals(e.Name, Name, StringComparison.OrdinalIgnoreCase));
@@ -124,11 +127,46 @@ namespace PSRecoveryPartition.Cmdlets
                     result.BootEntry = existing;
                     result.ActionsTaken.Add("Reused existing boot entry '" + Name + "' (" + existing.Identifier + ")");
                 }
-                else if (Force.IsPresent || ShouldProcess("BCD: '" + Name + "' -> " + BootImagePath.FullName, "Create recovery boot entry"))
+                else if (RecoveryPartition != null)
                 {
-                    result.BootEntry = bcd.Create(Name, BootImagePath, BootTimeout, BootEntryVisibility, SetDefault.IsPresent, false);
-                    result.ActionsTaken.Add("Created boot entry '" + Name + "' (" + result.BootEntry.Identifier + ")");
-                    result.Changed = true;
+                    var rel = string.IsNullOrEmpty(BootImageRelativePath)
+                        ? @"\Recovery\WindowsRE\Winre.wim"
+                        : (BootImageRelativePath.StartsWith("\\") ? BootImageRelativePath : "\\" + BootImageRelativePath);
+                    if (Force.IsPresent || ShouldProcess(
+                            "BCD: '" + Name + "' -> disk " + RecoveryPartition.DiskNumber +
+                            " partition " + RecoveryPartition.PartitionNumber + rel,
+                            "Create recovery boot entry"))
+                    {
+                        WindowsRecoveryBootEntryInfo created = null;
+                        VolumeStaging.WithDriveLetter(RecoveryPartition.DiskNumber, RecoveryPartition.PartitionNumber, letter =>
+                        {
+                            var image = new FileInfo(letter + rel);
+                            if (!image.Exists)
+                            {
+                                throw new FileNotFoundException(
+                                    "Boot image was not found on the recovery partition.", image.FullName);
+                            }
+                            created = bcd.Create(Name, image, BootTimeout, BootEntryVisibility, SetDefault.IsPresent, false);
+                        });
+                        result.BootEntry = created;
+                        result.ActionsTaken.Add("Created boot entry '" + Name + "' (" + (created != null ? created.Identifier : "?") + ")");
+                        result.Changed = true;
+                    }
+                }
+                else
+                {
+                    if (BootImagePath == null || !BootImagePath.Exists)
+                    {
+                        throw new FileNotFoundException(
+                            "BootImagePath or RecoveryPartition is required for EntryPointMode '" + EntryPointMode + "' and the image must exist.",
+                            BootImagePath != null ? BootImagePath.FullName : "<null>");
+                    }
+                    if (Force.IsPresent || ShouldProcess("BCD: '" + Name + "' -> " + BootImagePath.FullName, "Create recovery boot entry"))
+                    {
+                        result.BootEntry = bcd.Create(Name, BootImagePath, BootTimeout, BootEntryVisibility, SetDefault.IsPresent, false);
+                        result.ActionsTaken.Add("Created boot entry '" + Name + "' (" + result.BootEntry.Identifier + ")");
+                        result.Changed = true;
+                    }
                 }
             }
 

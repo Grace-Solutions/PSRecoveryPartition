@@ -21,6 +21,12 @@ namespace PSRecoveryPartition
         public string FileSystem { get; set; }
         public string DriveLetter { get; set; }
         public string[] AccessPaths { get; set; }
+        // \\?\Volume{guid}\ form (stable across reboots, no drive letter required).
+        public string VolumePath { get; set; }
+        // \Device\HarddiskN\PartitionM (NT object name).
+        public string DevicePath { get; set; }
+        // \\?\GLOBALROOT\Device\HarddiskN\PartitionM (Win32 namespace entry into the NT object).
+        public string GlobalRootPath { get; set; }
         public bool IsRecoveryPartition { get; set; }
         public bool IsHidden { get; set; }
         public bool NoDefaultDriveLetter { get; set; }

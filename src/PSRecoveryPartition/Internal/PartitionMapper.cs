@@ -21,6 +21,8 @@ namespace PSRecoveryPartition
                 DiskNumber        = partition.DiskNumber,
                 PartitionNumber   = partition.PartitionNumber,
                 DiskPath          = @"\\.\PhysicalDrive" + partition.DiskNumber,
+                DevicePath        = @"\Device\Harddisk" + partition.DiskNumber + @"\Partition" + partition.PartitionNumber,
+                GlobalRootPath    = @"\\?\GLOBALROOT\Device\Harddisk" + partition.DiskNumber + @"\Partition" + partition.PartitionNumber,
                 Offset            = partition.StartingOffset,
                 SizeBytes         = partition.LengthBytes,
             };
@@ -46,6 +48,9 @@ namespace PSRecoveryPartition
                 info.Label       = volume.Label;
                 info.FileSystem  = volume.FileSystem;
                 info.DriveLetter = volume.DriveLetter;
+                info.VolumePath  = string.IsNullOrEmpty(volume.VolumeName)
+                    ? null
+                    : (volume.VolumeName.EndsWith("\\", StringComparison.Ordinal) ? volume.VolumeName : volume.VolumeName + "\\");
                 if (volume.MountPoints != null)
                 {
                     info.AccessPaths = volume.MountPoints.Where(s => !string.IsNullOrEmpty(s)).ToArray();

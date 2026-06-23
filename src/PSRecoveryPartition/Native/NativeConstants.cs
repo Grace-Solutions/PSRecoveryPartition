@@ -15,7 +15,11 @@ namespace PSRecoveryPartition.Native
         public const uint FILE_SHARE_READ   = 0x00000001;
         public const uint FILE_SHARE_WRITE  = 0x00000002;
         public const uint OPEN_EXISTING     = 3;
-        public const uint FILE_ATTRIBUTE_NORMAL = 0x00000080;
+        public const uint FILE_ATTRIBUTE_NORMAL   = 0x00000080;
+        public const uint FILE_ATTRIBUTE_HIDDEN   = 0x00000002;
+        public const uint FILE_ATTRIBUTE_SYSTEM   = 0x00000004;
+        public const uint FILE_ATTRIBUTE_READONLY = 0x00000001;
+        public const uint INVALID_FILE_ATTRIBUTES = 0xFFFFFFFF;
         public static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
         // Win32 error codes used for sized-buffer retry loops.

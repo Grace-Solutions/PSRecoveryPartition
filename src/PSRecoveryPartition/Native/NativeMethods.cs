@@ -91,6 +91,14 @@ namespace PSRecoveryPartition.Native
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetVolumeLabelW(string lpRootPathName, string lpVolumeName);
 
+        // File attribute manipulation for staged recovery payloads (Hidden / System).
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetFileAttributesW(string lpFileName, uint dwFileAttributes);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern uint GetFileAttributesW(string lpFileName);
+
         // Bitmask of in-use DOS drive letters (bit 0 = A:, bit 25 = Z:). Used to
         // pick a free letter when fmifs!FormatEx needs a DOS root because it
         // does not accept \\?\Volume{guid}\ device paths.

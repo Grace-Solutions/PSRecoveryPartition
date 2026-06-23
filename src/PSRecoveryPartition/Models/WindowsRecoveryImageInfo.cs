@@ -15,5 +15,13 @@ namespace PSRecoveryPartition
         public string Hash { get; set; }
         public string HashAlgorithm { get; set; }
         public bool IsCurrentlyRegistered { get; set; }
+        // Where the image was discovered (Reagent, RecoveryPartition, SystemRoot,
+        // UserPath). Lets callers filter or prefer one source over another.
+        public string Source { get; set; }
+        // Populated when the image lives on a recovery partition that the
+        // module enumerated directly via IOCTL + volume staging.
+        public int? DiskNumber { get; set; }
+        public int? PartitionNumber { get; set; }
+        public string VolumePath { get; set; }
     }
 }

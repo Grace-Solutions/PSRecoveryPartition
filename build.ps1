@@ -7,6 +7,13 @@ param(
     [switch] $UpdateHelp,
     [switch] $ValidateHelp,
     [switch] $CreateRelease,
+    # Stamp a fresh version into the manifest and built assemblies. When -Version
+    # is not supplied a UTC yyyy.M.d.Hmm value is generated. CI passes this so
+    # every published build is unique (PowerShell Gallery rejects re-publishing
+    # an existing version). Omitted for local builds so the committed manifest is
+    # left untouched.
+    [switch] $StampVersion,
+    [string] $Version,
     [ValidateSet('Debug', 'Release')]
     [string] $Configuration = 'Release'
 )
@@ -37,8 +44,43 @@ if ($Restore) {
     if ($LASTEXITCODE -ne 0) { throw "dotnet restore failed ($LASTEXITCODE)." }
 }
 
+$ResolvedVersion = $null
+if ($StampVersion -or $Version) {
+    if ([string]::IsNullOrWhiteSpace($Version)) {
+        # yyyy.M.d.Hmm in UTC, e.g. 2026.7.4.1402. Hmm is hour*100+minute, so it
+        # increases monotonically within a day and stays a valid version part.
+        $Version = (Get-Date).ToUniversalTime().ToString('yyyy.M.d.Hmm')
+    }
+    $parsed = $null
+    if (-not [version]::TryParse($Version, [ref]$parsed)) {
+        throw "Computed version '$Version' is not a valid System.Version (major.minor.build.revision)."
+    }
+    $ResolvedVersion = $parsed.ToString()
+
+    Write-Section "Stamp version: $ResolvedVersion"
+    $ManifestPath = Join-Path $ModuleStageDir "$ModuleName.psd1"
+    $manifestText = Get-Content -LiteralPath $ManifestPath -Raw
+    $updated = [regex]::Replace(
+        $manifestText,
+        "(?m)^(?<pre>\s*ModuleVersion\s*=\s*')[^']*(?<post>')",
+        { param($m) $m.Groups['pre'].Value + $ResolvedVersion + $m.Groups['post'].Value })
+    if ($updated -eq $manifestText) {
+        throw "Could not find a ModuleVersion entry to stamp in $ManifestPath."
+    }
+    # Write UTF-8 without BOM regardless of PowerShell edition.
+    [System.IO.File]::WriteAllText($ManifestPath, $updated, (New-Object System.Text.UTF8Encoding($false)))
+    Write-Host "  manifest ModuleVersion -> $ResolvedVersion"
+}
+
 Write-Section "Build ($Configuration)"
-dotnet build $ProjectPath --configuration $Configuration --nologo --verbosity minimal
+$buildArgs = @($ProjectPath, '--configuration', $Configuration, '--nologo', '--verbosity', 'minimal')
+if ($ResolvedVersion) {
+    $buildArgs += "-p:Version=$ResolvedVersion"
+    $buildArgs += "-p:AssemblyVersion=$ResolvedVersion"
+    $buildArgs += "-p:FileVersion=$ResolvedVersion"
+    $buildArgs += "-p:InformationalVersion=$ResolvedVersion"
+}
+dotnet build @buildArgs
 if ($LASTEXITCODE -ne 0) { throw "dotnet build failed ($LASTEXITCODE)." }
 
 Write-Section 'Stage module binaries'

@@ -1,5 +1,3 @@
-using System;
-
 namespace PSRecoveryPartition
 {
     /// <summary>
@@ -30,6 +28,5 @@ namespace PSRecoveryPartition
         public bool IsRecoveryPartition { get; set; }
         public bool IsHidden { get; set; }
         public bool NoDefaultDriveLetter { get; set; }
-        public DateTimeOffset DiscoveredAtUtc { get; set; }
     }
 }

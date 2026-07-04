@@ -16,7 +16,6 @@ namespace PSRecoveryPartition
             if (partition == null) { return null; }
             var info = new RecoveryPartitionInfo
             {
-                DiscoveredAtUtc   = DateTimeOffset.UtcNow,
                 ExecutionMethod   = RecoveryExecutionMethod.Native,
                 DiskNumber        = partition.DiskNumber,
                 PartitionNumber   = partition.PartitionNumber,

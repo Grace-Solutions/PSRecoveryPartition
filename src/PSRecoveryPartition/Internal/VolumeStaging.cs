@@ -35,11 +35,20 @@ namespace PSRecoveryPartition
 
         /// <summary>
         /// Invokes <paramref name="action"/> with a backslash-terminated volume
-        /// root that is valid for file I/O. Tries the persistent
-        /// <c>\\?\Volume{guid}\</c> path first; if no file system is attached,
-        /// assigns a transient junction (no drive letter) and runs the action
-        /// through it, removing the junction on exit.
+        /// root that is valid for <em>managed</em> file I/O. Assigns a transient
+        /// directory junction (no drive letter) over the <c>\\?\Volume{guid}\</c>
+        /// path and runs the action through the junction's temp-folder path,
+        /// removing the junction on exit.
         /// </summary>
+        /// <remarks>
+        /// The raw <c>\\?\Volume{guid}\</c> name is valid for native CreateFile
+        /// but managed file APIs on .NET Framework reject it: the '?' trips the
+        /// legacy path validator ("Illegal characters in path"). The junction's
+        /// root is an ordinary temp directory path, which every managed API
+        /// accepts. SetVolumeMountPointW adds the junction as an extra mount
+        /// point regardless of whether a file system is already attached, so a
+        /// single code path covers both automounted and automount-disabled hosts.
+        /// </remarks>
         public static void WithVolumeRoot(int diskNumber, int partitionNumber, Action<string> action)
         {
             if (action == null) { throw new ArgumentNullException("action"); }
@@ -51,15 +60,6 @@ namespace PSRecoveryPartition
                     " partition " + partitionNumber + ".");
             }
 
-            // Probe: does the volume currently have a file system attached? If
-            // yes, the \\?\Volume{guid}\ path is directly usable for file I/O.
-            if (HasAttachedFileSystem(volumePath))
-            {
-                action(volumePath);
-                return;
-            }
-
-            // Fall back to a transient directory junction (no drive letter).
             WithTransientJunction(volumePath, action);
         }
 

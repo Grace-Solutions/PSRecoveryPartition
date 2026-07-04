@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -17,7 +17,8 @@ Builds an idempotent recovery partition plan.
 New-RecoveryPartitionPlan -DiskNumber <Int32> [-Label <String>] [-FileSystem <String>]
  [-WindowsREImagePath <FileInfo>] [-BootImagePath <FileInfo>] [-BootEntryName <String>]
  [-BootTimeout <TimeSpan>] [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefaultBootEntry]
- [-EntryPointMode <RecoveryEntryPointMode>] [-PushButtonAction <String>] [<CommonParameters>]
+ [-EntryPointMode <RecoveryEntryPointMode>] [-PushButtonAction <String>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### ExplicitSize
@@ -25,7 +26,8 @@ New-RecoveryPartitionPlan -DiskNumber <Int32> [-Label <String>] [-FileSystem <St
 New-RecoveryPartitionPlan -DiskNumber <Int32> -SizeBytes <Int64> [-Label <String>] [-FileSystem <String>]
  [-WindowsREImagePath <FileInfo>] [-BootImagePath <FileInfo>] [-BootEntryName <String>]
  [-BootTimeout <TimeSpan>] [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefaultBootEntry]
- [-EntryPointMode <RecoveryEntryPointMode>] [-PushButtonAction <String>] [<CommonParameters>]
+ [-EntryPointMode <RecoveryEntryPointMode>] [-PushButtonAction <String>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### PercentSize
@@ -33,7 +35,8 @@ New-RecoveryPartitionPlan -DiskNumber <Int32> -SizeBytes <Int64> [-Label <String
 New-RecoveryPartitionPlan -DiskNumber <Int32> -SizePercent <Int32> [-Label <String>] [-FileSystem <String>]
  [-WindowsREImagePath <FileInfo>] [-BootImagePath <FileInfo>] [-BootEntryName <String>]
  [-BootTimeout <TimeSpan>] [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefaultBootEntry]
- [-EntryPointMode <RecoveryEntryPointMode>] [-PushButtonAction <String>] [<CommonParameters>]
+ [-EntryPointMode <RecoveryEntryPointMode>] [-PushButtonAction <String>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -70,6 +73,7 @@ Builds a plan that creates a 1 GiB recovery partition, registers the WindowsRE i
 
 ### -BootEntryName
 Friendly name applied to the recovery BCD boot entry.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -84,6 +88,7 @@ Accept wildcard characters: False
 
 ### -BootEntryVisibility
 Whether the recovery BCD boot entry is Visible or Hidden in the boot menu.
+
 ```yaml
 Type: RecoveryBootEntryVisibility
 Parameter Sets: (All)
@@ -99,6 +104,7 @@ Accept wildcard characters: False
 
 ### -BootImagePath
 Path to a boot WIM image used by the BCD recovery entry.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -113,6 +119,7 @@ Accept wildcard characters: False
 
 ### -BootTimeout
 Boot menu timeout applied when a new recovery boot entry is configured.
+
 ```yaml
 Type: TimeSpan
 Parameter Sets: (All)
@@ -126,7 +133,8 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
+Number of the physical disk to operate on, as reported by Get-Disk.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -141,6 +149,7 @@ Accept wildcard characters: False
 
 ### -EntryPointMode
 Selects which recovery entry points to configure: PushButton, BootEntry, or Both.
+
 ```yaml
 Type: RecoveryEntryPointMode
 Parameter Sets: (All)
@@ -155,7 +164,9 @@ Accept wildcard characters: False
 ```
 
 ### -FileSystem
-File system used to format the recovery partition. Defaults to NTFS.
+File system used to format the recovery partition.
+Defaults to NTFS.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -170,7 +181,9 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-File system label assigned to the recovery volume. Defaults to RECOVERY.
+File system label assigned to the recovery volume.
+Defaults to RECOVERY.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -185,6 +198,7 @@ Accept wildcard characters: False
 
 ### -PushButtonAction
 Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -199,6 +213,7 @@ Accept wildcard characters: False
 
 ### -SetDefaultBootEntry
 When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -212,7 +227,9 @@ Accept wildcard characters: False
 ```
 
 ### -SizeBytes
-Explicit partition size in bytes. Mutually exclusive with -SizePercent.
+Explicit partition size in bytes.
+Mutually exclusive with -SizePercent.
+
 ```yaml
 Type: Int64
 Parameter Sets: ExplicitSize
@@ -226,7 +243,9 @@ Accept wildcard characters: False
 ```
 
 ### -SizePercent
-Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.
+Partition size expressed as a percentage of the target disk size.
+Mutually exclusive with -SizeBytes.
+
 ```yaml
 Type: Int32
 Parameter Sets: PercentSize
@@ -241,10 +260,26 @@ Accept wildcard characters: False
 
 ### -WindowsREImagePath
 Path to a WindowsRE WIM image that should be staged into the recovery partition.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

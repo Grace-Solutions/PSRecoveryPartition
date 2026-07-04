@@ -99,11 +99,49 @@ namespace PSRecoveryPartition.Native
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern uint GetFileAttributesW(string lpFileName);
 
+        // Directory / file creation and copy on Win32 device paths. These accept
+        // \\?\GLOBALROOT\Device\HarddiskVolumeN\ and \\?\Volume{guid}\ prefixes,
+        // so recovery payloads can be staged onto a partition that has no drive
+        // letter and is never mounted -- the path never passes through managed
+        // path validation (which rejects the '?' and GlobalRoot forms).
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CreateDirectoryW(string lpPathName, IntPtr lpSecurityAttributes);
+
+        // Progress callback for CopyFileExW. Return PROGRESS_CONTINUE (0) to keep
+        // copying. dwCallbackReason CALLBACK_CHUNK_FINISHED (0) fires per chunk.
+        public delegate uint CopyProgressRoutine(
+            long totalFileSize,
+            long totalBytesTransferred,
+            long streamSize,
+            long streamBytesTransferred,
+            uint dwStreamNumber,
+            uint dwCallbackReason,
+            IntPtr hSourceFile,
+            IntPtr hDestinationFile,
+            IntPtr lpData);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CopyFileExW(
+            string lpExistingFileName,
+            string lpNewFileName,
+            CopyProgressRoutine lpProgressRoutine,
+            IntPtr lpData,
+            [MarshalAs(UnmanagedType.Bool)] ref bool pbCancel,
+            uint dwCopyFlags);
+
         // Bitmask of in-use DOS drive letters (bit 0 = A:, bit 25 = Z:). Used to
         // pick a free letter when fmifs!FormatEx needs a DOS root because it
         // does not accept \\?\Volume{guid}\ device paths.
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern uint GetLogicalDrives();
+
+        // Firmware type of the running platform: 1 = BIOS, 2 = UEFI. Determines
+        // whether a flat boot entry loads winload.exe (BIOS) or winload.efi (UEFI).
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetFirmwareType(out uint FirmwareType);
 
         // fmifs!FormatEx is the inbox formatting entry point used by
         // format.com. It is undocumented but ABI-stable since NT 4.0. Callers

@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -14,7 +14,7 @@ Discovers recovery partitions on local disks.
 
 ```
 Get-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [-IncludeNonRecovery]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -46,7 +46,9 @@ Discovers recovery partitions on disk 0 using a splatted OrderedDictionary param
 ## PARAMETERS
 
 ### -DiskNumber
-Optional disk filter. When omitted, every physical disk is searched.
+Optional disk filter.
+When omitted, every physical disk is searched.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -61,6 +63,7 @@ Accept wildcard characters: False
 
 ### -IncludeNonRecovery
 When set, the discovery surface also returns partitions that do not look like recovery partitions; useful for diagnostics.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -75,6 +78,7 @@ Accept wildcard characters: False
 
 ### -PartitionNumber
 Optional partition filter applied to the results of the disk-level enumeration.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -84,6 +88,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

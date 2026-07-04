@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -13,7 +13,8 @@ Discovers Windows RE or Windows PE image files.
 ## SYNTAX
 
 ```
-Get-WindowsRecoveryImage [-Path <DirectoryInfo>] [-ImageKind <String>] [-ComputeHash] [<CommonParameters>]
+Get-WindowsRecoveryImage [-Path <DirectoryInfo>] [-ImageKind <String>] [-Source <String[]>] [-ComputeHash]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,7 +32,9 @@ Lists WIM files in the specified folder.
 ## PARAMETERS
 
 ### -ComputeHash
-When set, computes a SHA-256 hash of each discovered image. Slower but useful for change detection.
+When set, computes a SHA-256 hash of each discovered image.
+Slower but useful for change detection.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -46,6 +49,7 @@ Accept wildcard characters: False
 
 ### -ImageKind
 Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -61,6 +65,7 @@ Accept wildcard characters: False
 
 ### -Path
 File-system path to search for WIM images.
+
 ```yaml
 Type: DirectoryInfo
 Parameter Sets: (All)
@@ -70,6 +75,36 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Source
+{{ Fill Source Description }}
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

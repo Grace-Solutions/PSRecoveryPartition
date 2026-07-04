@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -14,19 +14,20 @@ Removes a recovery boot entry idempotently.
 
 ### ByIdentifier (Default)
 ```
-Remove-WindowsRecoveryBootEntry -Identifier <String> [-PassThru] [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-WindowsRecoveryBootEntry -Identifier <String> [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByInput
 ```
-Remove-WindowsRecoveryBootEntry -InputObject <WindowsRecoveryBootEntryInfo> [-PassThru] [-Force] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Remove-WindowsRecoveryBootEntry -InputObject <WindowsRecoveryBootEntryInfo> [-PassThru] [-Force]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByName
 ```
-Remove-WindowsRecoveryBootEntry -Name <String> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-WindowsRecoveryBootEntry -Name <String> [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -60,6 +61,7 @@ Accept wildcard characters: False
 
 ### -Force
 Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -74,6 +76,7 @@ Accept wildcard characters: False
 
 ### -Identifier
 BCD GUID identifier of the target boot entry.
+
 ```yaml
 Type: String
 Parameter Sets: ByIdentifier
@@ -88,6 +91,7 @@ Accept wildcard characters: False
 
 ### -InputObject
 Object received from the pipeline that the cmdlet should act on.
+
 ```yaml
 Type: WindowsRecoveryBootEntryInfo
 Parameter Sets: ByInput
@@ -102,6 +106,7 @@ Accept wildcard characters: False
 
 ### -Name
 Friendly display name of the target boot entry.
+
 ```yaml
 Type: String
 Parameter Sets: ByName
@@ -115,7 +120,9 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+Returns the resulting object after the operation completes.
+By default the cmdlet returns nothing on success.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -140,6 +147,21 @@ Aliases: wi
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

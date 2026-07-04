@@ -1,5 +1,6 @@
 @{
     RootModule           = 'PSRecoveryPartition.dll'
+    FormatsToProcess     = @('PSRecoveryPartition.format.ps1xml')
     ModuleVersion        = '2026.6.22.1713'
     GUID                 = 'd6d6f0b8-2a4b-4a8d-9d2a-7c0f4c2b5e9a'
     Author               = 'Grace Solutions'

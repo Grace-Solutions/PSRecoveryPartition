@@ -101,13 +101,42 @@ namespace PSRecoveryPartition.Cmdlets
                                 .FirstOrDefault(e => string.Equals(e.Name, InputObject.BootEntryName, StringComparison.OrdinalIgnoreCase));
                             if (existing == null)
                             {
-                                bcd.Create(
-                                    InputObject.BootEntryName,
-                                    InputObject.BootImagePath,
-                                    InputObject.BootTimeout ?? TimeSpan.FromSeconds(10),
-                                    InputObject.BootEntryVisibility,
-                                    InputObject.SetDefaultBootEntry,
-                                    false);
+                                // The image is already in place; wire a ramdisk entry
+                                // to it and drop a boot.sdi alongside it.
+                                var image = InputObject.BootImagePath;
+                                var dir = image.Directory;
+                                var volumeRoot = dir != null ? dir.Root.FullName.TrimEnd('\\') : "C:";
+                                var imageRel = image.FullName.Substring(volumeRoot.Length);
+
+                                var scratch = System.IO.Path.Combine(System.IO.Path.GetTempPath(),
+                                    "PSRecoveryPartition-sdi-" + Guid.NewGuid().ToString("N"));
+                                var sdi = BootSdiResolver.Resolve(null, image, 1, scratch, WriteVerbose);
+                                var sdiRel = "\\boot.sdi";
+                                if (dir != null)
+                                {
+                                    var sdiTarget = System.IO.Path.Combine(dir.FullName, "boot.sdi");
+                                    if (!string.Equals(sdi.FullName, sdiTarget, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        System.IO.File.Copy(sdi.FullName, sdiTarget, true);
+                                    }
+                                    sdiRel = sdiTarget.Substring(volumeRoot.Length);
+                                }
+
+                                bcd.Create(new BcdBootEntryRequest
+                                {
+                                    Name = InputObject.BootEntryName,
+                                    Mode = RecoveryBootMode.Ramdisk,
+                                    VolumeToken = volumeRoot,
+                                    ImageRelativePath = imageRel,
+                                    SdiRelativePath = sdiRel,
+                                    SystemRoot = "\\Windows",
+                                    LoaderPath = "\\windows\\system32\\" + FirmwareInfo.WinloadLeaf(),
+                                    Timeout = InputObject.BootTimeout ?? TimeSpan.FromSeconds(10),
+                                    Visibility = InputObject.BootEntryVisibility,
+                                    SetDefault = InputObject.SetDefaultBootEntry,
+                                    AddLast = false,
+                                    StagedImage = image
+                                });
                             }
                         }
                         break;

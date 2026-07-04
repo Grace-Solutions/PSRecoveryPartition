@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -14,7 +14,7 @@ Discovers recovery boot entries.
 
 ```
 Get-WindowsRecoveryBootEntry [-Name <String>] [-BootImagePath <FileInfo>] [-IncludeHidden] [-IncludeAll]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -33,6 +33,7 @@ Lists the recovery boot entries currently registered in BCD.
 
 ### -BootImagePath
 Path to a boot WIM image used by the BCD recovery entry.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -47,6 +48,7 @@ Accept wildcard characters: False
 
 ### -IncludeAll
 When set, returns every BCD entry instead of only those that match recovery heuristics.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -61,6 +63,7 @@ Accept wildcard characters: False
 
 ### -IncludeHidden
 When set, returns boot entries that are flagged as hidden in BCD.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -75,6 +78,7 @@ Accept wildcard characters: False
 
 ### -Name
 Friendly display name of the target boot entry.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -84,6 +88,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

@@ -1,4 +1,4 @@
-﻿---
+---
 Module Name: PSRecoveryPartition
 Module Guid: d6d6f0b8-2a4b-4a8d-9d2a-7c0f4c2b5e9a
 Download Help Link: https://github.com/GraceSolutions/PSRecoveryPartition
@@ -45,7 +45,7 @@ Creates a recovery partition on a target disk.
 Builds an idempotent recovery partition plan.
 
 ### [New-WindowsRecoveryBootEntry](New-WindowsRecoveryBootEntry.md)
-Creates a recovery boot entry idempotently.
+Creates a custom recovery boot entry from a boot image.
 
 ### [Remove-RecoveryPartition](Remove-RecoveryPartition.md)
 Removes a recovery partition.
@@ -63,7 +63,7 @@ Downloads or copies a recovery boot image to a local destination.
 Updates the metadata of an existing recovery partition.
 
 ### [Set-WindowsRecoveryEntryPoint](Set-WindowsRecoveryEntryPoint.md)
-Configures push-button reset, a boot entry, or both as recovery entry points.
+Configures Windows RE / push-button reset as a recovery entry point.
 
 ### [Set-WindowsRecoveryEnvironment](Set-WindowsRecoveryEnvironment.md)
 Registers a WindowsRE image and/or schedules a boot to RE.

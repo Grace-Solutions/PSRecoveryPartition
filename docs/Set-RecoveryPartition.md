@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -14,7 +14,8 @@ Updates the metadata of an existing recovery partition.
 
 ```
 Set-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> [-Label <String>]
- [-NoDefaultDriveLetter <Boolean>] [-IsHidden <Boolean>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-NoDefaultDriveLetter <Boolean>] [-IsHidden <Boolean>] [-PassThru] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -47,7 +48,8 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
+Number of the physical disk to operate on, as reported by Get-Disk.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -62,6 +64,7 @@ Accept wildcard characters: False
 
 ### -IsHidden
 When set, marks the partition as hidden so it is omitted from common UI surfaces.
+
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
@@ -75,7 +78,9 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-File system label assigned to the recovery volume. Defaults to RECOVERY.
+File system label assigned to the recovery volume.
+Defaults to RECOVERY.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -90,6 +95,7 @@ Accept wildcard characters: False
 
 ### -NoDefaultDriveLetter
 When set, prevents Windows from automatically assigning a drive letter to the partition.
+
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
@@ -103,7 +109,8 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-Number of the partition on the target disk (matches `Get-RecoveryPartition.PartitionNumber`; enumerated natively from the disk's partition table via `IOCTL_DISK_GET_DRIVE_LAYOUT_EX`).
+Number of the partition on the target disk, as reported by Get-Partition.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -117,7 +124,9 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+Returns the resulting object after the operation completes.
+By default the cmdlet returns nothing on success.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -142,6 +151,21 @@ Aliases: wi
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -13,8 +13,8 @@ Executes a recovery partition plan idempotently.
 ## SYNTAX
 
 ```
-Invoke-RecoveryPartitionPlan -InputObject <RecoveryPartitionPlan> [-PassThru] [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Invoke-RecoveryPartitionPlan -InputObject <RecoveryPartitionPlan> [-PassThru] [-Force]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -48,6 +48,7 @@ Accept wildcard characters: False
 
 ### -Force
 Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -61,7 +62,9 @@ Accept wildcard characters: False
 ```
 
 ### -InputObject
-RecoveryPartitionPlan produced by New-RecoveryPartitionPlan. Accepted from the pipeline.
+RecoveryPartitionPlan produced by New-RecoveryPartitionPlan.
+Accepted from the pipeline.
+
 ```yaml
 Type: RecoveryPartitionPlan
 Parameter Sets: (All)
@@ -75,7 +78,9 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+Returns the resulting object after the operation completes.
+By default the cmdlet returns nothing on success.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -100,6 +105,21 @@ Aliases: wi
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

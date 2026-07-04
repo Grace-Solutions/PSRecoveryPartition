@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default display views for PSRecoveryPartition result objects.
+
+  The diagnostic surface (ExecutionMethod, ProcessFallbackUsed, ProcessResults)
+  inherited from RecoveryResultBase remains on every object for callers that ask
+  for it by name, but is omitted from these default views so it does not clutter
+  the console. Object-retrieval timestamps have been dropped from the model
+  entirely; FileInfo-carried timestamps (e.g. BootImagePath, ImagePath) and the
+  file's own LastWriteTimeUtc are unaffected.
+-->
+<Configuration>
+  <ViewDefinitions>
+
+    <View>
+      <Name>PSRecoveryPartition.WindowsRecoveryBootEntryInfo</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.WindowsRecoveryBootEntryInfo</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>Identifier</PropertyName></ListItem>
+              <ListItem><PropertyName>Name</PropertyName></ListItem>
+              <ListItem><PropertyName>ObjectType</PropertyName></ListItem>
+              <ListItem><PropertyName>BootImagePath</PropertyName></ListItem>
+              <ListItem><PropertyName>BootTimeout</PropertyName></ListItem>
+              <ListItem><PropertyName>Visibility</PropertyName></ListItem>
+              <ListItem><PropertyName>IsDefault</PropertyName></ListItem>
+              <ListItem><PropertyName>IsRecoveryEntry</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+    <View>
+      <Name>PSRecoveryPartition.WindowsRecoveryEnvironmentInfo</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.WindowsRecoveryEnvironmentInfo</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>Enabled</PropertyName></ListItem>
+              <ListItem><PropertyName>WindowsRELocationPath</PropertyName></ListItem>
+              <ListItem><PropertyName>WindowsREImagePath</PropertyName></ListItem>
+              <ListItem><PropertyName>BootConfigurationDataIdentifier</PropertyName></ListItem>
+              <ListItem><PropertyName>RecoveryImageLocation</PropertyName></ListItem>
+              <ListItem><PropertyName>RecoveryImageIndex</PropertyName></ListItem>
+              <ListItem><PropertyName>CustomImageLocation</PropertyName></ListItem>
+              <ListItem><PropertyName>CustomImageIndex</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+    <View>
+      <Name>PSRecoveryPartition.WindowsRecoveryImageInfo</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.WindowsRecoveryImageInfo</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>ImagePath</PropertyName></ListItem>
+              <ListItem><PropertyName>ImageKind</PropertyName></ListItem>
+              <ListItem><PropertyName>SizeBytes</PropertyName></ListItem>
+              <ListItem><PropertyName>LastWriteTimeUtc</PropertyName></ListItem>
+              <ListItem><PropertyName>IsCurrentlyRegistered</PropertyName></ListItem>
+              <ListItem><PropertyName>Source</PropertyName></ListItem>
+              <ListItem><PropertyName>DiskNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>PartitionNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>VolumePath</PropertyName></ListItem>
+              <ListItem><PropertyName>Hash</PropertyName></ListItem>
+              <ListItem><PropertyName>HashAlgorithm</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+    <View>
+      <Name>PSRecoveryPartition.RecoveryPartitionInfo</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.RecoveryPartitionInfo</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>DiskNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>PartitionNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>Label</PropertyName></ListItem>
+              <ListItem><PropertyName>FileSystem</PropertyName></ListItem>
+              <ListItem><PropertyName>SizeBytes</PropertyName></ListItem>
+              <ListItem><PropertyName>Offset</PropertyName></ListItem>
+              <ListItem><PropertyName>GptType</PropertyName></ListItem>
+              <ListItem><PropertyName>MbrType</PropertyName></ListItem>
+              <ListItem><PropertyName>DriveLetter</PropertyName></ListItem>
+              <ListItem><PropertyName>VolumePath</PropertyName></ListItem>
+              <ListItem><PropertyName>DevicePath</PropertyName></ListItem>
+              <ListItem><PropertyName>GlobalRootPath</PropertyName></ListItem>
+              <ListItem><PropertyName>IsRecoveryPartition</PropertyName></ListItem>
+              <ListItem><PropertyName>IsHidden</PropertyName></ListItem>
+              <ListItem><PropertyName>NoDefaultDriveLetter</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+    <View>
+      <Name>PSRecoveryPartition.RecoveryPartitionMountResult</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.RecoveryPartitionMountResult</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>AccessPath</PropertyName></ListItem>
+              <ListItem><PropertyName>Mounted</PropertyName></ListItem>
+              <ListItem><PropertyName>Changed</PropertyName></ListItem>
+              <ListItem><PropertyName>Partition</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+    <View>
+      <Name>PSRecoveryPartition.WindowsRecoveryEntryPointResult</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.WindowsRecoveryEntryPointResult</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>EntryPointMode</PropertyName></ListItem>
+              <ListItem><PropertyName>Success</PropertyName></ListItem>
+              <ListItem><PropertyName>Changed</PropertyName></ListItem>
+              <ListItem><PropertyName>ActionsTaken</PropertyName></ListItem>
+              <ListItem><PropertyName>RecoveryEnvironment</PropertyName></ListItem>
+              <ListItem><PropertyName>BootEntry</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+    <View>
+      <Name>PSRecoveryPartition.RecoveryPartitionPlan</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.RecoveryPartitionPlan</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>DiskNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>SizingMode</PropertyName></ListItem>
+              <ListItem><PropertyName>ResolvedSizeBytes</PropertyName></ListItem>
+              <ListItem><PropertyName>Label</PropertyName></ListItem>
+              <ListItem><PropertyName>FileSystem</PropertyName></ListItem>
+              <ListItem><PropertyName>EntryPointMode</PropertyName></ListItem>
+              <ListItem><PropertyName>Changed</PropertyName></ListItem>
+              <ListItem><PropertyName>Steps</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+  </ViewDefinitions>
+</Configuration>

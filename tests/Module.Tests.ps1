@@ -356,10 +356,24 @@ Describe 'Boot entry / entry point -RecoveryPartition parameter' {
         $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionInfo'
     }
 
-    It 'Set-WindowsRecoveryEntryPoint exposes -RecoveryPartition typed as RecoveryPartitionInfo' {
-        $param = (Get-Command Set-WindowsRecoveryEntryPoint).Parameters['RecoveryPartition']
-        $param | Should -Not -BeNullOrEmpty
-        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionInfo'
+    It 'New-WindowsRecoveryBootEntry exposes ByTargetPath and defaults to ByImagePath' {
+        $cmd = Get-Command New-WindowsRecoveryBootEntry
+        $cmd.ParameterSets.Name | Should -Contain 'ByTargetPath'
+        ($cmd.ParameterSets | Where-Object IsDefault).Name | Should -Be 'ByImagePath'
+    }
+
+    It 'New-WindowsRecoveryBootEntry exposes -ExpandBootImage and -ImageIndex' {
+        $params = (Get-Command New-WindowsRecoveryBootEntry).Parameters.Keys
+        $params | Should -Contain 'ExpandBootImage'
+        $params | Should -Contain 'ImageIndex'
+        $params | Should -Contain 'BootSdiPath'
+        $params | Should -Contain 'StagingRelativePath'
+    }
+
+    It 'Set-WindowsRecoveryEntryPoint no longer creates boot entries (-RecoveryPartition removed)' {
+        # Boot-entry creation was consolidated into New-WindowsRecoveryBootEntry.
+        (Get-Command Set-WindowsRecoveryEntryPoint).Parameters.ContainsKey('RecoveryPartition') |
+            Should -BeFalse
     }
 }
 

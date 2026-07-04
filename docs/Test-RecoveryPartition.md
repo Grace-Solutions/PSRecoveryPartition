@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -13,7 +13,8 @@ Tests a recovery partition for size, layout, and contents.
 ## SYNTAX
 
 ```
-Test-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [<CommonParameters>]
+Test-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,7 +32,8 @@ Validates the recovery partition on disk 0 partition 5.
 ## PARAMETERS
 
 ### -DiskNumber
-Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
+Number of the physical disk to operate on, as reported by Get-Disk.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -45,7 +47,8 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-Number of the partition on the target disk (matches `Get-RecoveryPartition.PartitionNumber`; enumerated natively from the disk's partition table via `IOCTL_DISK_GET_DRIVE_LAYOUT_EX`).
+Number of the partition on the target disk, as reported by Get-Partition.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -55,6 +58,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

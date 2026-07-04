@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -15,13 +15,13 @@ Resizes a recovery partition to the requested size.
 ### ExplicitSize (Default)
 ```
 Resize-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> -SizeBytes <Int64> [-PassThru] [-Force]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### PercentSize
 ```
 Resize-RecoveryPartition -DiskNumber <Int32> -PartitionNumber <Int32> -SizePercent <Int32> [-PassThru] [-Force]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -54,7 +54,8 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
+Number of the physical disk to operate on, as reported by Get-Disk.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -68,7 +69,8 @@ Accept wildcard characters: False
 ```
 
 ### -PartitionNumber
-Number of the partition on the target disk (matches `Get-RecoveryPartition.PartitionNumber`; enumerated natively from the disk's partition table via `IOCTL_DISK_GET_DRIVE_LAYOUT_EX`).
+Number of the partition on the target disk, as reported by Get-Partition.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -82,7 +84,9 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+Returns the resulting object after the operation completes.
+By default the cmdlet returns nothing on success.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -96,7 +100,9 @@ Accept wildcard characters: False
 ```
 
 ### -SizeBytes
-Explicit partition size in bytes. Mutually exclusive with -SizePercent.
+Explicit partition size in bytes.
+Mutually exclusive with -SizePercent.
+
 ```yaml
 Type: Int64
 Parameter Sets: ExplicitSize
@@ -110,7 +116,9 @@ Accept wildcard characters: False
 ```
 
 ### -SizePercent
-Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.
+Partition size expressed as a percentage of the target disk size.
+Mutually exclusive with -SizeBytes.
+
 ```yaml
 Type: Int32
 Parameter Sets: PercentSize
@@ -141,6 +149,7 @@ Accept wildcard characters: False
 
 ### -Force
 Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -149,6 +158,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -37,3 +37,6 @@ docs/cab/
 
 # Local build logs
 build.log
+
+# Claude Code agent memory (local, not project content)
+memory/

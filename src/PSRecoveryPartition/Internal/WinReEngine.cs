@@ -91,6 +91,28 @@ namespace PSRecoveryPartition
 
         private static readonly Regex KeyValueLine = new Regex(@"^\s*(?<k>[^:]+?)\s*:\s*(?<v>.*)$", RegexOptions.Compiled);
 
+        /// <summary>
+        /// Builds a <see cref="DirectoryInfo"/> for a normal filesystem path, or
+        /// returns null for the kernel device paths reagentc emits. Managed
+        /// DirectoryInfo throws for <c>\\?\GlobalRoot...</c> ("internal to the
+        /// kernel") and for any path containing '?' ("Illegal characters in
+        /// path"), so those are surfaced only as the raw string.
+        /// </summary>
+        private static DirectoryInfo TryDirectory(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) { return null; }
+            if (path.IndexOf('?') >= 0 ||
+                path.StartsWith(@"\\?\", StringComparison.Ordinal) ||
+                path.IndexOf("GlobalRoot", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return null;
+            }
+            try { return new DirectoryInfo(path); }
+            catch (ArgumentException) { return null; }
+            catch (NotSupportedException) { return null; }
+            catch (PathTooLongException) { return null; }
+        }
+
         internal static WindowsRecoveryEnvironmentInfo Parse(string reagentcInfoOutput)
         {
             var info = new WindowsRecoveryEnvironmentInfo
@@ -112,7 +134,8 @@ namespace PSRecoveryPartition
                 }
                 else if (key.IndexOf("Windows RE location", StringComparison.OrdinalIgnoreCase) >= 0 && value.Length > 0)
                 {
-                    info.WindowsRELocation = new DirectoryInfo(value);
+                    info.WindowsRELocationPath = value;
+                    info.WindowsRELocation = TryDirectory(value);
                 }
                 else if (key.IndexOf("Boot Configuration Data", StringComparison.OrdinalIgnoreCase) >= 0)
                 {

@@ -356,8 +356,9 @@ public sealed class WindowsRecoveryBootEntryInfo
     public RecoveryBootEntryVisibility Visibility { get; set; }
     public bool IsDefault { get; set; }
     public bool IsRecoveryEntry { get; set; }
-    public bool ProcessFallbackUsed { get; set; }
-    public DateTimeOffset DiscoveredAtUtc { get; set; }
+    // ExecutionMethod / ProcessFallbackUsed / ProcessResults are inherited from
+    // RecoveryResultBase and remain queryable, but are omitted from the default
+    // format view. Retrieval timestamps are not surfaced.
 }
 ```
 

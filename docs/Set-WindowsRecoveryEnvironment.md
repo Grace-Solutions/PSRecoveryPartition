@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -14,7 +14,7 @@ Registers a WindowsRE image and/or schedules a boot to RE.
 
 ```
 Set-WindowsRecoveryEnvironment [-WindowsREImagePath <FileInfo>] [-Target <DirectoryInfo>] [-BootToRE]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -33,6 +33,7 @@ Registers the supplied WindowsRE image and returns the updated configuration.
 
 ### -BootToRE
 When set, schedules the system to boot into the Windows Recovery Environment on the next restart.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -61,7 +62,9 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+Returns the resulting object after the operation completes.
+By default the cmdlet returns nothing on success.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -76,6 +79,7 @@ Accept wildcard characters: False
 
 ### -Target
 Reagentc target identifier used when registering or scheduling a WindowsRE boot.
+
 ```yaml
 Type: DirectoryInfo
 Parameter Sets: (All)
@@ -106,6 +110,7 @@ Accept wildcard characters: False
 
 ### -WindowsREImagePath
 Path to a WindowsRE WIM image that should be staged into the recovery partition.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -115,6 +120,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

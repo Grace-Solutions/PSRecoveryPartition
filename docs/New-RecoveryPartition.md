@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -15,19 +15,22 @@ Creates a recovery partition on a target disk.
 ### DefaultSize (Default)
 ```
 New-RecoveryPartition -DiskNumber <Int32> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### ExplicitSize
 ```
 New-RecoveryPartition -DiskNumber <Int32> -SizeBytes <Int64> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### PercentSize
 ```
 New-RecoveryPartition -DiskNumber <Int32> -SizePercent <Int32> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -77,7 +80,8 @@ Accept wildcard characters: False
 ```
 
 ### -DiskNumber
-Number of the physical disk to operate on (matches `Get-RecoveryPartition.DiskNumber` and the `\\.\PhysicalDriveN` device path; enumerated natively by the module without consulting the Storage PowerShell module).
+Number of the physical disk to operate on, as reported by Get-Disk.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -91,7 +95,9 @@ Accept wildcard characters: False
 ```
 
 ### -FileSystem
-File system used to format the recovery partition. Defaults to NTFS.
+File system used to format the recovery partition.
+Defaults to NTFS.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -107,6 +113,7 @@ Accept wildcard characters: False
 
 ### -Force
 Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -120,7 +127,9 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-File system label assigned to the recovery volume. Defaults to RECOVERY.
+File system label assigned to the recovery volume.
+Defaults to RECOVERY.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -134,7 +143,9 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+Returns the resulting object after the operation completes.
+By default the cmdlet returns nothing on success.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -148,7 +159,9 @@ Accept wildcard characters: False
 ```
 
 ### -SizeBytes
-Explicit partition size in bytes. Mutually exclusive with -SizePercent.
+Explicit partition size in bytes.
+Mutually exclusive with -SizePercent.
+
 ```yaml
 Type: Int64
 Parameter Sets: ExplicitSize
@@ -162,7 +175,9 @@ Accept wildcard characters: False
 ```
 
 ### -SizePercent
-Partition size expressed as a percentage of the target disk size. Mutually exclusive with -SizeBytes.
+Partition size expressed as a percentage of the target disk size.
+Mutually exclusive with -SizeBytes.
+
 ```yaml
 Type: Int32
 Parameter Sets: PercentSize
@@ -193,10 +208,26 @@ Accept wildcard characters: False
 
 ### -WindowsREImagePath
 Path to a WindowsRE WIM image that should be staged into the recovery partition.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

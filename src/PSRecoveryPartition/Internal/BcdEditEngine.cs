@@ -22,25 +22,62 @@ namespace PSRecoveryPartition
         {
             var args = new List<string> { "/enum", "all" };
             var result = Run(args, "enumerate boot entries");
-            var parsed = ParseEnumerate(result.StandardOutput ?? string.Empty);
+            var parsed = DeduplicateByIdentifier(ParseEnumerate(result.StandardOutput ?? string.Empty));
             foreach (var e in parsed)
             {
                 e.ExecutionMethod = RecoveryExecutionMethod.ProcessFallback;
                 e.ProcessFallbackUsed = true;
                 e.ProcessResults.Add(result);
-                e.DiscoveredAtUtc = DateTimeOffset.UtcNow;
             }
             return includeHidden
                 ? parsed
                 : parsed.Where(p => p.Visibility == RecoveryBootEntryVisibility.Visible).ToList();
         }
 
-        public WindowsRecoveryBootEntryInfo Create(string name, FileInfo bootImagePath, TimeSpan timeout, RecoveryBootEntryVisibility visibility, bool setDefault, bool addLast)
+        /// <summary>
+        /// Creates a custom recovery boot entry. In <see cref="RecoveryBootMode.Ramdisk"/>
+        /// mode a dedicated device-options object is created that points at the
+        /// staged boot.sdi, and the loader boots the WIM as a ramdisk. In
+        /// <see cref="RecoveryBootMode.Flat"/> mode the loader boots an
+        /// already-expanded image in place on the partition (no ramdisk, no sdi).
+        /// The caller supplies a transient drive-letter token that stays valid for
+        /// the duration of these calls; bcdedit rewrites it to a persistent device
+        /// id at parse time.
+        /// </summary>
+        public WindowsRecoveryBootEntryInfo Create(BcdBootEntryRequest req)
         {
-            if (bootImagePath == null) { throw new ArgumentNullException("bootImagePath"); }
+            if (req == null) { throw new ArgumentNullException("req"); }
+            if (string.IsNullOrEmpty(req.VolumeToken)) { throw new ArgumentException("A volume token (e.g. \"X:\") is required.", "req"); }
 
-            var createArgs = new List<string> { "/create", "/d", name ?? "Recovery", "/application", "OSLOADER" };
-            var create = Run(createArgs, "create boot entry");
+            var name = string.IsNullOrEmpty(req.Name) ? "Recovery" : req.Name;
+            var token = req.VolumeToken.TrimEnd('\\');
+            var loaderPath = string.IsNullOrEmpty(req.LoaderPath) ? @"\windows\system32\boot\winload.efi" : req.LoaderPath;
+
+            string deviceElement;
+            if (req.Mode == RecoveryBootMode.Ramdisk)
+            {
+                var imageRel = EnsureLeadingBackslash(req.ImageRelativePath);
+                var sdiRel = EnsureLeadingBackslash(req.SdiRelativePath);
+
+                // A dedicated device-options object so the entry points at *our*
+                // staged boot.sdi rather than the global {ramdiskoptions}.
+                var createSdi = Run(new List<string> { "/create", "/d", name + " ramdisk options", "/device" }, "create ramdisk device options");
+                var sdiId = ExtractIdentifier(createSdi.StandardOutput);
+                if (string.IsNullOrEmpty(sdiId))
+                {
+                    throw new InvalidOperationException(
+                        "bcdedit.exe did not return a device-options identifier. Output: " + (createSdi.StandardOutput ?? "<empty>"));
+                }
+                Run(new List<string> { "/set", sdiId, "ramdisksdidevice", "partition=" + token }, "set ramdisk sdi device");
+                Run(new List<string> { "/set", sdiId, "ramdisksdipath", sdiRel }, "set ramdisk sdi path");
+                deviceElement = "ramdisk=[" + token + "]" + imageRel + "," + sdiId;
+            }
+            else
+            {
+                deviceElement = "partition=" + token;
+            }
+
+            var create = Run(new List<string> { "/create", "/d", name, "/application", "osloader" }, "create boot entry");
             var identifier = ExtractIdentifier(create.StandardOutput);
             if (string.IsNullOrEmpty(identifier))
             {
@@ -48,32 +85,26 @@ namespace PSRecoveryPartition
                     "bcdedit.exe did not return a new boot entry identifier. Output: " + (create.StandardOutput ?? "<empty>"));
             }
 
-            var volumeRoot = bootImagePath.Directory != null ? bootImagePath.Directory.Root.FullName.TrimEnd('\\') : "C:";
-            var relativeImagePath = bootImagePath.FullName.Substring(volumeRoot.Length).Replace('/', '\\');
-            if (!relativeImagePath.StartsWith("\\")) { relativeImagePath = "\\" + relativeImagePath; }
-
-            Run(new List<string> { "/set", identifier, "device", "ramdisk=[" + volumeRoot + "]" + relativeImagePath + ",{ramdiskoptions}" }, "configure boot device");
-            Run(new List<string> { "/set", identifier, "osdevice", "ramdisk=[" + volumeRoot + "]" + relativeImagePath + ",{ramdiskoptions}" }, "configure boot osdevice");
-            Run(new List<string> { "/set", identifier, "systemroot", "\\Windows" }, "configure boot systemroot");
+            Run(new List<string> { "/set", identifier, "device", deviceElement }, "configure boot device");
+            Run(new List<string> { "/set", identifier, "osdevice", deviceElement }, "configure boot osdevice");
+            Run(new List<string> { "/set", identifier, "path", loaderPath }, "configure boot loader path");
+            Run(new List<string> { "/set", identifier, "systemroot", req.SystemRoot ?? @"\Windows" }, "configure boot systemroot");
+            if (req.Mode == RecoveryBootMode.Flat)
+            {
+                Run(new List<string> { "/set", identifier, "detecthal", "yes" }, "configure hardware abstraction layer detection");
+            }
             Run(new List<string> { "/set", identifier, "winpe", "yes" }, "mark boot entry as Windows PE");
 
-            if (visibility == RecoveryBootEntryVisibility.Hidden)
+            if (req.Visibility == RecoveryBootEntryVisibility.Hidden)
             {
                 Run(new List<string> { "/set", identifier, "displaymessage", "Recovery" }, "configure boot displaymessage");
             }
-            if (addLast)
+            Run(new List<string> { "/displayorder", identifier, req.AddLast ? "/addlast" : "/addfirst" }, "update displayorder");
+            if (req.Timeout > TimeSpan.Zero)
             {
-                Run(new List<string> { "/displayorder", identifier, "/addlast" }, "append boot entry to displayorder");
+                Run(new List<string> { "/timeout", ((int)req.Timeout.TotalSeconds).ToString() }, "set boot manager timeout");
             }
-            else
-            {
-                Run(new List<string> { "/displayorder", identifier, "/addfirst" }, "prepend boot entry to displayorder");
-            }
-            if (timeout > TimeSpan.Zero)
-            {
-                Run(new List<string> { "/timeout", ((int)timeout.TotalSeconds).ToString() }, "set boot manager timeout");
-            }
-            if (setDefault)
+            if (req.SetDefault)
             {
                 Run(new List<string> { "/default", identifier }, "set boot entry as default");
             }
@@ -81,16 +112,23 @@ namespace PSRecoveryPartition
             return new WindowsRecoveryBootEntryInfo
             {
                 Identifier = identifier,
-                Name = name ?? "Recovery",
-                BootImagePath = bootImagePath,
-                BootTimeout = timeout,
-                Visibility = visibility,
-                IsDefault = setDefault,
+                Name = name,
+                ObjectType = "Windows Boot Loader",
+                BootImagePath = req.StagedImage,
+                BootTimeout = req.Timeout,
+                Visibility = req.Visibility,
+                IsDefault = req.SetDefault,
                 IsRecoveryEntry = true,
                 ExecutionMethod = RecoveryExecutionMethod.ProcessFallback,
-                ProcessFallbackUsed = true,
-                DiscoveredAtUtc = DateTimeOffset.UtcNow
+                ProcessFallbackUsed = true
             };
+        }
+
+        private static string EnsureLeadingBackslash(string relative)
+        {
+            var r = (relative ?? string.Empty).Replace('/', '\\');
+            if (r.Length == 0) { return "\\"; }
+            return r.StartsWith("\\", StringComparison.Ordinal) ? r : "\\" + r;
         }
 
         public void Remove(string identifier)
@@ -132,6 +170,38 @@ namespace PSRecoveryPartition
             return m.Success ? m.Value : null;
         }
 
+        /// <summary>
+        /// Collapses entries that share a boot identifier. <c>bcdedit /enum all</c>
+        /// can list the same BCD object under more than one group, which otherwise
+        /// yields visually identical rows. The first occurrence wins; entries with
+        /// no identifier are always kept.
+        /// </summary>
+        internal static IList<WindowsRecoveryBootEntryInfo> DeduplicateByIdentifier(IList<WindowsRecoveryBootEntryInfo> entries)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var result = new List<WindowsRecoveryBootEntryInfo>(entries.Count);
+            foreach (var e in entries)
+            {
+                if (string.IsNullOrEmpty(e.Identifier) || seen.Add(e.Identifier))
+                {
+                    result.Add(e);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// True when a BCD object's group is "Windows Boot Loader" -- the only
+        /// group that represents an actual bootable OS/WinPE entry. Supporting
+        /// objects (Device options, Firmware Application, Resume from Hibernate,
+        /// settings groups) are excluded from recovery-entry classification.
+        /// </summary>
+        private static bool IsBootLoader(string objectType)
+        {
+            return objectType != null &&
+                objectType.Trim().Equals("Windows Boot Loader", StringComparison.OrdinalIgnoreCase);
+        }
+
         internal static IList<WindowsRecoveryBootEntryInfo> ParseEnumerate(string output)
         {
             var entries = new List<WindowsRecoveryBootEntryInfo>();
@@ -149,6 +219,7 @@ namespace PSRecoveryPartition
                     var header = i > 0 ? lines[i - 1].Trim() : string.Empty;
                     current = new WindowsRecoveryBootEntryInfo
                     {
+                        ObjectType = header,
                         Name = header,
                         Visibility = RecoveryBootEntryVisibility.Visible
                     };
@@ -163,7 +234,21 @@ namespace PSRecoveryPartition
                 {
                     var v = line.Substring("description".Length).Trim();
                     if (!string.IsNullOrEmpty(v)) { current.Name = v; }
-                    if (v.IndexOf("Recovery", StringComparison.OrdinalIgnoreCase) >= 0) { current.IsRecoveryEntry = true; }
+                    // Only a bootable loader object counts as a recovery entry. A
+                    // "Device options" object can also carry a "Windows Recovery"
+                    // description but is just the ramdisk SDI support object.
+                    if (IsBootLoader(current.ObjectType) && v.IndexOf("Recovery", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        current.IsRecoveryEntry = true;
+                    }
+                }
+                else if (line.StartsWith("winpe", StringComparison.OrdinalIgnoreCase))
+                {
+                    var v = line.Substring("winpe".Length).Trim();
+                    if (IsBootLoader(current.ObjectType) && v.IndexOf("Yes", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        current.IsRecoveryEntry = true;
+                    }
                 }
                 else if (line.StartsWith("default", StringComparison.OrdinalIgnoreCase))
                 {

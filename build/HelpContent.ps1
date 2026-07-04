@@ -13,6 +13,12 @@
         BootTimeout             = 'Boot menu timeout applied when a new recovery boot entry is configured.'
         EntryPointMode          = 'Selects which recovery entry points to configure: PushButton, BootEntry, or Both.'
         PushButtonAction        = 'Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).'
+        RecoveryPartition       = 'Recovery partition (RecoveryPartitionInfo, typically piped from Get-RecoveryPartition) to stage the boot image onto and target with the BCD entry. Files are written through the partition''s \\?\GLOBALROOT path without assigning a drive letter or mounting the volume.'
+        TargetPath              = 'An already-mounted directory to stage the boot image into. Use this when the destination volume has a drive letter or mount point.'
+        StagingRelativePath     = 'Volume-relative folder the image (and boot.sdi) are staged into. Defaults to \Recovery\WindowsRE; pass an empty string to stage at the volume root.'
+        ExpandBootImage         = 'Expands the boot image flat onto the destination (non-RAM / flat boot) and wires the entry to boot it in place, instead of staging the WIM for ramdisk boot. Requires a destination (-RecoveryPartition or -TargetPath).'
+        ImageIndex              = 'One-based image index inside the WIM to expand when -ExpandBootImage is used. Defaults to 1.'
+        BootSdiPath             = 'Explicit boot.sdi to stage for ramdisk boot. When omitted it is resolved from the live OS and then extracted from the boot image.'
         AccessPath              = 'Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.'
         NoDefaultDriveLetter    = 'When set, prevents Windows from automatically assigning a drive letter to the partition.'
         IsHidden                = 'When set, marks the partition as hidden so it is omitted from common UI surfaces.'
@@ -193,10 +199,10 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)
         OneLinerDescription = 'Lists the recovery boot entries currently registered in BCD.'
     }
     'New-WindowsRecoveryBootEntry' = @{
-        Synopsis    = 'Creates a recovery boot entry idempotently.'
-        Description = 'Creates a BCD boot entry that boots from the supplied WIM image. Existing entries with the same name are not duplicated.'
-        OneLiner    = "New-WindowsRecoveryBootEntry -BootImagePath 'C:\RecoveryImages\boot.wim' -Name 'Recovery' -PassThru"
-        OneLinerDescription = 'Creates a recovery boot entry that boots boot.wim.'
+        Synopsis    = 'Creates a custom recovery boot entry from a boot image.'
+        Description = 'Stages a boot image onto a destination and creates a matching BCD boot entry. The destination is a recovery partition (written through its \\?\GLOBALROOT path with no mount), an already-mounted directory (-TargetPath), or the image''s existing location (the default ByImagePath set). By default the WIM is staged as-is and booted as a ramdisk, and a boot.sdi is resolved automatically (or supplied with -BootSdiPath); with -ExpandBootImage the image is expanded flat onto the destination for non-RAM boot and the entry is wired to boot it in place. The staging sub-path defaults to \Recovery\WindowsRE but is fully overridable via -StagingRelativePath. Existing entries with the same name are not duplicated.'
+        OneLiner    = "Get-RecoveryPartition | New-WindowsRecoveryBootEntry -BootImagePath 'C:\RecoveryImages\winre.wim' -PassThru"
+        OneLinerDescription = 'Stages winre.wim onto the recovery partition and creates a ramdisk recovery boot entry.'
     }
     'Remove-WindowsRecoveryBootEntry' = @{
         Synopsis    = 'Removes a recovery boot entry idempotently.'
@@ -205,25 +211,21 @@ Write-Output -InputObject ($NewRecoveryPartitionPlanResult)
         OneLinerDescription = 'Removes the recovery boot entry with the friendly name "Recovery".'
     }
     'Set-WindowsRecoveryEntryPoint' = @{
-        Synopsis    = 'Configures push-button reset, a boot entry, or both as recovery entry points.'
-        Description = 'Combines WindowsRE registration and BCD boot entry creation behind a single high-level surface. EntryPointMode selects which paths are configured.'
-        OneLiner    = "Set-WindowsRecoveryEntryPoint -EntryPointMode Both -BootImagePath 'C:\RecoveryImages\boot.wim' -WindowsREImagePath 'C:\RecoveryImages\winre.wim' -BootTimeout ([timespan]'00:00:10') -PassThru"
-        OneLinerDescription = 'Configures both push-button reset and a recovery boot entry in a single call.'
+        Synopsis    = 'Configures Windows RE / push-button reset as a recovery entry point.'
+        Description = 'Optionally registers a WindowsRE image, enables Windows RE, and schedules a boot into Windows RE on the next restart. Custom BCD boot entries are created by New-WindowsRecoveryBootEntry; this cmdlet no longer creates them, so boot-entry creation has a single, unambiguous path. -EntryPointMode BootEntry or Both is rejected and redirected to New-WindowsRecoveryBootEntry.'
+        OneLiner    = 'Set-WindowsRecoveryEntryPoint -EntryPointMode PushButtonReset -PushButtonAction BootToRE -PassThru'
+        OneLinerDescription = 'Enables Windows RE and schedules a boot into it on the next restart.'
         Splat       = @'
 $SetWindowsRecoveryEntryPointParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
-    $SetWindowsRecoveryEntryPointParameters.EntryPointMode = 'Both'
-    $SetWindowsRecoveryEntryPointParameters.BootImagePath = 'C:\RecoveryImages\boot.wim'
+    $SetWindowsRecoveryEntryPointParameters.EntryPointMode = 'PushButtonReset'
     $SetWindowsRecoveryEntryPointParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
     $SetWindowsRecoveryEntryPointParameters.PushButtonAction = 'BootToRE'
-    $SetWindowsRecoveryEntryPointParameters.Name = 'Grace Solutions Recovery'
-    $SetWindowsRecoveryEntryPointParameters.BootTimeout = [Timespan]::FromSeconds(10)
-    $SetWindowsRecoveryEntryPointParameters.BootEntryVisibility = 'Visible'
     $SetWindowsRecoveryEntryPointParameters.PassThru = $True
     $SetWindowsRecoveryEntryPointParameters.Verbose = $True
 
 $SetWindowsRecoveryEntryPointResult = Set-WindowsRecoveryEntryPoint @SetWindowsRecoveryEntryPointParameters
 Write-Output -InputObject ($SetWindowsRecoveryEntryPointResult)
 '@
-        SplatDescription = 'Splatted OrderedDictionary example for the combined entry-point configuration.'
+        SplatDescription = 'Splatted OrderedDictionary example for push-button / Windows RE configuration.'
     }
 }

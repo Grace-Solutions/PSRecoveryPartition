@@ -1,4 +1,4 @@
-﻿---
+---
 external help file: PSRecoveryPartition.dll-Help.xml
 Module Name: PSRecoveryPartition
 online version:
@@ -14,14 +14,15 @@ Downloads or copies a recovery boot image to a local destination.
 
 ### ByUri (Default)
 ```
-Save-RecoveryBootImage [-SourceUri] <Uri> -DestinationPath <FileInfo> [-ImageKind <String>] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Save-RecoveryBootImage [-SourceUri] <Uri> -DestinationPath <FileInfo> [-ImageKind <String>]
+ [-Headers <IDictionary>] [-Hidden] [-System] [-Force] [-PassThru] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Save-RecoveryBootImage [-SourcePath] <FileInfo> -DestinationPath <FileInfo> [-ImageKind <String>] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Save-RecoveryBootImage [-SourcePath] <FileInfo> -DestinationPath <FileInfo> [-ImageKind <String>] [-Hidden]
+ [-System] [-Force] [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -55,6 +56,7 @@ Accept wildcard characters: False
 
 ### -Force
 Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -69,6 +71,7 @@ Accept wildcard characters: False
 
 ### -ImageKind
 Image classification (WindowsRE, WindowsPE, BootWim) used when tagging the result.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -82,7 +85,9 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.
+Returns the resulting object after the operation completes.
+By default the cmdlet returns nothing on success.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -97,6 +102,7 @@ Accept wildcard characters: False
 
 ### -SourcePath
 Source file path on a local or UNC volume used as the input to the copy.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: ByPath
@@ -111,6 +117,7 @@ Accept wildcard characters: False
 
 ### -SourceUri
 HTTPS URI from which the recovery image should be downloaded.
+
 ```yaml
 Type: Uri
 Parameter Sets: ByUri
@@ -140,13 +147,75 @@ Accept wildcard characters: False
 ```
 
 ### -DestinationPath
-Target file or directory path. When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.
+Target file or directory path.
+When it names an existing directory or ends with a path separator the source leaf name is appended; otherwise the value is treated as the full destination file path and the source is renamed on copy.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Headers
+{{ Fill Headers Description }}
+
+```yaml
+Type: IDictionary
+Parameter Sets: ByUri
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Hidden
+{{ Fill Hidden Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -System
+{{ Fill System Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

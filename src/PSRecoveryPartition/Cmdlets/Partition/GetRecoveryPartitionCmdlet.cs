@@ -15,13 +15,20 @@ namespace PSRecoveryPartition.Cmdlets
         [Parameter(ValueFromPipelineByPropertyName = true)]
         public int? PartitionNumber { get; set; }
 
+        // Scopes discovery to the current OS disk (default), all disks, or the
+        // secondary disk(s). Prevents recovery/BCD operations from fanning out
+        // across every disk on dual-disk or dual-boot systems. Ignored when an
+        // explicit -DiskNumber is supplied.
+        [Parameter]
+        public RecoveryPartitionDetectionMode DetectionMode { get; set; } = RecoveryPartitionDetectionMode.CurrentOSDisk;
+
         [Parameter]
         public SwitchParameter IncludeNonRecovery { get; set; }
 
         protected override void ProcessRecord()
         {
             var engine = new RecoveryPartitionEngine(this);
-            var partitions = engine.Get(DiskNumber, recoveryOnly: !IncludeNonRecovery.IsPresent);
+            var partitions = engine.Get(DiskNumber, recoveryOnly: !IncludeNonRecovery.IsPresent, detectionMode: DetectionMode);
             foreach (var p in partitions)
             {
                 if (PartitionNumber.HasValue && p.PartitionNumber != PartitionNumber.Value) { continue; }

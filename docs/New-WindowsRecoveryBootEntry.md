@@ -204,7 +204,9 @@ Accept wildcard characters: False
 ```
 
 ### -BootSdiPath
-Explicit boot.sdi to stage for ramdisk boot. When omitted it is resolved from the live OS and then extracted from the boot image.
+Explicit boot.sdi to stage for ramdisk boot.
+When omitted it is resolved from the live OS and then extracted from the boot image.
+
 ```yaml
 Type: FileInfo
 Parameter Sets: (All)
@@ -218,7 +220,9 @@ Accept wildcard characters: False
 ```
 
 ### -ExpandBootImage
-Expands the boot image flat onto the destination (non-RAM / flat boot) and wires the entry to boot it in place, instead of staging the WIM for ramdisk boot. Requires a destination (-RecoveryPartition or -TargetPath).
+Expands the boot image flat onto the destination (non-RAM / flat boot) and wires the entry to boot it in place, instead of staging the WIM for ramdisk boot.
+Requires a destination (-RecoveryPartition or -TargetPath).
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -226,13 +230,15 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -ImageIndex
-One-based image index inside the WIM to expand when -ExpandBootImage is used. Defaults to 1.
+One-based image index inside the WIM to expand when -ExpandBootImage is used.
+Defaults to 1.
+
 ```yaml
 Type: Int32
 Parameter Sets: (All)
@@ -261,7 +267,9 @@ Accept wildcard characters: False
 ```
 
 ### -RecoveryPartition
-Recovery partition (RecoveryPartitionInfo, typically piped from Get-RecoveryPartition) to stage the boot image onto and target with the BCD entry. Files are written through the partition's \\?\GLOBALROOT path without assigning a drive letter or mounting the volume.
+Recovery partition (RecoveryPartitionInfo, typically piped from Get-RecoveryPartition) to stage the boot image onto and target with the BCD entry.
+Files are written through the partition's \?\GLOBALROOT path without assigning a drive letter or mounting the volume.
+
 ```yaml
 Type: RecoveryPartitionInfo
 Parameter Sets: ByRecoveryPartition
@@ -275,7 +283,9 @@ Accept wildcard characters: False
 ```
 
 ### -StagingRelativePath
-Volume-relative folder the image (and boot.sdi) are staged into. Defaults to \Recovery\WindowsRE; pass an empty string to stage at the volume root.
+Volume-relative folder the image (and boot.sdi) are staged into.
+Defaults to \Recovery\WindowsRE; pass an empty string to stage at the volume root.
+
 ```yaml
 Type: String
 Parameter Sets: (All)
@@ -289,7 +299,9 @@ Accept wildcard characters: False
 ```
 
 ### -TargetPath
-An already-mounted directory to stage the boot image into. Use this when the destination volume has a drive letter or mount point.
+An already-mounted directory to stage the boot image into.
+Use this when the destination volume has a drive letter or mount point.
+
 ```yaml
 Type: DirectoryInfo
 Parameter Sets: ByTargetPath

@@ -23,6 +23,7 @@
         NoDefaultDriveLetter    = 'When set, prevents Windows from automatically assigning a drive letter to the partition.'
         IsHidden                = 'When set, marks the partition as hidden so it is omitted from common UI surfaces.'
         IncludeNonRecovery      = 'When set, the discovery surface also returns partitions that do not look like recovery partitions; useful for diagnostics.'
+        DetectionMode           = 'Scopes discovery to a set of disks: CurrentOSDisk (default; the disk hosting the running OS), AllDisks, or SecondaryDisk (every disk except the OS disk). Prevents recovery/BCD operations from fanning out across every disk on dual-disk or dual-boot systems. Ignored when -DiskNumber is supplied.'
         IncludeAll              = 'When set, returns every BCD entry instead of only those that match recovery heuristics.'
         IncludeHidden           = 'When set, returns boot entries that are flagged as hidden in BCD.'
         Path                    = 'File-system path to search for WIM images.'

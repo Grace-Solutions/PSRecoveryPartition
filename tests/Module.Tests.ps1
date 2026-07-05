@@ -94,6 +94,22 @@ Describe 'BootEntryVisibility enum' {
     }
 }
 
+Describe 'Get-RecoveryPartition -DetectionMode' {
+    It 'exposes -DetectionMode typed as RecoveryPartitionDetectionMode' {
+        $param = (Get-Command Get-RecoveryPartition).Parameters['DetectionMode']
+        $param | Should -Not -BeNullOrEmpty
+        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionDetectionMode'
+    }
+
+    It 'defines CurrentOSDisk, AllDisks and SecondaryDisk with CurrentOSDisk as the default (0)' {
+        $t = (Get-Command Get-RecoveryPartition).Parameters['DetectionMode'].ParameterType
+        foreach ($name in @('CurrentOSDisk','AllDisks','SecondaryDisk')) {
+            [enum]::GetNames($t) | Should -Contain $name
+        }
+        [int][enum]::Parse($t, 'CurrentOSDisk') | Should -Be 0
+    }
+}
+
 Describe 'Recovery partition defaults and discovery' {
     It 'defaults the recovery partition label to RECOVERY' {
         $asm = [AppDomain]::CurrentDomain.GetAssemblies() |

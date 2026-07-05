@@ -13,8 +13,9 @@ Discovers recovery partitions on local disks.
 ## SYNTAX
 
 ```
-Get-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>] [-IncludeNonRecovery]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-RecoveryPartition [-DiskNumber <Int32>] [-PartitionNumber <Int32>]
+ [-DetectionMode <RecoveryPartitionDetectionMode>] [-IncludeNonRecovery] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -98,6 +99,20 @@ Accept wildcard characters: False
 Type: ActionPreference
 Parameter Sets: (All)
 Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DetectionMode
+Scopes discovery to a set of disks: CurrentOSDisk (default; the disk hosting the running OS), AllDisks, or SecondaryDisk (every disk except the OS disk). Prevents recovery/BCD operations from fanning out across every disk on dual-disk or dual-boot systems. Ignored when -DiskNumber is supplied.
+```yaml
+Type: RecoveryPartitionDetectionMode
+Parameter Sets: (All)
+Aliases:
 
 Required: False
 Position: Named

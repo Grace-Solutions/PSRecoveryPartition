@@ -17,7 +17,90 @@ Import-Module .\Module\PSRecoveryPartition\PSRecoveryPartition.psd1
 
 ## Quickstart
 
-The plan-based workflow is the recommended entry point. Build a plan, review it, and apply it idempotently:
+Every mutating cmdlet supports `-Verbose` for step-by-step logging and `-WhatIf`. The examples below use a splatted `OrderedDictionary` so each parameter is explicit and easy to diff.
+
+### Create a recovery partition
+
+```powershell
+$NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewRecoveryPartitionParameters.DiskNumber         = 0
+    $NewRecoveryPartitionParameters.SizePercent        = 2
+    $NewRecoveryPartitionParameters.Label              = 'RECOVERY'
+    $NewRecoveryPartitionParameters.FileSystem         = 'NTFS'
+    $NewRecoveryPartitionParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
+    $NewRecoveryPartitionParameters.PassThru           = $True
+    $NewRecoveryPartitionParameters.Verbose            = $True
+
+$NewRecoveryPartitionResult = New-RecoveryPartition @NewRecoveryPartitionParameters
+Write-Output -InputObject ($NewRecoveryPartitionResult)
+```
+
+### Download a recovery image (conditional, ETag/Last-Modified aware)
+
+`Save-RecoveryBootImage` issues a conditional `If-Modified-Since` request derived from the local file's timestamp: an unchanged remote image returns HTTP 304 and is **not** re-downloaded, and each successful download stamps the file with the server's `Last-Modified` so the next run can skip it. Set `-Force $True` to download unconditionally.
+
+```powershell
+$SaveRecoveryBootImageParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $SaveRecoveryBootImageParameters.SourceUri       = 'https://images.example.com/winre/winre.wim'
+    $SaveRecoveryBootImageParameters.DestinationPath = 'C:\RecoveryImages\'
+    $SaveRecoveryBootImageParameters.Headers         = @{ Authorization = 'Bearer <token>' }
+    $SaveRecoveryBootImageParameters.ImageKind       = 'WindowsRE'
+    $SaveRecoveryBootImageParameters.Force           = $False
+    $SaveRecoveryBootImageParameters.PassThru        = $True
+    $SaveRecoveryBootImageParameters.Verbose         = $True
+
+$SaveRecoveryBootImageResult = Save-RecoveryBootImage @SaveRecoveryBootImageParameters
+Write-Output -InputObject ($SaveRecoveryBootImageResult)
+```
+
+### Create a custom recovery boot entry
+
+Gather inputs as single-liners, then feed the results into the splat. `Get-RecoveryPartition` defaults to `-DetectionMode CurrentOSDisk`, so it returns the recovery partition on the running OS disk rather than fanning out across every disk on a dual-disk or dual-boot machine.
+
+```powershell
+$OSRecoveryPartition = Get-RecoveryPartition -DetectionMode CurrentOSDisk -Verbose
+$BootImage           = Save-RecoveryBootImage -SourceUri 'https://images.example.com/winpe/boot.wim' -DestinationPath 'C:\RecoveryImages\' -PassThru -Verbose
+```
+
+**Variant A — WIM (ramdisk) boot, staged at the volume root of a mounted volume (`Volume:\`).** The image is staged as-is and RAM-booted; `boot.sdi` is resolved automatically.
+
+```powershell
+$NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewWindowsRecoveryBootEntryParameters.BootImagePath       = $BootImage.ImagePath
+    $NewWindowsRecoveryBootEntryParameters.TargetPath          = 'R:\'
+    $NewWindowsRecoveryBootEntryParameters.StagingRelativePath = ''
+    $NewWindowsRecoveryBootEntryParameters.Name                = 'Grace Solutions WinPE'
+    $NewWindowsRecoveryBootEntryParameters.BootTimeout         = [TimeSpan]::FromSeconds(10)
+    $NewWindowsRecoveryBootEntryParameters.BootEntryVisibility = 'Visible'
+    $NewWindowsRecoveryBootEntryParameters.PassThru            = $True
+    $NewWindowsRecoveryBootEntryParameters.Verbose             = $True
+
+$NewWindowsRecoveryBootEntryResult = New-WindowsRecoveryBootEntry @NewWindowsRecoveryBootEntryParameters
+Write-Output -InputObject ($NewWindowsRecoveryBootEntryResult)
+```
+
+**Variant B — expanded (flat / non-RAM) boot into `\Recovery` on the recovery partition, targeted by its `\\?\Volume{GUID}\` / `\\?\GLOBALROOT` device path (no drive letter, no mount).** `-ExpandBootImage` applies image index 1 flat onto the partition.
+
+```powershell
+$NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewWindowsRecoveryBootEntryParameters.BootImagePath       = $BootImage.ImagePath
+    $NewWindowsRecoveryBootEntryParameters.RecoveryPartition   = $OSRecoveryPartition
+    $NewWindowsRecoveryBootEntryParameters.ExpandBootImage     = $True
+    $NewWindowsRecoveryBootEntryParameters.ImageIndex          = 1
+    $NewWindowsRecoveryBootEntryParameters.StagingRelativePath = '\Recovery'
+    $NewWindowsRecoveryBootEntryParameters.Name                = 'Grace Solutions Recovery'
+    $NewWindowsRecoveryBootEntryParameters.BootTimeout         = [TimeSpan]::FromSeconds(10)
+    $NewWindowsRecoveryBootEntryParameters.BootEntryVisibility = 'Visible'
+    $NewWindowsRecoveryBootEntryParameters.PassThru            = $True
+    $NewWindowsRecoveryBootEntryParameters.Verbose             = $True
+
+$NewWindowsRecoveryBootEntryResult = New-WindowsRecoveryBootEntry @NewWindowsRecoveryBootEntryParameters
+Write-Output -InputObject ($NewWindowsRecoveryBootEntryResult)
+```
+
+### Plan-based workflow
+
+For end-to-end provisioning, build a plan, review it, and apply it idempotently:
 
 ```powershell
 $Plan = New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 `
@@ -92,9 +175,9 @@ On MBR disks the module writes the partition type byte `0x27` (Windows Recovery)
 | [Enable-WindowsRecoveryEnvironment](docs/Enable-WindowsRecoveryEnvironment.md) | Enables Windows Recovery Environment. |
 | [Disable-WindowsRecoveryEnvironment](docs/Disable-WindowsRecoveryEnvironment.md) | Disables Windows Recovery Environment. |
 | [Get-WindowsRecoveryBootEntry](docs/Get-WindowsRecoveryBootEntry.md) | Discovers recovery boot entries. |
-| [New-WindowsRecoveryBootEntry](docs/New-WindowsRecoveryBootEntry.md) | Creates a recovery boot entry idempotently. |
+| [New-WindowsRecoveryBootEntry](docs/New-WindowsRecoveryBootEntry.md) | Creates a custom recovery boot entry from a boot image (WIM ramdisk or flat expand). |
 | [Remove-WindowsRecoveryBootEntry](docs/Remove-WindowsRecoveryBootEntry.md) | Removes a recovery boot entry idempotently. |
-| [Set-WindowsRecoveryEntryPoint](docs/Set-WindowsRecoveryEntryPoint.md) | Configures push-button reset, a boot entry, or both. |
+| [Set-WindowsRecoveryEntryPoint](docs/Set-WindowsRecoveryEntryPoint.md) | Configures push-button reset / Windows RE as a recovery entry point. |
 
 See [docs/DesignSpecification.md](docs/DesignSpecification.md) for the full design.
 

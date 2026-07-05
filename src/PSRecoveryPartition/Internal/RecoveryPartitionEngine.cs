@@ -24,12 +24,23 @@ namespace PSRecoveryPartition
             _owner = owner;
         }
 
-        public IList<RecoveryPartitionInfo> Get(int? diskNumber = null, bool recoveryOnly = true)
+        public IList<RecoveryPartitionInfo> Get(
+            int? diskNumber = null,
+            bool recoveryOnly = true,
+            RecoveryPartitionDetectionMode detectionMode = RecoveryPartitionDetectionMode.AllDisks)
         {
-            var disks = diskNumber.HasValue
-                ? new List<Win32DiskInfo> { Win32DiskInfoReader.Read(diskNumber.Value) }
-                : Win32DiskInfoReader.EnumerateAll();
             var volumes = Win32VolumeMapper.EnumerateAll();
+
+            IList<Win32DiskInfo> disks;
+            if (diskNumber.HasValue)
+            {
+                // An explicit disk always wins over the detection mode.
+                disks = new List<Win32DiskInfo> { Win32DiskInfoReader.Read(diskNumber.Value) };
+            }
+            else
+            {
+                disks = FilterByDetectionMode(Win32DiskInfoReader.EnumerateAll(), volumes, detectionMode);
+            }
 
             var result = new List<RecoveryPartitionInfo>();
             foreach (var disk in disks)
@@ -42,6 +53,51 @@ namespace PSRecoveryPartition
                 }
             }
             return result;
+        }
+
+        private static IList<Win32DiskInfo> FilterByDetectionMode(
+            IList<Win32DiskInfo> disks, IList<Win32VolumeInfo> volumes, RecoveryPartitionDetectionMode mode)
+        {
+            if (mode == RecoveryPartitionDetectionMode.AllDisks) { return disks; }
+
+            var osDisk = ResolveCurrentOsDiskNumber(volumes);
+            if (osDisk == null)
+            {
+                throw new InvalidOperationException(
+                    "Could not determine the current OS disk for -DetectionMode " + mode +
+                    ". Specify -DiskNumber explicitly, or use -DetectionMode AllDisks.");
+            }
+            return mode == RecoveryPartitionDetectionMode.CurrentOSDisk
+                ? disks.Where(d => d.DiskNumber == osDisk.Value).ToList()
+                : disks.Where(d => d.DiskNumber != osDisk.Value).ToList();
+        }
+
+        /// <summary>
+        /// Disk number backing the running Windows installation, resolved by
+        /// mapping the system drive root (e.g. <c>C:\</c>) to the volume that
+        /// carries it and reading that volume's first disk extent. Returns null
+        /// when the mapping cannot be established.
+        /// </summary>
+        private static int? ResolveCurrentOsDiskNumber(IList<Win32VolumeInfo> volumes)
+        {
+            var windir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+            var sysRoot = string.IsNullOrEmpty(windir) ? null : Path.GetPathRoot(windir);
+            if (string.IsNullOrEmpty(sysRoot)) { return null; }
+            var target = sysRoot.TrimEnd('\\');
+
+            foreach (var v in volumes)
+            {
+                if (v.Extents == null || v.Extents.Count == 0 || v.MountPoints == null) { continue; }
+                foreach (var mp in v.MountPoints)
+                {
+                    if (!string.IsNullOrEmpty(mp) &&
+                        string.Equals(mp.TrimEnd('\\'), target, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return v.Extents[0].DiskNumber;
+                    }
+                }
+            }
+            return null;
         }
 
         public RecoveryPartitionInfo Create(int diskNumber, long sizeBytes, string label, string fileSystem, FileInfo windowsREImagePath)

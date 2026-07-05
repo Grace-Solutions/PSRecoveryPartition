@@ -156,7 +156,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -178,6 +178,7 @@ Accept wildcard characters: False
 
 ### -SourceUri
 HTTPS URI from which the recovery image should be downloaded.
+
 ```yaml
 Type: Uri
 Parameter Sets: ByUri
@@ -200,7 +201,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

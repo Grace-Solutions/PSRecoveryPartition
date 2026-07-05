@@ -532,7 +532,6 @@ Update all affected cmdlets:
 ```text
 New-RecoveryPartition
 Resize-RecoveryPartition
-Get-RecoveryPartitionPlan
 ```
 
 Remove:
@@ -605,8 +604,6 @@ Required section:
 | [Remove-RecoveryPartition](docs/Remove-RecoveryPartition.md) | Removes a recovery partition safely. |
 | [Mount-RecoveryPartition](docs/Mount-RecoveryPartition.md) | Adds a temporary access path to a recovery partition. |
 | [Dismount-RecoveryPartition](docs/Dismount-RecoveryPartition.md) | Removes a temporary access path from a recovery partition. |
-| [New-RecoveryPartitionPlan](docs/New-RecoveryPartitionPlan.md) | Builds an idempotent end-to-end recovery partition plan. |
-| [Invoke-RecoveryPartitionPlan](docs/Invoke-RecoveryPartitionPlan.md) | Applies a recovery partition plan idempotently. |
 | [Get-WindowsRecoveryImage](docs/Get-WindowsRecoveryImage.md) | Finds Windows RE or Windows PE images. |
 | [Set-WindowsRecoveryImage](docs/Set-WindowsRecoveryImage.md) | Copies or updates a Windows RE or Windows PE image. |
 | [Get-WindowsRecoveryEnvironment](docs/Get-WindowsRecoveryEnvironment.md) | Gets Windows Recovery Environment configuration. |
@@ -777,8 +774,6 @@ Remove-RecoveryPartition
 Mount-RecoveryPartition
 Dismount-RecoveryPartition
 Test-RecoveryPartition
-New-RecoveryPartitionPlan
-Invoke-RecoveryPartitionPlan
 Get-WindowsRecoveryImage
 Set-WindowsRecoveryImage
 Get-WindowsRecoveryEnvironment
@@ -863,8 +858,6 @@ The OS partition is identified by a drive letter that matches `$env:SystemDrive`
 
 Behaviour rules:
 
-- `New-RecoveryPartitionPlan` attaches the analysis to the plan and emits each warning via `Write-Warning`. A `ResizePartition` step is converted to a `Skip` step when `CanGrowInPlace` is false.
-- `Invoke-RecoveryPartitionPlan` re-emits the warnings before executing the plan.
 - `Resize-RecoveryPartition` throws when `CanGrowInPlace` is false unless `-Force` is supplied.
 - `Remove-RecoveryPartition` throws when `CanRemoveSafely` is false (immediately followed by the OS partition) unless `-Force` is supplied.
 

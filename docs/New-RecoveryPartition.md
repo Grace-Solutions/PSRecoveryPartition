@@ -15,52 +15,53 @@ Creates a recovery partition on a target disk.
 ### DefaultSize (Default)
 ```
 New-RecoveryPartition -DiskNumber <Int32> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-CreationMode <RecoveryPartitionCreationMode>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ExplicitSize
 ```
 New-RecoveryPartition -DiskNumber <Int32> -SizeBytes <Int64> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-CreationMode <RecoveryPartitionCreationMode>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### PercentSize
 ```
 New-RecoveryPartition -DiskNumber <Int32> -SizePercent <Int32> [-Label <String>] [-FileSystem <String>]
- [-WindowsREImagePath <FileInfo>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-CreationMode <RecoveryPartitionCreationMode>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Creates a recovery partition on the specified disk and optionally stages a WindowsRE image into it. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.
+Creates and formats a recovery partition on the specified disk. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing (mutually exclusive parameter sets). The partition is always placed after the existing partitions; -CreationMode controls how trailing free space is obtained. Image and boot-entry payloads are staged by the dedicated cmdlets (Set-WindowsRecoveryImage, New-WindowsRecoveryBootEntry).
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
 ```powershell
-New-RecoveryPartition -DiskNumber 0 -SizeBytes 1073741824 -WindowsREImagePath 'C:\RecoveryImages\Winre.wim' -PassThru
+New-RecoveryPartition -DiskNumber 0 -SizeBytes 1073741824 -PassThru
 ```
 
-Creates a 1 GiB recovery partition on disk 0 and stages the supplied WindowsRE image.
+Creates a 1 GiB recovery partition on disk 0 using existing trailing free space.
 
 ### Example 2: Splatted parameters with OrderedDictionary
 ```powershell
 $NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
-    $NewRecoveryPartitionParameters.DiskNumber = 0
-    $NewRecoveryPartitionParameters.SizePercent = 2
-    $NewRecoveryPartitionParameters.Label = 'Windows RE tools'
-    $NewRecoveryPartitionParameters.FileSystem = 'NTFS'
-    $NewRecoveryPartitionParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
-    $NewRecoveryPartitionParameters.PassThru = $True
-    $NewRecoveryPartitionParameters.Verbose = $True
+    $NewRecoveryPartitionParameters.DiskNumber   = 0
+    $NewRecoveryPartitionParameters.SizePercent  = 2
+    $NewRecoveryPartitionParameters.Label        = 'RECOVERY'
+    $NewRecoveryPartitionParameters.FileSystem   = 'NTFS'
+    $NewRecoveryPartitionParameters.CreationMode = 'ShrinkToFit'
+    $NewRecoveryPartitionParameters.PassThru     = $True
+    $NewRecoveryPartitionParameters.Verbose      = $True
 
 $NewRecoveryPartitionResult = New-RecoveryPartition @NewRecoveryPartitionParameters
+
 Write-Output -InputObject ($NewRecoveryPartitionResult)
 ```
 
-Creates a percentage-sized recovery partition with a friendly label and stages a WindowsRE image.
+Creates a percentage-sized recovery partition, shrinking the last partition to make room if the disk has no trailing free space.
 
 ## PARAMETERS
 
@@ -206,13 +207,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -WindowsREImagePath
-Path to a WindowsRE WIM image that should be staged into the recovery partition.
+### -ProgressAction
+{{ Fill ProgressAction Description }}
 
 ```yaml
-Type: FileInfo
+Type: ActionPreference
 Parameter Sets: (All)
-Aliases:
+Aliases: proga
 
 Required: False
 Position: Named
@@ -221,13 +222,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
+### -CreationMode
+Placement strategy. The recovery partition is always created after the existing partitions (never before the OS). UseTrailingFreeSpace (default) appends into existing free space at the end of the disk and never moves or resizes anything, failing if there is not enough room. ShrinkToFit shrinks the last partition (typically the OS) by the shortfall to free trailing space first. RequireEmptyDisk only creates on a disk with no partitions.
 ```yaml
-Type: ActionPreference
+Type: RecoveryPartitionCreationMode
 Parameter Sets: (All)
-Aliases: proga
+Aliases:
 
 Required: False
 Position: Named
@@ -248,4 +248,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+
 

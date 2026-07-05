@@ -284,7 +284,7 @@ Accept wildcard characters: False
 
 ### -StagingRelativePath
 Volume-relative folder the image (and boot.sdi) are staged into.
-Defaults to \Recovery\WindowsRE; pass an empty string or a single backslash (\) to stage at the volume root.
+Defaults to \Recovery\WindowsRE; pass an empty string or a single backslash () to stage at the volume root.
 
 ```yaml
 Type: String
@@ -327,4 +327,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+
 

@@ -21,7 +21,7 @@ Every mutating cmdlet supports `-Verbose` for step-by-step logging and `-WhatIf`
 
 ### Create a recovery partition
 
-This only creates and formats the partition; chain the image and boot-entry cmdlets below to populate it.
+This only creates and formats the partition; chain the image and boot-entry cmdlets below to populate it. The partition is always placed **after** the existing partitions (never before the OS, which would require moving the OS partition). `-CreationMode` controls how trailing free space is obtained: `UseTrailingFreeSpace` (default) appends into existing end-of-disk free space and never touches existing data; `ShrinkToFit` shrinks the last partition (typically the OS) by the shortfall first; `RequireEmptyDisk` only creates on an empty disk.
 
 ```powershell
 $NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)

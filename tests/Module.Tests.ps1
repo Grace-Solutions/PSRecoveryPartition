@@ -67,6 +67,20 @@ Describe 'New-RecoveryPartition parameter sets' {
     It 'does not expose -EnablePercentSizing' {
         (Get-Command New-RecoveryPartition).Parameters.Keys | Should -Not -Contain 'EnablePercentSizing'
     }
+
+    It 'no longer exposes -WindowsREImagePath (staging is a separate cmdlet)' {
+        (Get-Command New-RecoveryPartition).Parameters.Keys | Should -Not -Contain 'WindowsREImagePath'
+    }
+
+    It 'exposes -CreationMode typed as RecoveryPartitionCreationMode with UseTrailingFreeSpace default (0)' {
+        $param = (Get-Command New-RecoveryPartition).Parameters['CreationMode']
+        $param | Should -Not -BeNullOrEmpty
+        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionCreationMode'
+        foreach ($name in @('UseTrailingFreeSpace','ShrinkToFit','RequireEmptyDisk')) {
+            [enum]::GetNames($param.ParameterType) | Should -Contain $name
+        }
+        [int][enum]::Parse($param.ParameterType, 'UseTrailingFreeSpace') | Should -Be 0
+    }
 }
 
 Describe 'Resize-RecoveryPartition parameter sets' {

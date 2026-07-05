@@ -1397,7 +1397,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Creates a recovery partition on the specified disk and optionally stages a WindowsRE image into it. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing. The two are mutually exclusive parameter sets.</maml:para>
+      <maml:para>Creates and formats a recovery partition on the specified disk. Use -SizeBytes for explicit sizing or -SizePercent for percentage-based sizing (mutually exclusive parameter sets). The partition is always placed after the existing partitions; -CreationMode controls how trailing free space is obtained. Image and boot-entry payloads are staged by the dedicated cmdlets (Set-WindowsRecoveryImage, New-WindowsRecoveryBootEntry).</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -1499,18 +1499,6 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>WindowsREImagePath</maml:name>
-          <maml:description>
-            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
-          <dev:type>
-            <maml:name>FileInfo</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
           <maml:name>ProgressAction</maml:name>
           <maml:description>
@@ -1519,6 +1507,18 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
           <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
           <dev:type>
             <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>CreationMode</maml:name>
+          <maml:description>
+            <maml:para>Placement strategy. The recovery partition is always created after the existing partitions (never before the OS). UseTrailingFreeSpace (default) appends into existing free space at the end of the disk and never moves or resizes anything, failing if there is not enough room. ShrinkToFit shrinks the last partition (typically the OS) by the shortfall to free trailing space first. RequireEmptyDisk only creates on a disk with no partitions.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">RecoveryPartitionCreationMode</command:parameterValue>
+          <dev:type>
+            <maml:name>RecoveryPartitionCreationMode</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -1623,18 +1623,6 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>WindowsREImagePath</maml:name>
-          <maml:description>
-            <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
-          <dev:type>
-            <maml:name>FileInfo</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
           <maml:name>ProgressAction</maml:name>
           <maml:description>
@@ -1643,6 +1631,18 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
           <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
           <dev:type>
             <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>CreationMode</maml:name>
+          <maml:description>
+            <maml:para>Placement strategy. The recovery partition is always created after the existing partitions (never before the OS). UseTrailingFreeSpace (default) appends into existing free space at the end of the disk and never moves or resizes anything, failing if there is not enough room. ShrinkToFit shrinks the last partition (typically the OS) by the shortfall to free trailing space first. RequireEmptyDisk only creates on a disk with no partitions.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">RecoveryPartitionCreationMode</command:parameterValue>
+          <dev:type>
+            <maml:name>RecoveryPartitionCreationMode</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -1758,18 +1758,6 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>WindowsREImagePath</maml:name>
-        <maml:description>
-          <maml:para>Path to a WindowsRE WIM image that should be staged into the recovery partition.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
-        <dev:type>
-          <maml:name>FileInfo</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
         <maml:name>ProgressAction</maml:name>
         <maml:description>
@@ -1778,6 +1766,18 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
         <dev:type>
           <maml:name>ActionPreference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>CreationMode</maml:name>
+        <maml:description>
+          <maml:para>Placement strategy. The recovery partition is always created after the existing partitions (never before the OS). UseTrailingFreeSpace (default) appends into existing free space at the end of the disk and never moves or resizes anything, failing if there is not enough room. ShrinkToFit shrinks the last partition (typically the OS) by the shortfall to free trailing space first. RequireEmptyDisk only creates on a disk with no partitions.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">RecoveryPartitionCreationMode</command:parameterValue>
+        <dev:type>
+          <maml:name>RecoveryPartitionCreationMode</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -1811,26 +1811,27 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
     <command:examples>
       <command:example>
         <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
-        <dev:code>New-RecoveryPartition -DiskNumber 0 -SizeBytes 1073741824 -WindowsREImagePath 'C:\RecoveryImages\Winre.wim' -PassThru</dev:code>
+        <dev:code>New-RecoveryPartition -DiskNumber 0 -SizeBytes 1073741824 -PassThru</dev:code>
         <dev:remarks>
-          <maml:para>Creates a 1 GiB recovery partition on disk 0 and stages the supplied WindowsRE image.</maml:para>
+          <maml:para>Creates a 1 GiB recovery partition on disk 0 using existing trailing free space.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>---- Example 2: Splatted parameters with OrderedDictionary ----</maml:title>
         <dev:code>$NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
-    $NewRecoveryPartitionParameters.DiskNumber = 0
-    $NewRecoveryPartitionParameters.SizePercent = 2
-    $NewRecoveryPartitionParameters.Label = 'Windows RE tools'
-    $NewRecoveryPartitionParameters.FileSystem = 'NTFS'
-    $NewRecoveryPartitionParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
-    $NewRecoveryPartitionParameters.PassThru = $True
-    $NewRecoveryPartitionParameters.Verbose = $True
+    $NewRecoveryPartitionParameters.DiskNumber   = 0
+    $NewRecoveryPartitionParameters.SizePercent  = 2
+    $NewRecoveryPartitionParameters.Label        = 'RECOVERY'
+    $NewRecoveryPartitionParameters.FileSystem   = 'NTFS'
+    $NewRecoveryPartitionParameters.CreationMode = 'ShrinkToFit'
+    $NewRecoveryPartitionParameters.PassThru     = $True
+    $NewRecoveryPartitionParameters.Verbose      = $True
 
 $NewRecoveryPartitionResult = New-RecoveryPartition @NewRecoveryPartitionParameters
+
 Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <dev:remarks>
-          <maml:para>Creates a percentage-sized recovery partition with a friendly label and stages a WindowsRE image.</maml:para>
+          <maml:para>Creates a percentage-sized recovery partition, shrinking the last partition to make room if the disk has no trailing free space.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

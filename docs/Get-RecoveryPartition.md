@@ -108,7 +108,7 @@ Accept wildcard characters: False
 ```
 
 ### -DetectionMode
-Scopes discovery to a set of disks: CurrentOSDisk (default; the disk hosting the running OS), AllDisks, or SecondaryDisk (every disk except the OS disk).
+Scopes discovery to a set of disks: CurrentOSDisk (default; the disk hosting the running OS), AllDisks, or SecondaryDisksOnly (every disk except the OS disk).
 Prevents recovery/BCD operations from fanning out across every disk on dual-disk or dual-boot systems.
 Ignored when -DiskNumber is supplied.
 

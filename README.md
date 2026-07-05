@@ -21,50 +21,49 @@ Every mutating cmdlet supports `-Verbose` for step-by-step logging and `-WhatIf`
 
 ### Create a recovery partition
 
+This only creates and formats the partition; chain the image and boot-entry cmdlets below to populate it.
+
 ```powershell
 $NewRecoveryPartitionParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
-    $NewRecoveryPartitionParameters.DiskNumber         = 0
-    $NewRecoveryPartitionParameters.SizePercent        = 2
-    $NewRecoveryPartitionParameters.Label              = 'RECOVERY'
-    $NewRecoveryPartitionParameters.FileSystem         = 'NTFS'
-    $NewRecoveryPartitionParameters.WindowsREImagePath = 'C:\RecoveryImages\winre.wim'
-    $NewRecoveryPartitionParameters.PassThru           = $True
-    $NewRecoveryPartitionParameters.Verbose            = $True
+    $NewRecoveryPartitionParameters.DiskNumber  = 0
+    $NewRecoveryPartitionParameters.SizePercent = 2
+    $NewRecoveryPartitionParameters.Label       = 'RECOVERY'
+    $NewRecoveryPartitionParameters.FileSystem  = 'NTFS'
+    $NewRecoveryPartitionParameters.PassThru    = $True
+    $NewRecoveryPartitionParameters.Verbose     = $True
 
 $NewRecoveryPartitionResult = New-RecoveryPartition @NewRecoveryPartitionParameters
+
 Write-Output -InputObject ($NewRecoveryPartitionResult)
 ```
 
 ### Download a recovery image (conditional, ETag/Last-Modified aware)
 
-`Save-RecoveryBootImage` issues a conditional `If-Modified-Since` request derived from the local file's timestamp: an unchanged remote image returns HTTP 304 and is **not** re-downloaded, and each successful download stamps the file with the server's `Last-Modified` so the next run can skip it. Set `-Force $True` to download unconditionally.
+`Save-RecoveryBootImage` issues a conditional `If-Modified-Since` request derived from the local file's timestamp: an unchanged remote image returns HTTP 304 and is **not** re-downloaded, and each successful download stamps the file with the server's `Last-Modified` so the next run can skip it. Set `-Force $True` to download unconditionally. `-DestinationPath` may be a folder (the source/URL leaf name is kept) or a full file path (the download is saved and renamed to that name — useful when the URL has no filename).
 
 ```powershell
 $SaveRecoveryBootImageParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
-    $SaveRecoveryBootImageParameters.SourceUri       = 'https://images.example.com/winre/winre.wim'
-    $SaveRecoveryBootImageParameters.DestinationPath = 'C:\RecoveryImages\'
+    $SaveRecoveryBootImageParameters.SourceUri       = 'https://images.example.com/winre/download'
+    $SaveRecoveryBootImageParameters.DestinationPath = 'C:\RecoveryImages\winre.wim'
     $SaveRecoveryBootImageParameters.Headers         = @{ Authorization = 'Bearer <token>' }
-    $SaveRecoveryBootImageParameters.ImageKind       = 'WindowsRE'
     $SaveRecoveryBootImageParameters.Force           = $False
     $SaveRecoveryBootImageParameters.PassThru        = $True
     $SaveRecoveryBootImageParameters.Verbose         = $True
 
 $SaveRecoveryBootImageResult = Save-RecoveryBootImage @SaveRecoveryBootImageParameters
+
 Write-Output -InputObject ($SaveRecoveryBootImageResult)
 ```
 
 ### Create a custom recovery boot entry
 
-Gather inputs as single-liners, then feed the results into the splat. `Get-RecoveryPartition` defaults to `-DetectionMode CurrentOSDisk`, so it returns the recovery partition on the running OS disk rather than fanning out across every disk on a dual-disk or dual-boot machine.
+Each variant is self-contained — the single-liners gather the inputs and the splat consumes them. `Get-RecoveryPartition` defaults to `-DetectionMode CurrentOSDisk`, so it returns the recovery partition on the running OS disk rather than fanning out across every disk on a dual-disk or dual-boot machine.
+
+**Variant A — WIM (ramdisk) boot, staged at the volume root (`StagingRelativePath` of `''` or `'\'`) of a mounted volume (`Volume:\`).** The image is staged as-is and RAM-booted; `boot.sdi` is resolved automatically.
 
 ```powershell
-$OSRecoveryPartition = Get-RecoveryPartition -DetectionMode CurrentOSDisk -Verbose
-$BootImage           = Save-RecoveryBootImage -SourceUri 'https://images.example.com/winpe/boot.wim' -DestinationPath 'C:\RecoveryImages\' -PassThru -Verbose
-```
+$BootImage = Save-RecoveryBootImage -SourceUri 'https://images.example.com/winpe/boot.wim' -DestinationPath 'C:\RecoveryImages\' -PassThru -Verbose
 
-**Variant A — WIM (ramdisk) boot, staged at the volume root of a mounted volume (`Volume:\`).** The image is staged as-is and RAM-booted; `boot.sdi` is resolved automatically.
-
-```powershell
 $NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $NewWindowsRecoveryBootEntryParameters.BootImagePath       = $BootImage.ImagePath
     $NewWindowsRecoveryBootEntryParameters.TargetPath          = 'R:\'
@@ -76,12 +75,16 @@ $NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collection
     $NewWindowsRecoveryBootEntryParameters.Verbose             = $True
 
 $NewWindowsRecoveryBootEntryResult = New-WindowsRecoveryBootEntry @NewWindowsRecoveryBootEntryParameters
+
 Write-Output -InputObject ($NewWindowsRecoveryBootEntryResult)
 ```
 
-**Variant B — expanded (flat / non-RAM) boot into `\Recovery` on the recovery partition, targeted by its `\\?\Volume{GUID}\` / `\\?\GLOBALROOT` device path (no drive letter, no mount).** `-ExpandBootImage` applies image index 1 flat onto the partition.
+**Variant B — expanded (flat / non-RAM) boot into `\Recovery` on the recovery partition, targeted by its `\\?\Volume{GUID}\` / `\\?\GLOBALROOT` device path (no drive letter, no mount).** `-ExpandBootImage` applies the selected image index flat onto the partition.
 
 ```powershell
+$OSRecoveryPartition = Get-RecoveryPartition -DetectionMode CurrentOSDisk -Verbose
+$BootImage           = Save-RecoveryBootImage -SourceUri 'https://images.example.com/winpe/boot.wim' -DestinationPath 'C:\RecoveryImages\' -PassThru -Verbose
+
 $NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
     $NewWindowsRecoveryBootEntryParameters.BootImagePath       = $BootImage.ImagePath
     $NewWindowsRecoveryBootEntryParameters.RecoveryPartition   = $OSRecoveryPartition
@@ -95,24 +98,9 @@ $NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collection
     $NewWindowsRecoveryBootEntryParameters.Verbose             = $True
 
 $NewWindowsRecoveryBootEntryResult = New-WindowsRecoveryBootEntry @NewWindowsRecoveryBootEntryParameters
+
 Write-Output -InputObject ($NewWindowsRecoveryBootEntryResult)
 ```
-
-### Plan-based workflow
-
-For end-to-end provisioning, build a plan, review it, and apply it idempotently:
-
-```powershell
-$Plan = New-RecoveryPartitionPlan -DiskNumber 0 -SizePercent 2 `
-    -WindowsREImagePath 'C:\RecoveryImages\winre.wim' `
-    -BootImagePath      'C:\RecoveryImages\boot.wim' `
-    -EntryPointMode     Both
-
-$Plan.Steps | Format-Table Action, Target, AlreadySatisfied, Description
-$Plan | Invoke-RecoveryPartitionPlan -PassThru
-```
-
-The plan inspects the disk layout, surfaces warnings (for example when the recovery partition is in front of the OS partition or there is no trailing free space), and converts unsafe `Resize-Partition` steps to `Skip` unless `-Force` is supplied on `Invoke-RecoveryPartitionPlan`.
 
 ## Architecture
 
@@ -121,8 +109,7 @@ Cmdlets are thin C# shells over a small internal engine layer:
 - `RecoveryPartitionEngine` owns partition lifecycle (create, resize, remove, mount).
 - `WinReEngine` wraps `reagentc.exe` for WindowsRE registration and `BootToRE` scheduling.
 - `BcdEditEngine` wraps `bcdedit.exe` for BCD boot entry management.
-- `RecoveryPartitionLayoutAnalyzer` inspects disk geometry around the target partition and emits a `RecoveryPartitionLayoutAnalysis` with `CanGrowInPlace`, `CanShrinkInPlace`, `CanRemoveSafely`, neighbour information, leading/trailing free space, and human-readable warnings.
-- `RecoveryPlanBuilder` translates the layout, requested size, and image inputs into a `RecoveryPartitionPlan` whose steps are dispatched by `Invoke-RecoveryPartitionPlan`.
+- `RecoveryPartitionLayoutAnalyzer` inspects disk geometry around the target partition and emits a `RecoveryPartitionLayoutAnalysis` with `CanGrowInPlace`, `CanShrinkInPlace`, `CanRemoveSafely`, neighbour information, leading/trailing free space, and human-readable warnings that `Resize-RecoveryPartition` and `Remove-RecoveryPartition` gate on.
 
 Every result object discloses `ExecutionMethod` (Native, PInvoke, or ProcessFallback) and `ProcessFallbackUsed` so callers can audit which path was taken. The default for partition operations is `Native`.
 
@@ -165,8 +152,6 @@ On MBR disks the module writes the partition type byte `0x27` (Windows Recovery)
 | [Mount-RecoveryPartition](docs/Mount-RecoveryPartition.md) | Mounts a recovery partition at a folder mount point. |
 | [Dismount-RecoveryPartition](docs/Dismount-RecoveryPartition.md) | Removes a folder mount point from a recovery partition. |
 | [Test-RecoveryPartition](docs/Test-RecoveryPartition.md) | Tests a recovery partition for size, layout, and contents. |
-| [New-RecoveryPartitionPlan](docs/New-RecoveryPartitionPlan.md) | Builds an idempotent end-to-end recovery partition plan. |
-| [Invoke-RecoveryPartitionPlan](docs/Invoke-RecoveryPartitionPlan.md) | Executes a recovery partition plan idempotently. |
 | [Get-WindowsRecoveryImage](docs/Get-WindowsRecoveryImage.md) | Discovers Windows RE or Windows PE image files. |
 | [Set-WindowsRecoveryImage](docs/Set-WindowsRecoveryImage.md) | Copies or updates a Windows RE or Windows PE image. |
 | [Save-RecoveryBootImage](docs/Save-RecoveryBootImage.md) | Downloads or copies a recovery boot image to a local destination. |

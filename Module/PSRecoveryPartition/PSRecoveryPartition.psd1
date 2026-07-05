@@ -21,8 +21,6 @@
         'Mount-RecoveryPartition'
         'Dismount-RecoveryPartition'
         'Test-RecoveryPartition'
-        'New-RecoveryPartitionPlan'
-        'Invoke-RecoveryPartitionPlan'
         'Get-WindowsRecoveryImage'
         'Set-WindowsRecoveryImage'
         'Get-WindowsRecoveryEnvironment'

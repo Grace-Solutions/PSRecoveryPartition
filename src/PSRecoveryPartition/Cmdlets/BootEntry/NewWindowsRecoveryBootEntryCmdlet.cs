@@ -49,7 +49,8 @@ namespace PSRecoveryPartition.Cmdlets
         public DirectoryInfo TargetPath { get; set; }
 
         // Volume-relative folder the image (and boot.sdi) are staged into. Default
-        // \Recovery\WindowsRE; pass an empty string to stage at the volume root.
+        // \Recovery\WindowsRE; pass an empty string or "\" to stage at the volume
+        // root.
         [Parameter]
         public string StagingRelativePath { get; set; } = @"\Recovery\WindowsRE";
 

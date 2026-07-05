@@ -32,17 +32,11 @@ Returns the current Windows Recovery Environment configuration.
 ### [Get-WindowsRecoveryImage](Get-WindowsRecoveryImage.md)
 Discovers Windows RE or Windows PE image files.
 
-### [Invoke-RecoveryPartitionPlan](Invoke-RecoveryPartitionPlan.md)
-Executes a recovery partition plan idempotently.
-
 ### [Mount-RecoveryPartition](Mount-RecoveryPartition.md)
 Mounts a recovery partition at a folder mount point.
 
 ### [New-RecoveryPartition](New-RecoveryPartition.md)
 Creates a recovery partition on a target disk.
-
-### [New-RecoveryPartitionPlan](New-RecoveryPartitionPlan.md)
-Builds an idempotent recovery partition plan.
 
 ### [New-WindowsRecoveryBootEntry](New-WindowsRecoveryBootEntry.md)
 Creates a custom recovery boot entry from a boot image.

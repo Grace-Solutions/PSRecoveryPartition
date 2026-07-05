@@ -101,9 +101,9 @@ Describe 'Get-RecoveryPartition -DetectionMode' {
         $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionDetectionMode'
     }
 
-    It 'defines CurrentOSDisk, AllDisks and SecondaryDisk with CurrentOSDisk as the default (0)' {
+    It 'defines CurrentOSDisk, AllDisks and SecondaryDisksOnly with CurrentOSDisk as the default (0)' {
         $t = (Get-Command Get-RecoveryPartition).Parameters['DetectionMode'].ParameterType
-        foreach ($name in @('CurrentOSDisk','AllDisks','SecondaryDisk')) {
+        foreach ($name in @('CurrentOSDisk','AllDisks','SecondaryDisksOnly')) {
             [enum]::GetNames($t) | Should -Contain $name
         }
         [int][enum]::Parse($t, 'CurrentOSDisk') | Should -Be 0

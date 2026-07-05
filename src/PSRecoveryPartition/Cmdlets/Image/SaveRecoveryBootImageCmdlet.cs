@@ -63,6 +63,7 @@ namespace PSRecoveryPartition.Cmdlets
 
             var destFile = DestinationPathResolver.Resolve(DestinationPath, sourceLeaf);
             DestinationPathResolver.EnsureParentDirectoryExists(destFile);
+            WriteVerbose("Destination resolved to '" + destFile.FullName + "'.");
 
             if (ParameterSetName == "ByPath")
             {
@@ -74,8 +75,13 @@ namespace PSRecoveryPartition.Cmdlets
                 var skip = !Force.IsPresent && destFile.Exists
                     && destFile.Length == SourcePath.Length
                     && destFile.LastWriteTimeUtc == SourcePath.LastWriteTimeUtc;
-                if (!skip && ShouldProcess(SourcePath.FullName + " -> " + destFile.FullName, "Copy recovery boot image"))
+                if (skip)
                 {
+                    WriteVerbose("Destination matches source (size + timestamp); skipping copy. Use -Force to overwrite.");
+                }
+                else if (ShouldProcess(SourcePath.FullName + " -> " + destFile.FullName, "Copy recovery boot image"))
+                {
+                    WriteVerbose("Copying '" + SourcePath.FullName + "' -> '" + destFile.FullName + "'.");
                     File.Copy(SourcePath.FullName, destFile.FullName, true);
                     destFile.Refresh();
                 }
@@ -84,10 +90,8 @@ namespace PSRecoveryPartition.Cmdlets
             {
                 if (ShouldProcess(SourceUri.ToString() + " -> " + destFile.FullName, "Download recovery boot image"))
                 {
-                    HttpImageDownloader
-                        .DownloadAsync(SourceUri, destFile.FullName, Headers, this, "Save-RecoveryBootImage")
-                        .GetAwaiter().GetResult();
-                    destFile.Refresh();
+                    HttpImageDownloader.RunConditional(
+                        SourceUri, Headers, destFile, Force.IsPresent, "Save-RecoveryBootImage", this, WriteVerbose);
                 }
             }
 

@@ -23,6 +23,6 @@ namespace PSRecoveryPartition
         /// Every physical disk except the one hosting the running OS. Useful for
         /// targeting a second OS/data disk without touching the current OS disk.
         /// </summary>
-        SecondaryDisk = 2,
+        SecondaryDisksOnly = 2,
     }
 }

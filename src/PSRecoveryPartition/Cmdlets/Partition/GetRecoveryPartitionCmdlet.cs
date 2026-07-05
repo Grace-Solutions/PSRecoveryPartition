@@ -27,14 +27,22 @@ namespace PSRecoveryPartition.Cmdlets
 
         protected override void ProcessRecord()
         {
+            WriteVerbose(DiskNumber.HasValue
+                ? "Scanning disk " + DiskNumber.Value + " for recovery partitions."
+                : "Scanning disks (DetectionMode " + DetectionMode + ") for recovery partitions.");
+
             var engine = new RecoveryPartitionEngine(this);
             var partitions = engine.Get(DiskNumber, recoveryOnly: !IncludeNonRecovery.IsPresent, detectionMode: DetectionMode);
+
+            var emitted = 0;
             foreach (var p in partitions)
             {
                 if (PartitionNumber.HasValue && p.PartitionNumber != PartitionNumber.Value) { continue; }
                 Stamp(p);
                 WriteObject(p);
+                emitted++;
             }
+            WriteVerbose("Found " + emitted + " recovery partition(s).");
         }
     }
 }

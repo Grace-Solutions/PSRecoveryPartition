@@ -55,8 +55,13 @@ namespace PSRecoveryPartition.Cmdlets
             var target = "Disk " + DiskNumber + " (size " + resolved + " bytes, mode " + mode + ")";
             if (!ShouldProcess(target, "Create recovery partition")) { return; }
 
+            WriteVerbose("Creating recovery partition on disk " + DiskNumber + ": " + resolved +
+                " bytes (" + mode + "), " + FileSystem + ", label '" + (Label ?? "RECOVERY") + "'" +
+                (WindowsREImagePath != null ? ", staging '" + WindowsREImagePath.Name + "'" : "") + ".");
             var engine = new RecoveryPartitionEngine(this);
             var info = engine.Create(DiskNumber, resolved, Label, FileSystem, WindowsREImagePath);
+            WriteVerbose("Created recovery partition: disk " + info.DiskNumber + " partition " +
+                info.PartitionNumber + " at offset " + info.Offset + ".");
             Stamp(info);
             if (PassThru.IsPresent) { WriteObject(info); }
         }

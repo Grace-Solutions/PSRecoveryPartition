@@ -149,11 +149,16 @@ namespace PSRecoveryPartition.Cmdlets
         private WindowsRecoveryBootEntryInfo CreateOnRecoveryPartition()
         {
             var part = RecoveryPartition;
-            var nativeRoot = !string.IsNullOrEmpty(part.GlobalRootPath) ? part.GlobalRootPath : part.VolumePath;
+            // Prefer the \\?\Volume{guid}\ path: it is the volume's file-system
+            // namespace and native CreateDirectory/CopyFile work against it with no
+            // mount. GlobalRootPath is the partition *device* (\Device\HarddiskN\
+            // PartitionM), which is not a file-system namespace, so it is only a
+            // last resort.
+            var nativeRoot = !string.IsNullOrEmpty(part.VolumePath) ? part.VolumePath : part.GlobalRootPath;
             if (string.IsNullOrEmpty(nativeRoot))
             {
                 throw new InvalidOperationException(
-                    "The recovery partition exposes neither a GlobalRootPath nor a VolumePath to stage onto.");
+                    "The recovery partition exposes neither a VolumePath nor a GlobalRootPath to stage onto.");
             }
             var target = "disk " + part.DiskNumber + " partition " + part.PartitionNumber +
                          " (" + (ExpandBootImage.IsPresent ? "flat expand" : "stage WIM") + ")";

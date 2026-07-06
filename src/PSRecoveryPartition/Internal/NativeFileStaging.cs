@@ -112,23 +112,29 @@ namespace PSRecoveryPartition
         /// </summary>
         private static int DeviceRootLength(string path)
         {
-            // \\?\GLOBALROOT\Device\HarddiskVolumeN\...  -> root ends after HarddiskVolumeN
+            // GlobalRoot device forms. The device specifier is either the volume
+            // form "Device\HarddiskVolumeN" (2 tokens) or the partition form
+            // "Device\HarddiskN\PartitionM" (3 tokens). Consume the whole specifier
+            // so directory creation never treats "PartitionM" as a subdirectory.
             const string gr = @"\\?\GLOBALROOT\";
             if (path.StartsWith(gr, StringComparison.OrdinalIgnoreCase))
             {
-                // Consume "Device\HarddiskVolumeN" (three backslash-separated tokens
-                // after the prefix: Device, HarddiskVolumeN).
-                var after = gr.Length;
-                var tokensSeen = 0;
-                for (var i = after; i < path.Length; i++)
+                var tokens = path.Substring(gr.Length).Split('\\');
+                // tokens: [Device, HarddiskVolumeN, ...] or [Device, HarddiskN, PartitionM, ...]
+                var deviceTokens =
+                    tokens.Length >= 2 && tokens[1].StartsWith("HarddiskVolume", StringComparison.OrdinalIgnoreCase)
+                        ? 2
+                        : (tokens.Length >= 3 &&
+                           tokens[1].StartsWith("Harddisk", StringComparison.OrdinalIgnoreCase) &&
+                           tokens[2].StartsWith("Partition", StringComparison.OrdinalIgnoreCase)
+                            ? 3
+                            : 2);
+                var consumed = gr.Length;
+                for (var t = 0; t < deviceTokens && t < tokens.Length; t++)
                 {
-                    if (path[i] == '\\')
-                    {
-                        tokensSeen++;
-                        if (tokensSeen == 2) { return i + 1; }
-                    }
+                    consumed += tokens[t].Length + 1; // token + separator
                 }
-                return path.Length; // whole thing is the root
+                return Math.Min(consumed, path.Length);
             }
 
             // \\?\Volume{guid}\...

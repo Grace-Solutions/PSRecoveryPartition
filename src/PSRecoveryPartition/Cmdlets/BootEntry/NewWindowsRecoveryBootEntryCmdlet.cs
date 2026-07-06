@@ -170,35 +170,20 @@ namespace PSRecoveryPartition.Cmdlets
             else
             {
                 var sdi = ResolveSdi();
-                if (!string.IsNullOrEmpty(part.VolumePath))
+                // A hidden recovery partition has no drive letter and its file system
+                // is not mounted, so the raw \\?\Volume{guid}\ path is "not ready"
+                // (Win32 21) for file I/O. Mount it transiently via a junction (no
+                // drive letter, torn down on exit) and copy through that.
+                VolumeStaging.WithVolumeRoot(part.DiskNumber, part.PartitionNumber, root =>
                 {
-                    // Fast path: copy straight onto the \\?\Volume{guid}\ file-system
-                    // namespace with native APIs - no mount. (GlobalRootPath is the
-                    // partition *device*, not a file-system namespace, so it is never
-                    // used for staging.)
-                    var root = part.VolumePath;
-                    NativeFileStaging.EnsureDirectory(NativeFileStaging.Combine(root, VolRel(StagingRelativePath)));
+                    var destDir = JoinLocal(root, StagingRelativePath);
+                    Directory.CreateDirectory(destDir);
                     ReportActivity("Staging boot image");
                     NativeFileStaging.CopyFile(BootImagePath.FullName,
-                        NativeFileStaging.Combine(root, VolRel(StagingRelativePath, BootImagePath.Name)),
+                        Path.Combine(destDir, BootImagePath.Name),
                         p => ReportProgress("Staging boot image", p));
-                    NativeFileStaging.CopyFile(sdi.FullName,
-                        NativeFileStaging.Combine(root, VolRel(StagingRelativePath, "boot.sdi")), null);
-                }
-                else
-                {
-                    // Fallback: the volume manager has not surfaced a \\?\Volume{guid}\
-                    // name (for example automount is disabled). Resolve the volume via
-                    // a transient junction (no drive letter) and copy through it.
-                    VolumeStaging.WithVolumeRoot(part.DiskNumber, part.PartitionNumber, root =>
-                    {
-                        var destDir = JoinLocal(root, StagingRelativePath);
-                        Directory.CreateDirectory(destDir);
-                        ReportActivity("Staging boot image");
-                        File.Copy(BootImagePath.FullName, Path.Combine(destDir, BootImagePath.Name), true);
-                        File.Copy(sdi.FullName, Path.Combine(destDir, "boot.sdi"), true);
-                    });
-                }
+                    File.Copy(sdi.FullName, Path.Combine(destDir, "boot.sdi"), true);
+                });
                 ConfigureRamdisk(req);
             }
 

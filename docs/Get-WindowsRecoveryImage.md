@@ -13,8 +13,9 @@ Discovers Windows RE or Windows PE image files.
 ## SYNTAX
 
 ```
-Get-WindowsRecoveryImage [-Path <DirectoryInfo>] [-ImageKind <String>] [-Source <String[]>] [-ComputeHash]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-WindowsRecoveryImage [-Path <DirectoryInfo>] [-ImageKind <String>] [-Source <String[]>]
+ [-DetectionMode <RecoveryPartitionDetectionMode>] [-ComputeHash] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -98,6 +99,20 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DetectionMode
+Scopes discovery to a set of disks: CurrentOSDisk (default; the disk hosting the running OS), AllDisks, or SecondaryDisksOnly (every disk except the OS disk). Prevents recovery/BCD operations from fanning out across every disk on dual-disk or dual-boot systems. Ignored when -DiskNumber is supplied.
+```yaml
+Type: RecoveryPartitionDetectionMode
 Parameter Sets: (All)
 Aliases:
 

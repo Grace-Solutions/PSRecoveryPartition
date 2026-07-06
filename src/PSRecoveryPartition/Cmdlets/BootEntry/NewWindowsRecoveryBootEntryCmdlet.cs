@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using PSRecoveryPartition.Native;
@@ -49,7 +50,8 @@ namespace PSRecoveryPartition.Cmdlets
         public DirectoryInfo TargetPath { get; set; }
 
         // Volume-relative folder the image (and boot.sdi) are staged into. Default
-        // \Recovery\WindowsRE; pass an empty string to stage at the volume root.
+        // \Recovery\WindowsRE; pass an empty string or "\" to stage at the volume
+        // root.
         [Parameter]
         public string StagingRelativePath { get; set; } = @"\Recovery\WindowsRE";
 
@@ -102,6 +104,29 @@ namespace PSRecoveryPartition.Cmdlets
                 {
                     throw new ArgumentOutOfRangeException("ImageIndex", ImageIndex,
                         "The boot image contains " + count + " image(s).");
+                }
+            }
+
+            // Idempotency: never create a duplicate entry with the same name.
+            // Without -Force this is a no-op that returns the existing entry; with
+            // -Force the existing entry (and its ramdisk device-options object) is
+            // removed and recreated.
+            if (!string.IsNullOrEmpty(Name))
+            {
+                var bcd = new BcdEditEngine(this);
+                var existing = bcd.Enumerate(includeHidden: true)
+                    .FirstOrDefault(e => string.Equals(e.Name, Name, StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    if (!Force.IsPresent)
+                    {
+                        WriteWarning("A boot entry named '" + Name + "' already exists (" + existing.Identifier +
+                            "). Use -Force to replace it.");
+                        if (PassThru.IsPresent) { Stamp(existing); WriteObject(existing); }
+                        return;
+                    }
+                    WriteVerbose("Replacing existing boot entry '" + Name + "' (" + existing.Identifier + ").");
+                    bcd.Remove(existing.Identifier);
                 }
             }
 

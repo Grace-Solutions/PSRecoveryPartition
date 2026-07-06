@@ -34,6 +34,12 @@ namespace PSRecoveryPartition.Cmdlets
         [ValidateSet("UserPath", "SystemRoot", "Reagent", "RecoveryPartition")]
         public string[] Source { get; set; }
 
+        // Scopes the RecoveryPartition source to the current OS disk (default),
+        // all disks, or the secondary disk(s) - so image discovery does not fan
+        // out across every disk on dual-disk / dual-boot systems.
+        [Parameter]
+        public RecoveryPartitionDetectionMode DetectionMode { get; set; } = RecoveryPartitionDetectionMode.CurrentOSDisk;
+
         [Parameter]
         public SwitchParameter ComputeHash { get; set; }
 
@@ -97,7 +103,7 @@ namespace PSRecoveryPartition.Cmdlets
         {
             var engine = new RecoveryPartitionEngine(this);
             IList<RecoveryPartitionInfo> parts;
-            try { parts = engine.Get(diskNumber: null, recoveryOnly: true); }
+            try { parts = engine.Get(diskNumber: null, recoveryOnly: true, detectionMode: DetectionMode); }
             catch (Exception ex) { WriteVerbose("Recovery partition enumeration failed: " + ex.Message); return; }
             foreach (var p in parts)
             {

@@ -100,7 +100,7 @@ namespace PSRecoveryPartition
             return null;
         }
 
-        public RecoveryPartitionInfo Create(int diskNumber, long sizeBytes, string label, string fileSystem, FileInfo windowsREImagePath)
+        public RecoveryPartitionInfo Create(int diskNumber, long sizeBytes, string label, string fileSystem, RecoveryPartitionCreationMode creationMode)
         {
             var disk = Win32DiskInfoReader.Read(diskNumber);
             var gptType = new Guid(RecoveryPartitionConstants.GptTypeRecovery.Trim('{', '}'));
@@ -109,6 +109,12 @@ namespace PSRecoveryPartition
                                   | NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_HIDDEN;
             var resolvedLabel = string.IsNullOrEmpty(label) ? RecoveryPartitionConstants.DefaultLabel : label;
             var resolvedFs    = string.IsNullOrEmpty(fileSystem) ? "NTFS" : fileSystem;
+
+            // Step 0: apply the placement strategy. The partition is always created
+            // after the existing partitions; this only decides how trailing free
+            // space is obtained (append into it, shrink the last partition to make
+            // it, or require an empty disk).
+            ApplyCreationMode(disk, sizeBytes, creationMode);
 
             // Step 1: create as a plain Basic Data partition with no special
             // attributes so the Windows volume manager surfaces a mountable
@@ -145,16 +151,9 @@ namespace PSRecoveryPartition
             Win32VolumeFormatter.Format(
                 EnsureTrailingSlash(volume.VolumeName), resolvedFs, resolvedLabel, quickFormat: true);
 
-            // Step 4: optional WindowsRE image staging. Routed through
-            // VolumeStaging so the volume GUID path is used directly when NTFS
-            // is already attached, falling back to a transient directory
-            // junction (no drive letter) only if needed. Recovery payloads are
-            // marked Hidden + System by default - this matches what the
-            // diskpart WinRE recipe leaves on disk.
-            if (windowsREImagePath != null && windowsREImagePath.Exists)
-            {
-                CopyImageOnto(created.DiskNumber, created.PartitionNumber, windowsREImagePath, hidden: true, system: true);
-            }
+            // Image/boot payloads are staged separately (Set-WindowsRecoveryImage,
+            // New-WindowsRecoveryBootEntry) so this cmdlet only creates and formats
+            // the partition.
 
             // Step 5: strip any drive-letter mount the volume manager auto-
             // assigned while the partition was a plain Basic Data entry. The
@@ -389,25 +388,91 @@ namespace PSRecoveryPartition
             };
         }
 
-        private void CopyImageOnto(int diskNumber, int partitionNumber, FileInfo image, bool hidden, bool system)
-        {
-            VolumeStaging.WithVolumeRoot(diskNumber, partitionNumber, volumeRoot =>
-            {
-                var recoveryDir = Path.Combine(volumeRoot, "Recovery");
-                var winreDir    = Path.Combine(recoveryDir, "WindowsRE");
-                Directory.CreateDirectory(winreDir);
-                var staged = Path.Combine(winreDir, image.Name);
-                File.Copy(image.FullName, staged, true);
+        private const long PlacementAlignmentBytes = 1024L * 1024L; // 1 MiB
 
-                if (hidden || system)
+        /// <summary>
+        /// Applies the requested placement strategy before the partition is
+        /// created. A recovery partition is always appended after the existing
+        /// partitions (never before the OS, which would require moving the OS
+        /// partition), so this only ensures there is enough trailing free space:
+        /// verify it, refuse a non-empty disk, or shrink the last partition to
+        /// create room.
+        /// </summary>
+        private static void ApplyCreationMode(Win32DiskInfo disk, long requestedSizeBytes, RecoveryPartitionCreationMode mode)
+        {
+            var activeParts = disk.Partitions
+                .Where(p => p.LengthBytes > 0)
+                .OrderBy(p => p.StartingOffset)
+                .ToList();
+
+            if (mode == RecoveryPartitionCreationMode.RequireEmptyDisk)
+            {
+                if (activeParts.Count > 0)
                 {
-                    // Recovery payloads are marked Hidden + System by convention
-                    // so Explorer hides them and chkdsk treats them as protected.
-                    try { VolumeStaging.ApplyAttributes(staged, hidden, system); } catch { /* best effort */ }
-                    try { VolumeStaging.ApplyAttributes(winreDir, hidden, system); } catch { /* best effort */ }
-                    try { VolumeStaging.ApplyAttributes(recoveryDir, hidden, system); } catch { /* best effort */ }
+                    throw new InvalidOperationException(
+                        "Disk " + disk.DiskNumber + " already has " + activeParts.Count +
+                        " partition(s); -CreationMode RequireEmptyDisk will not create a recovery partition on a non-empty disk.");
                 }
-            });
+                return;
+            }
+
+            long minOffset = disk.PartitionStyle == PartitionStyle.Gpt
+                ? Math.Max(disk.GptStartingUsableOffset, PlacementAlignmentBytes)
+                : PlacementAlignmentBytes;
+            long maxUsable = disk.PartitionStyle == PartitionStyle.Gpt
+                ? disk.GptStartingUsableOffset + disk.GptUsableLength
+                : disk.SizeBytes;
+
+            long tail = minOffset;
+            foreach (var p in activeParts) { tail = Math.Max(tail, p.StartingOffset + p.LengthBytes); }
+            long alignedTail = AlignUp1MiB(tail);
+            long trailingFree = Math.Max(0, maxUsable - alignedTail);
+
+            long needed = AlignDown1MiB(requestedSizeBytes);
+            if (needed <= 0) { needed = PlacementAlignmentBytes; }
+
+            if (trailingFree >= needed) { return; } // enough room already
+
+            if (mode == RecoveryPartitionCreationMode.UseTrailingFreeSpace)
+            {
+                throw new InvalidOperationException(
+                    "Disk " + disk.DiskNumber + " has " + trailingFree + " bytes of trailing free space but " +
+                    needed + " bytes are required. Free space at the end of the disk (for example shrink the OS " +
+                    "partition), or pass -CreationMode ShrinkToFit to shrink the last partition automatically.");
+            }
+
+            // ShrinkToFit: shrink the partition at the tail of the disk by the
+            // shortfall so the freed space is contiguous with any existing
+            // trailing free space, then the create step appends into it.
+            if (activeParts.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "Requested recovery partition size (" + requestedSizeBytes + " bytes) exceeds the usable space on disk " +
+                    disk.DiskNumber + ".");
+            }
+
+            var last = activeParts.OrderBy(p => p.StartingOffset + p.LengthBytes).Last();
+            long deficit = needed - trailingFree;
+            long newLastSize = AlignDown1MiB(last.LengthBytes - deficit);
+            if (newLastSize <= PlacementAlignmentBytes)
+            {
+                throw new InvalidOperationException(
+                    "Cannot free " + deficit + " bytes by shrinking partition " + last.PartitionNumber +
+                    " on disk " + disk.DiskNumber + "; it is too small. Free space manually or request a smaller size.");
+            }
+
+            Win32PartitionWriter.Shrink(disk.DiskNumber, last.PartitionNumber, newLastSize);
+        }
+
+        private static long AlignUp1MiB(long value)
+        {
+            var rem = value % PlacementAlignmentBytes;
+            return rem == 0 ? value : value + (PlacementAlignmentBytes - rem);
+        }
+
+        private static long AlignDown1MiB(long value)
+        {
+            return value - (value % PlacementAlignmentBytes);
         }
 
         private void TrySetMbrRecoveryType(int diskNumber, int partitionNumber)

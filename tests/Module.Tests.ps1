@@ -26,7 +26,6 @@ Describe 'PSRecoveryPartition module' {
         $expected = @(
             'Get-RecoveryPartition','New-RecoveryPartition','Set-RecoveryPartition','Resize-RecoveryPartition',
             'Remove-RecoveryPartition','Mount-RecoveryPartition','Dismount-RecoveryPartition','Test-RecoveryPartition',
-            'New-RecoveryPartitionPlan','Invoke-RecoveryPartitionPlan',
             'Get-WindowsRecoveryImage','Set-WindowsRecoveryImage','Save-RecoveryBootImage',
             'Get-WindowsRecoveryEnvironment','Set-WindowsRecoveryEnvironment',
             'Enable-WindowsRecoveryEnvironment','Disable-WindowsRecoveryEnvironment',
@@ -67,6 +66,20 @@ Describe 'New-RecoveryPartition parameter sets' {
 
     It 'does not expose -EnablePercentSizing' {
         (Get-Command New-RecoveryPartition).Parameters.Keys | Should -Not -Contain 'EnablePercentSizing'
+    }
+
+    It 'no longer exposes -WindowsREImagePath (staging is a separate cmdlet)' {
+        (Get-Command New-RecoveryPartition).Parameters.Keys | Should -Not -Contain 'WindowsREImagePath'
+    }
+
+    It 'exposes -CreationMode typed as RecoveryPartitionCreationMode with UseTrailingFreeSpace default (0)' {
+        $param = (Get-Command New-RecoveryPartition).Parameters['CreationMode']
+        $param | Should -Not -BeNullOrEmpty
+        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionCreationMode'
+        foreach ($name in @('UseTrailingFreeSpace','ShrinkToFit','RequireEmptyDisk')) {
+            [enum]::GetNames($param.ParameterType) | Should -Contain $name
+        }
+        [int][enum]::Parse($param.ParameterType, 'UseTrailingFreeSpace') | Should -Be 0
     }
 }
 
@@ -146,32 +159,12 @@ Describe 'Recovery partition defaults and discovery' {
     }
 }
 
-Describe 'New-RecoveryPartitionPlan surface' {
-    It 'replaces Get-RecoveryPartitionPlan with New-RecoveryPartitionPlan' {
-        Get-Command -Module PSRecoveryPartition -Name 'Get-RecoveryPartitionPlan' -ErrorAction SilentlyContinue |
+Describe 'Plan cmdlets removed' {
+    It 'no longer exports New-RecoveryPartitionPlan or Invoke-RecoveryPartitionPlan' {
+        Get-Command -Module PSRecoveryPartition -Name 'New-RecoveryPartitionPlan' -ErrorAction SilentlyContinue |
             Should -BeNullOrEmpty
-        Get-Command -Module PSRecoveryPartition -Name 'New-RecoveryPartitionPlan' -ErrorAction Stop |
-            Should -Not -BeNullOrEmpty
-    }
-
-    It 'exposes the expanded plan parameters' {
-        $params = (Get-Command New-RecoveryPartitionPlan).Parameters.Keys
-        $params | Should -Contain 'BootImagePath'
-        $params | Should -Contain 'WindowsREImagePath'
-        $params | Should -Contain 'EntryPointMode'
-        $params | Should -Contain 'BootEntryName'
-        $params | Should -Contain 'PushButtonAction'
-    }
-
-    It 'surfaces the new plan-step action constants on the assembly' {
-        $asm = [AppDomain]::CurrentDomain.GetAssemblies() |
-            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
-            Select-Object -First 1
-        $type = $asm.GetType('PSRecoveryPartition.RecoveryPartitionPlanActions', $false)
-        $type | Should -Not -BeNullOrEmpty
-        foreach ($name in @('CreatePartition','ResizePartition','CopyWinREImage','CopyBootImage','RegisterWinRE','EnableWinRE','CreateBootEntry','ConfigurePushButton','Skip')) {
-            $type.GetField($name) | Should -Not -BeNullOrEmpty -Because "expected plan action constant '$name'"
-        }
+        Get-Command -Module PSRecoveryPartition -Name 'Invoke-RecoveryPartitionPlan' -ErrorAction SilentlyContinue |
+            Should -BeNullOrEmpty
     }
 }
 
@@ -196,11 +189,6 @@ Describe 'Recovery partition layout analysis' {
         foreach ($value in @('Unknown','Standalone','BeforeOs','AfterOs','SameAsOs')) {
             [System.Enum]::IsDefined($type, $value) | Should -BeTrue -Because "expected enum value '$value'"
         }
-    }
-
-    It 'attaches a LayoutAnalysis property to RecoveryPartitionPlan' {
-        $type = $RecoveryAssembly.GetType('PSRecoveryPartition.RecoveryPartitionPlan', $false)
-        $type.GetProperty('LayoutAnalysis') | Should -Not -BeNullOrEmpty
     }
 
     It 'exposes -Force on Resize-RecoveryPartition for risky operations' {
@@ -401,6 +389,34 @@ Describe 'Get-WindowsRecoveryImage -Source filter' {
         $validate | Should -Not -BeNullOrEmpty
         foreach ($value in @('UserPath','SystemRoot','Reagent','RecoveryPartition')) {
             $validate.ValidValues | Should -Contain $value
+        }
+    }
+
+    It 'exposes -DetectionMode (default CurrentOSDisk) to scope the RecoveryPartition source' {
+        $param = (Get-Command Get-WindowsRecoveryImage).Parameters['DetectionMode']
+        $param | Should -Not -BeNullOrEmpty
+        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionDetectionMode'
+    }
+}
+
+Describe 'StreamMetadataStore ETag round-trip (NTFS ADS)' {
+    It 'writes and reads an ETag without disturbing the file body' {
+        $store = ([AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1).GetType('PSRecoveryPartition.StreamMetadataStore')
+        $flags = [Reflection.BindingFlags]'NonPublic,Static,Public'
+        $write = $store.GetMethod('WriteEtag', $flags)
+        $read  = $store.GetMethod('ReadEtag', $flags)
+
+        $tmp = [IO.Path]::Combine([IO.Path]::GetTempPath(), 'psrp-ads-' + [guid]::NewGuid().ToString('N') + '.bin')
+        [IO.File]::WriteAllText($tmp, 'payload')
+        try {
+            $write.Invoke($null, [object[]]@($tmp, '"etag-42"'))
+            $read.Invoke($null, [object[]]@($tmp)) | Should -Be '"etag-42"'
+            [IO.File]::ReadAllText($tmp) | Should -Be 'payload'
+            $read.Invoke($null, [object[]]@(($tmp + '.absent'))) | Should -BeNullOrEmpty
+        } finally {
+            Remove-Item $tmp -Force -ErrorAction SilentlyContinue
         }
     }
 }

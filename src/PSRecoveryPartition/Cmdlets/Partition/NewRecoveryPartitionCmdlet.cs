@@ -33,8 +33,12 @@ namespace PSRecoveryPartition.Cmdlets
         [ValidateSet("NTFS", "FAT32", "ReFS")]
         public string FileSystem { get; set; } = "NTFS";
 
+        // Where/how the partition is placed. The recovery partition is always
+        // created after the existing partitions (never before the OS); the mode
+        // controls how the trailing free space is obtained. See
+        // RecoveryPartitionCreationMode.
         [Parameter]
-        public FileInfo WindowsREImagePath { get; set; }
+        public RecoveryPartitionCreationMode CreationMode { get; set; } = RecoveryPartitionCreationMode.UseTrailingFreeSpace;
 
         [Parameter]
         public SwitchParameter PassThru { get; set; }
@@ -52,14 +56,15 @@ namespace PSRecoveryPartition.Cmdlets
                 ParameterSetName == SizeResolver.ParameterSetPercentSize ? SizePercent : (int?)null,
                 diskSize, out mode);
 
-            var target = "Disk " + DiskNumber + " (size " + resolved + " bytes, mode " + mode + ")";
+            var target = "Disk " + DiskNumber + " (size " + resolved + " bytes, mode " + mode +
+                ", placement " + CreationMode + ")";
             if (!ShouldProcess(target, "Create recovery partition")) { return; }
 
             WriteVerbose("Creating recovery partition on disk " + DiskNumber + ": " + resolved +
-                " bytes (" + mode + "), " + FileSystem + ", label '" + (Label ?? "RECOVERY") + "'" +
-                (WindowsREImagePath != null ? ", staging '" + WindowsREImagePath.Name + "'" : "") + ".");
+                " bytes (" + mode + "), " + FileSystem + ", label '" + (Label ?? "RECOVERY") +
+                "', placement " + CreationMode + ".");
             var engine = new RecoveryPartitionEngine(this);
-            var info = engine.Create(DiskNumber, resolved, Label, FileSystem, WindowsREImagePath);
+            var info = engine.Create(DiskNumber, resolved, Label, FileSystem, CreationMode);
             WriteVerbose("Created recovery partition: disk " + info.DiskNumber + " partition " +
                 info.PartitionNumber + " at offset " + info.Offset + ".");
             Stamp(info);

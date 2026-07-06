@@ -149,17 +149,6 @@ namespace PSRecoveryPartition.Cmdlets
         private WindowsRecoveryBootEntryInfo CreateOnRecoveryPartition()
         {
             var part = RecoveryPartition;
-            // Prefer the \\?\Volume{guid}\ path: it is the volume's file-system
-            // namespace and native CreateDirectory/CopyFile work against it with no
-            // mount. GlobalRootPath is the partition *device* (\Device\HarddiskN\
-            // PartitionM), which is not a file-system namespace, so it is only a
-            // last resort.
-            var nativeRoot = !string.IsNullOrEmpty(part.VolumePath) ? part.VolumePath : part.GlobalRootPath;
-            if (string.IsNullOrEmpty(nativeRoot))
-            {
-                throw new InvalidOperationException(
-                    "The recovery partition exposes neither a VolumePath nor a GlobalRootPath to stage onto.");
-            }
             var target = "disk " + part.DiskNumber + " partition " + part.PartitionNumber +
                          " (" + (ExpandBootImage.IsPresent ? "flat expand" : "stage WIM") + ")";
             if (!Force.IsPresent && !ShouldProcess(target, "Create recovery boot entry")) { return null; }
@@ -180,15 +169,36 @@ namespace PSRecoveryPartition.Cmdlets
             }
             else
             {
-                // Copy WIM + boot.sdi straight onto the partition with no mount.
-                var wimDest = NativeFileStaging.Combine(nativeRoot, VolRel(StagingRelativePath, BootImagePath.Name));
-                NativeFileStaging.EnsureDirectory(NativeFileStaging.Combine(nativeRoot, VolRel(StagingRelativePath)));
-                ReportActivity("Staging boot image");
-                NativeFileStaging.CopyFile(BootImagePath.FullName, wimDest, p => ReportProgress("Staging boot image", p));
-
                 var sdi = ResolveSdi();
-                var sdiDest = NativeFileStaging.Combine(nativeRoot, VolRel(StagingRelativePath, "boot.sdi"));
-                NativeFileStaging.CopyFile(sdi.FullName, sdiDest, null);
+                if (!string.IsNullOrEmpty(part.VolumePath))
+                {
+                    // Fast path: copy straight onto the \\?\Volume{guid}\ file-system
+                    // namespace with native APIs - no mount. (GlobalRootPath is the
+                    // partition *device*, not a file-system namespace, so it is never
+                    // used for staging.)
+                    var root = part.VolumePath;
+                    NativeFileStaging.EnsureDirectory(NativeFileStaging.Combine(root, VolRel(StagingRelativePath)));
+                    ReportActivity("Staging boot image");
+                    NativeFileStaging.CopyFile(BootImagePath.FullName,
+                        NativeFileStaging.Combine(root, VolRel(StagingRelativePath, BootImagePath.Name)),
+                        p => ReportProgress("Staging boot image", p));
+                    NativeFileStaging.CopyFile(sdi.FullName,
+                        NativeFileStaging.Combine(root, VolRel(StagingRelativePath, "boot.sdi")), null);
+                }
+                else
+                {
+                    // Fallback: the volume manager has not surfaced a \\?\Volume{guid}\
+                    // name (for example automount is disabled). Resolve the volume via
+                    // a transient junction (no drive letter) and copy through it.
+                    VolumeStaging.WithVolumeRoot(part.DiskNumber, part.PartitionNumber, root =>
+                    {
+                        var destDir = JoinLocal(root, StagingRelativePath);
+                        Directory.CreateDirectory(destDir);
+                        ReportActivity("Staging boot image");
+                        File.Copy(BootImagePath.FullName, Path.Combine(destDir, BootImagePath.Name), true);
+                        File.Copy(sdi.FullName, Path.Combine(destDir, "boot.sdi"), true);
+                    });
+                }
                 ConfigureRamdisk(req);
             }
 

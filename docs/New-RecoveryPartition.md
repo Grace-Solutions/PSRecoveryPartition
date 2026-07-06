@@ -223,7 +223,12 @@ Accept wildcard characters: False
 ```
 
 ### -CreationMode
-Placement strategy. The recovery partition is always created after the existing partitions (never before the OS). UseTrailingFreeSpace (default) appends into existing free space at the end of the disk and never moves or resizes anything, failing if there is not enough room. ShrinkToFit shrinks the last partition (typically the OS) by the shortfall to free trailing space first. RequireEmptyDisk only creates on a disk with no partitions.
+Placement strategy.
+The recovery partition is always created after the existing partitions (never before the OS).
+UseTrailingFreeSpace (default) appends into existing free space at the end of the disk and never moves or resizes anything, failing if there is not enough room.
+ShrinkToFit shrinks the last partition (typically the OS) by the shortfall to free trailing space first.
+RequireEmptyDisk only creates on a disk with no partitions.
+
 ```yaml
 Type: RecoveryPartitionCreationMode
 Parameter Sets: (All)
@@ -248,5 +253,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
-
 

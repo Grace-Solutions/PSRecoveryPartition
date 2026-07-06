@@ -40,6 +40,7 @@ namespace PSRecoveryPartition
             PSCmdlet owner,
             string activity,
             DateTimeOffset? notModifiedSince = null,
+            string ifNoneMatch = null,
             TimeSpan? timeout = null)
         {
             if (uri == null) { throw new ArgumentNullException("uri"); }
@@ -56,6 +57,12 @@ namespace PSRecoveryPartition
                         // Server-side freshness check: a 304 means the local copy is
                         // current, so nothing is re-downloaded.
                         request.Headers.IfModifiedSince = notModifiedSince.Value;
+                    }
+                    if (!string.IsNullOrEmpty(ifNoneMatch))
+                    {
+                        // TryAddWithoutValidation tolerates weak/opaque tags that the
+                        // strongly-typed EntityTagHeaderValue parser would reject.
+                        request.Headers.TryAddWithoutValidation("If-None-Match", ifNoneMatch);
                     }
 
                     using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
@@ -114,17 +121,23 @@ namespace PSRecoveryPartition
             PSCmdlet owner,
             Action<string> writeVerbose)
         {
-            DateTimeOffset? since = (!force && destFile.Exists)
-                ? destFile.LastWriteTimeUtc
-                : (DateTimeOffset?)null;
+            DateTimeOffset? since = null;
+            string ifNoneMatch = null;
+            if (!force && destFile.Exists)
+            {
+                since = destFile.LastWriteTimeUtc;
+                ifNoneMatch = StreamMetadataStore.ReadEtag(destFile.FullName);
+            }
             if (writeVerbose != null)
             {
                 writeVerbose(since.HasValue
-                    ? "Conditional download (If-Modified-Since " + since.Value.ToString("u") + "); use -Force to download unconditionally."
+                    ? "Conditional download (If-Modified-Since " + since.Value.ToString("u") +
+                        (string.IsNullOrEmpty(ifNoneMatch) ? "" : ", If-None-Match " + ifNoneMatch) +
+                        "); use -Force to download unconditionally."
                     : (force ? "Forced download (skipping freshness check)." : "Downloading (no existing local copy)."));
             }
 
-            var outcome = DownloadAsync(uri, destFile.FullName, headers, owner, activity, since).GetAwaiter().GetResult();
+            var outcome = DownloadAsync(uri, destFile.FullName, headers, owner, activity, since, ifNoneMatch).GetAwaiter().GetResult();
 
             if (!outcome.Downloaded)
             {
@@ -139,6 +152,8 @@ namespace PSRecoveryPartition
                 {
                     File.SetLastWriteTimeUtc(destFile.FullName, outcome.LastModified.Value.UtcDateTime);
                 }
+                // Persist the validator so the next run can send If-None-Match.
+                StreamMetadataStore.WriteEtag(destFile.FullName, outcome.ETag);
                 if (writeVerbose != null)
                 {
                     writeVerbose("Downloaded " + outcome.BytesWritten + " bytes"

@@ -53,75 +53,95 @@ namespace PSRecoveryPartition
             var token = req.VolumeToken.TrimEnd('\\');
             var loaderPath = string.IsNullOrEmpty(req.LoaderPath) ? @"\windows\system32\boot\winload.efi" : req.LoaderPath;
 
-            string deviceElement;
-            if (req.Mode == RecoveryBootMode.Ramdisk)
+            // Track the objects we create so a failure partway through does not
+            // leave a half-configured entry (and an orphaned device-options
+            // object) behind. On any error we best-effort delete them and rethrow.
+            string sdiId = null;
+            string identifier = null;
+            try
             {
-                var imageRel = EnsureLeadingBackslash(req.ImageRelativePath);
-                var sdiRel = EnsureLeadingBackslash(req.SdiRelativePath);
+                string deviceElement;
+                if (req.Mode == RecoveryBootMode.Ramdisk)
+                {
+                    var imageRel = EnsureLeadingBackslash(req.ImageRelativePath);
+                    var sdiRel = EnsureLeadingBackslash(req.SdiRelativePath);
 
-                // A dedicated device-options object so the entry points at *our*
-                // staged boot.sdi rather than the global {ramdiskoptions}.
-                var createSdi = Run(new List<string> { "/create", "/d", name + " ramdisk options", "/device" }, "create ramdisk device options");
-                var sdiId = ExtractIdentifier(createSdi.StandardOutput);
-                if (string.IsNullOrEmpty(sdiId))
+                    // A dedicated device-options object so the entry points at *our*
+                    // staged boot.sdi rather than the global {ramdiskoptions}.
+                    var createSdi = Run(new List<string> { "/create", "/d", name + " ramdisk options", "/device" }, "create ramdisk device options");
+                    sdiId = ExtractIdentifier(createSdi.StandardOutput);
+                    if (string.IsNullOrEmpty(sdiId))
+                    {
+                        throw new InvalidOperationException(
+                            "bcdedit.exe did not return a device-options identifier. Output: " + (createSdi.StandardOutput ?? "<empty>"));
+                    }
+                    Run(new List<string> { "/set", sdiId, "ramdisksdidevice", "partition=" + token }, "set ramdisk sdi device");
+                    Run(new List<string> { "/set", sdiId, "ramdisksdipath", sdiRel }, "set ramdisk sdi path");
+                    deviceElement = "ramdisk=[" + token + "]" + imageRel + "," + sdiId;
+                }
+                else
+                {
+                    deviceElement = "partition=" + token;
+                }
+
+                var create = Run(new List<string> { "/create", "/d", name, "/application", "osloader" }, "create boot entry");
+                identifier = ExtractIdentifier(create.StandardOutput);
+                if (string.IsNullOrEmpty(identifier))
                 {
                     throw new InvalidOperationException(
-                        "bcdedit.exe did not return a device-options identifier. Output: " + (createSdi.StandardOutput ?? "<empty>"));
+                        "bcdedit.exe did not return a new boot entry identifier. Output: " + (create.StandardOutput ?? "<empty>"));
                 }
-                Run(new List<string> { "/set", sdiId, "ramdisksdidevice", "partition=" + token }, "set ramdisk sdi device");
-                Run(new List<string> { "/set", sdiId, "ramdisksdipath", sdiRel }, "set ramdisk sdi path");
-                deviceElement = "ramdisk=[" + token + "]" + imageRel + "," + sdiId;
-            }
-            else
-            {
-                deviceElement = "partition=" + token;
-            }
 
-            var create = Run(new List<string> { "/create", "/d", name, "/application", "osloader" }, "create boot entry");
-            var identifier = ExtractIdentifier(create.StandardOutput);
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new InvalidOperationException(
-                    "bcdedit.exe did not return a new boot entry identifier. Output: " + (create.StandardOutput ?? "<empty>"));
-            }
+                Run(new List<string> { "/set", identifier, "device", deviceElement }, "configure boot device");
+                Run(new List<string> { "/set", identifier, "osdevice", deviceElement }, "configure boot osdevice");
+                Run(new List<string> { "/set", identifier, "path", loaderPath }, "configure boot loader path");
+                Run(new List<string> { "/set", identifier, "systemroot", req.SystemRoot ?? @"\Windows" }, "configure boot systemroot");
+                if (req.Mode == RecoveryBootMode.Flat)
+                {
+                    Run(new List<string> { "/set", identifier, "detecthal", "yes" }, "configure hardware abstraction layer detection");
+                }
+                Run(new List<string> { "/set", identifier, "winpe", "yes" }, "mark boot entry as Windows PE");
 
-            Run(new List<string> { "/set", identifier, "device", deviceElement }, "configure boot device");
-            Run(new List<string> { "/set", identifier, "osdevice", deviceElement }, "configure boot osdevice");
-            Run(new List<string> { "/set", identifier, "path", loaderPath }, "configure boot loader path");
-            Run(new List<string> { "/set", identifier, "systemroot", req.SystemRoot ?? @"\Windows" }, "configure boot systemroot");
-            if (req.Mode == RecoveryBootMode.Flat)
-            {
-                Run(new List<string> { "/set", identifier, "detecthal", "yes" }, "configure hardware abstraction layer detection");
-            }
-            Run(new List<string> { "/set", identifier, "winpe", "yes" }, "mark boot entry as Windows PE");
+                if (req.Visibility == RecoveryBootEntryVisibility.Hidden)
+                {
+                    Run(new List<string> { "/set", identifier, "displaymessage", "Recovery" }, "configure boot displaymessage");
+                }
+                Run(new List<string> { "/displayorder", identifier, req.AddLast ? "/addlast" : "/addfirst" }, "update displayorder");
+                if (req.Timeout > TimeSpan.Zero)
+                {
+                    Run(new List<string> { "/timeout", ((int)req.Timeout.TotalSeconds).ToString() }, "set boot manager timeout");
+                }
+                if (req.SetDefault)
+                {
+                    Run(new List<string> { "/default", identifier }, "set boot entry as default");
+                }
 
-            if (req.Visibility == RecoveryBootEntryVisibility.Hidden)
-            {
-                Run(new List<string> { "/set", identifier, "displaymessage", "Recovery" }, "configure boot displaymessage");
+                return new WindowsRecoveryBootEntryInfo
+                {
+                    Identifier = identifier,
+                    Name = name,
+                    ObjectType = "Windows Boot Loader",
+                    BootImagePath = req.StagedImage,
+                    BootTimeout = req.Timeout,
+                    Visibility = req.Visibility,
+                    IsDefault = req.SetDefault,
+                    IsRecoveryEntry = true,
+                    ExecutionMethod = RecoveryExecutionMethod.ProcessFallback,
+                    ProcessFallbackUsed = true
+                };
             }
-            Run(new List<string> { "/displayorder", identifier, req.AddLast ? "/addlast" : "/addfirst" }, "update displayorder");
-            if (req.Timeout > TimeSpan.Zero)
+            catch
             {
-                Run(new List<string> { "/timeout", ((int)req.Timeout.TotalSeconds).ToString() }, "set boot manager timeout");
+                if (!string.IsNullOrEmpty(identifier)) { TryDelete(identifier); }
+                if (!string.IsNullOrEmpty(sdiId)) { TryDelete(sdiId); }
+                throw;
             }
-            if (req.SetDefault)
-            {
-                Run(new List<string> { "/default", identifier }, "set boot entry as default");
-            }
+        }
 
-            return new WindowsRecoveryBootEntryInfo
-            {
-                Identifier = identifier,
-                Name = name,
-                ObjectType = "Windows Boot Loader",
-                BootImagePath = req.StagedImage,
-                BootTimeout = req.Timeout,
-                Visibility = req.Visibility,
-                IsDefault = req.SetDefault,
-                IsRecoveryEntry = true,
-                ExecutionMethod = RecoveryExecutionMethod.ProcessFallback,
-                ProcessFallbackUsed = true
-            };
+        private void TryDelete(string id)
+        {
+            try { Run(new List<string> { "/delete", id, "/f" }, "roll back BCD object " + id); }
+            catch { /* best effort rollback */ }
         }
 
         private static string EnsureLeadingBackslash(string relative)
@@ -134,7 +154,53 @@ namespace PSRecoveryPartition
         public void Remove(string identifier)
         {
             if (string.IsNullOrEmpty(identifier)) { throw new ArgumentNullException("identifier"); }
+
+            // Capture the ramdisk device-options object this entry references (if
+            // any) before we delete the loader, so we can clean it up afterwards
+            // and not leave it orphaned.
+            var deviceOptions = TryGetRamdiskDeviceOptionsId(identifier);
+
             Run(new List<string> { "/delete", identifier, "/f", "/cleanup" }, "remove boot entry " + identifier);
+
+            if (!string.IsNullOrEmpty(deviceOptions) && !IsDeviceOptionsReferenced(deviceOptions))
+            {
+                try { Run(new List<string> { "/delete", deviceOptions, "/f" }, "remove orphaned ramdisk device options " + deviceOptions); }
+                catch { /* best effort: shared or already gone */ }
+            }
+        }
+
+        // Reads a boot entry and returns the device-options {guid} its ramdisk
+        // device element references, or null. The global {ramdiskoptions} is never
+        // returned so we never delete the shared object.
+        private string TryGetRamdiskDeviceOptionsId(string identifier)
+        {
+            try
+            {
+                var res = Run(new List<string> { "/enum", identifier, "/v" }, "read boot entry " + identifier);
+                var m = Regex.Match(res.StandardOutput ?? string.Empty,
+                    @"ramdisk=\[[^\]]*\][^,\r\n]*,(\{[0-9a-fA-F\-]+\})", RegexOptions.IgnoreCase);
+                if (m.Success)
+                {
+                    var g = m.Groups[1].Value;
+                    if (!g.Equals("{ramdiskoptions}", StringComparison.OrdinalIgnoreCase)) { return g; }
+                }
+            }
+            catch { /* best effort */ }
+            return null;
+        }
+
+        // True when any remaining boot entry still references the device-options
+        // object (a ramdisk reference appears as ",{guid}" in a device/osdevice
+        // line; the object's own "identifier {guid}" line has no leading comma).
+        private bool IsDeviceOptionsReferenced(string deviceOptionsId)
+        {
+            try
+            {
+                var res = Run(new List<string> { "/enum", "all", "/v" }, "enumerate boot entries");
+                return (res.StandardOutput ?? string.Empty)
+                    .IndexOf("," + deviceOptionsId, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+            catch { return true; } // if unsure, keep the object
         }
 
         internal RecoveryProcessExecutionResult Run(IList<string> argumentList, string operationDescription)

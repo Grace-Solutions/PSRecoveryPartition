@@ -391,6 +391,34 @@ Describe 'Get-WindowsRecoveryImage -Source filter' {
             $validate.ValidValues | Should -Contain $value
         }
     }
+
+    It 'exposes -DetectionMode (default CurrentOSDisk) to scope the RecoveryPartition source' {
+        $param = (Get-Command Get-WindowsRecoveryImage).Parameters['DetectionMode']
+        $param | Should -Not -BeNullOrEmpty
+        $param.ParameterType.FullName | Should -Be 'PSRecoveryPartition.RecoveryPartitionDetectionMode'
+    }
+}
+
+Describe 'StreamMetadataStore ETag round-trip (NTFS ADS)' {
+    It 'writes and reads an ETag without disturbing the file body' {
+        $store = ([AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GetName().Name -eq 'PSRecoveryPartition' } |
+            Select-Object -First 1).GetType('PSRecoveryPartition.StreamMetadataStore')
+        $flags = [Reflection.BindingFlags]'NonPublic,Static,Public'
+        $write = $store.GetMethod('WriteEtag', $flags)
+        $read  = $store.GetMethod('ReadEtag', $flags)
+
+        $tmp = [IO.Path]::Combine([IO.Path]::GetTempPath(), 'psrp-ads-' + [guid]::NewGuid().ToString('N') + '.bin')
+        [IO.File]::WriteAllText($tmp, 'payload')
+        try {
+            $write.Invoke($null, [object[]]@($tmp, '"etag-42"'))
+            $read.Invoke($null, [object[]]@($tmp)) | Should -Be '"etag-42"'
+            [IO.File]::ReadAllText($tmp) | Should -Be 'payload'
+            $read.Invoke($null, [object[]]@(($tmp + '.absent'))) | Should -BeNullOrEmpty
+        } finally {
+            Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 Describe 'DestinationPathResolver UNC rejection' {

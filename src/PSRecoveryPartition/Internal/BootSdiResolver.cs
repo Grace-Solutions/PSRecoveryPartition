@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using PSRecoveryPartition.Native;
 
 namespace PSRecoveryPartition
@@ -18,6 +20,17 @@ namespace PSRecoveryPartition
     /// </summary>
     internal static class BootSdiResolver
     {
+        // UI cultures to probe for the localized EFI boot.sdi (current first, then
+        // en-US as the universal fallback).
+        private static IEnumerable<string> Cultures()
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var c in new[] { CultureInfo.CurrentUICulture.Name, "en-US" })
+            {
+                if (!string.IsNullOrEmpty(c) && seen.Add(c)) { yield return c; }
+            }
+        }
+
         // Locations on a live Windows install that commonly carry boot.sdi.
         private static IEnumerable<string> LiveOsCandidates()
         {
@@ -26,21 +39,33 @@ namespace PSRecoveryPartition
             {
                 yield return Path.Combine(windir, @"Boot\DVD\PCAT\boot.sdi");
                 yield return Path.Combine(windir, @"Boot\PCAT\boot.sdi");
+                foreach (var culture in Cultures())
+                {
+                    yield return Path.Combine(windir, @"Boot\DVD\EFI\" + culture + @"\boot.sdi");
+                }
+                yield return Path.Combine(windir, @"Boot\DVD\EFI\boot.sdi");
+                yield return Path.Combine(windir, @"System32\Recovery\boot.sdi");
             }
             var sysDrive = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
             if (!string.IsNullOrEmpty(sysDrive))
             {
                 yield return Path.Combine(sysDrive, @"Recovery\WindowsRE\boot.sdi");
+                yield return Path.Combine(sysDrive, @"Recovery\boot.sdi");
             }
         }
 
-        // Paths inside a WIM where boot.sdi is typically found.
-        private static readonly string[] InImageCandidates =
+        // Paths inside a WIM where boot.sdi is typically found (WinPE / boot.wim
+        // carry it; a plain winre.wim usually does not).
+        private static IEnumerable<string> InImageCandidates()
         {
-            @"\Windows\Boot\DVD\PCAT\boot.sdi",
-            @"\Windows\Boot\PCAT\boot.sdi",
-            @"\Windows\Boot\DVD\EFI\boot.sdi",
-        };
+            yield return @"\Windows\Boot\DVD\PCAT\boot.sdi";
+            yield return @"\Windows\Boot\PCAT\boot.sdi";
+            foreach (var culture in Cultures())
+            {
+                yield return @"\Windows\Boot\DVD\EFI\" + culture + @"\boot.sdi";
+            }
+            yield return @"\Windows\Boot\DVD\EFI\boot.sdi";
+        }
 
         /// <summary>
         /// Resolves boot.sdi. <paramref name="explicitPath"/> wins when supplied.
@@ -60,8 +85,10 @@ namespace PSRecoveryPartition
                 return explicitPath;
             }
 
+            var liveChecked = 0;
             foreach (var candidate in LiveOsCandidates())
             {
+                liveChecked++;
                 if (File.Exists(candidate))
                 {
                     Log(verbose, "boot.sdi: found on live OS at '" + candidate + "'.");
@@ -69,12 +96,14 @@ namespace PSRecoveryPartition
                 }
             }
 
+            var imageChecked = 0;
             if (bootImage != null && bootImage.Exists)
             {
                 Directory.CreateDirectory(scratchDir);
                 var dest = Path.Combine(scratchDir, "boot.sdi");
-                foreach (var inImage in InImageCandidates)
+                foreach (var inImage in InImageCandidates())
                 {
+                    imageChecked++;
                     try
                     {
                         if (WimgApi.TryExtractFile(bootImage.FullName, imageIndex, inImage, dest))
@@ -91,8 +120,12 @@ namespace PSRecoveryPartition
             }
 
             throw new FileNotFoundException(
-                "Could not resolve a boot.sdi. Supply one with -BootSdiPath, or use a boot image that contains one. " +
-                "boot.sdi is required for the default RAM-boot mode; -ExpandBootImage (flat boot) does not need it.");
+                "Could not resolve a boot.sdi (checked " + liveChecked + " live-OS location(s)" +
+                (imageChecked > 0
+                    ? " and " + imageChecked + " path(s) inside '" + bootImage.Name + "'"
+                    : "; no boot image was available to extract from") +
+                "). Supply one explicitly with -BootSdiPath, or use a boot image (WinPE/boot.wim) that contains one. " +
+                "boot.sdi is required only for the default RAM-boot mode; -ExpandBootImage (flat boot) does not need it.");
         }
 
         private static void Log(Action<string> verbose, string message)

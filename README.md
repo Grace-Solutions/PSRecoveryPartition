@@ -102,6 +102,29 @@ $NewWindowsRecoveryBootEntryResult = New-WindowsRecoveryBootEntry @NewWindowsRec
 Write-Output -InputObject ($NewWindowsRecoveryBootEntryResult)
 ```
 
+**Variant C — WIM (ramdisk) boot of a network image staged into a named subfolder on the recovery partition, appended last (`-AddLast`) and replacing any existing entry of the same name (`-Force`).** The image is copied straight onto the partition through its `\\?\Volume{GUID}\` path with no drive letter or mount; a `boot.sdi` is resolved automatically.
+
+```powershell
+$RecoveryPartition = Get-RecoveryPartition -DetectionMode CurrentOSDisk
+
+$NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $NewWindowsRecoveryBootEntryParameters.BootImagePath       = '\\fileserver\Images\Generic_x64.wim'
+    $NewWindowsRecoveryBootEntryParameters.ImageIndex          = 1
+    $NewWindowsRecoveryBootEntryParameters.RecoveryPartition   = $RecoveryPartition
+    $NewWindowsRecoveryBootEntryParameters.StagingRelativePath = '\Generic_x64'
+    $NewWindowsRecoveryBootEntryParameters.Name                = 'Remote Recovery'
+    $NewWindowsRecoveryBootEntryParameters.BootTimeout         = [TimeSpan]::FromSeconds(5)
+    $NewWindowsRecoveryBootEntryParameters.BootEntryVisibility = 'Visible'
+    $NewWindowsRecoveryBootEntryParameters.AddLast             = $True
+    $NewWindowsRecoveryBootEntryParameters.PassThru            = $True
+    $NewWindowsRecoveryBootEntryParameters.Verbose             = $True
+    $NewWindowsRecoveryBootEntryParameters.Force               = $True
+
+$NewWindowsRecoveryBootEntryResult = New-WindowsRecoveryBootEntry @NewWindowsRecoveryBootEntryParameters
+
+Write-Output -InputObject ($NewWindowsRecoveryBootEntryResult)
+```
+
 ## Architecture
 
 Cmdlets are thin C# shells over a small internal engine layer:

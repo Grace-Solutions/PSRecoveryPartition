@@ -116,12 +116,16 @@ namespace PSRecoveryPartition
                     Run(new List<string> { "/default", identifier }, "set boot entry as default");
                 }
 
+                var ramdisk = req.Mode == RecoveryBootMode.Ramdisk;
                 return new WindowsRecoveryBootEntryInfo
                 {
                     Identifier = identifier,
                     Name = name,
                     ObjectType = "Windows Boot Loader",
                     BootImagePath = req.StagedImage,
+                    StagedImagePath = ramdisk ? EnsureLeadingBackslash(req.ImageRelativePath) : null,
+                    SdiPath = ramdisk ? EnsureLeadingBackslash(req.SdiRelativePath) : null,
+                    DeviceOptionsIdentifier = sdiId,
                     BootTimeout = req.Timeout,
                     Visibility = req.Visibility,
                     IsDefault = req.SetDefault,

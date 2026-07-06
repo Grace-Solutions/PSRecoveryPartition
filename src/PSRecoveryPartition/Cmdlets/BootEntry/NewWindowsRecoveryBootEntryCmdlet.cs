@@ -193,6 +193,11 @@ namespace PSRecoveryPartition.Cmdlets
                 req.VolumeToken = letter;
                 created = new BcdEditEngine(this).Create(req);
             });
+            if (created != null)
+            {
+                created.DiskNumber = part.DiskNumber;
+                created.PartitionNumber = part.PartitionNumber;
+            }
             return created;
         }
 

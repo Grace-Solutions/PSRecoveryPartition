@@ -24,7 +24,12 @@
               <ListItem><PropertyName>Identifier</PropertyName></ListItem>
               <ListItem><PropertyName>Name</PropertyName></ListItem>
               <ListItem><PropertyName>ObjectType</PropertyName></ListItem>
-              <ListItem><PropertyName>BootImagePath</PropertyName></ListItem>
+              <ListItem><Label>SourceImagePath</Label><PropertyName>BootImagePath</PropertyName></ListItem>
+              <ListItem><PropertyName>StagedImagePath</PropertyName></ListItem>
+              <ListItem><PropertyName>SdiPath</PropertyName></ListItem>
+              <ListItem><PropertyName>DeviceOptionsIdentifier</PropertyName></ListItem>
+              <ListItem><PropertyName>DiskNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>PartitionNumber</PropertyName></ListItem>
               <ListItem><PropertyName>BootTimeout</PropertyName></ListItem>
               <ListItem><PropertyName>Visibility</PropertyName></ListItem>
               <ListItem><PropertyName>IsDefault</PropertyName></ListItem>

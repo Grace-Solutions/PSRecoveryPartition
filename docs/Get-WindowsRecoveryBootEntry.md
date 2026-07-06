@@ -24,10 +24,10 @@ Enumerates Boot Configuration Data entries and returns those that look like reco
 
 ### Example 1: Single-line usage
 ```powershell
-Get-WindowsRecoveryBootEntry
+Get-WindowsRecoveryBootEntry -Name 'Grace*'
 ```
 
-Lists the recovery boot entries currently registered in BCD.
+Lists the recovery boot entries whose name starts with "Grace".
 
 ## PARAMETERS
 
@@ -88,7 +88,7 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
-Accept wildcard characters: False
+Accept wildcard characters: True
 ```
 
 ### -ProgressAction

@@ -15,29 +15,31 @@ Creates a custom recovery boot entry from a boot image.
 ### ByImagePath (Default)
 ```
 New-WindowsRecoveryBootEntry -BootImagePath <FileInfo> [-StagingRelativePath <String>] [-ExpandBootImage]
- [-ImageIndex <Int32>] [-BootSdiPath <FileInfo>] [-Name <String>] [-BootTimeout <TimeSpan>]
- [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault] [-AddLast] [-Force] [-PassThru]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ImageIndex <Int32>] [-FormatTargetPartition] [-BootSdiPath <FileInfo>] [-Name <String>]
+ [-BootTimeout <TimeSpan>] [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault] [-AddLast]
+ [-Force] [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByRecoveryPartition
 ```
 New-WindowsRecoveryBootEntry -BootImagePath <FileInfo> -RecoveryPartition <RecoveryPartitionInfo>
- [-StagingRelativePath <String>] [-ExpandBootImage] [-ImageIndex <Int32>] [-BootSdiPath <FileInfo>]
- [-Name <String>] [-BootTimeout <TimeSpan>] [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault]
- [-AddLast] [-Force] [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-StagingRelativePath <String>] [-ExpandBootImage] [-ImageIndex <Int32>] [-FormatTargetPartition]
+ [-BootSdiPath <FileInfo>] [-Name <String>] [-BootTimeout <TimeSpan>]
+ [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault] [-AddLast] [-Force] [-PassThru]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByTargetPath
 ```
 New-WindowsRecoveryBootEntry -BootImagePath <FileInfo> -TargetPath <DirectoryInfo>
- [-StagingRelativePath <String>] [-ExpandBootImage] [-ImageIndex <Int32>] [-BootSdiPath <FileInfo>]
- [-Name <String>] [-BootTimeout <TimeSpan>] [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault]
- [-AddLast] [-Force] [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-StagingRelativePath <String>] [-ExpandBootImage] [-ImageIndex <Int32>] [-FormatTargetPartition]
+ [-BootSdiPath <FileInfo>] [-Name <String>] [-BootTimeout <TimeSpan>]
+ [-BootEntryVisibility <RecoveryBootEntryVisibility>] [-SetDefault] [-AddLast] [-Force] [-PassThru]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Stages a boot image onto a destination and creates a matching BCD boot entry. The destination is a recovery partition (written through its \\?\GLOBALROOT path with no mount), an already-mounted directory (-TargetPath), or the image's existing location (the default ByImagePath set). By default the WIM is staged as-is and booted as a ramdisk, and a boot.sdi is resolved automatically (or supplied with -BootSdiPath); with -ExpandBootImage the image is expanded flat onto the destination for non-RAM boot and the entry is wired to boot it in place. The staging sub-path defaults to \Recovery\WindowsRE but is fully overridable via -StagingRelativePath. Existing entries with the same name are not duplicated.
+Stages a boot image onto a destination and creates a matching BCD boot entry. The destination is a recovery partition (written through its \\?\GLOBALROOT path with no mount), an already-mounted directory (-TargetPath), or the image's existing location (the default ByImagePath set). By default the WIM is staged as-is and booted as a ramdisk, and a boot.sdi is resolved automatically (or supplied with -BootSdiPath); with -ExpandBootImage the image is expanded flat onto the partition root (Microsoft flat-boot layout, systemroot=\Windows) and the entry is wired to boot it in place. For ramdisk boot the staging sub-path defaults to \Recovery\WindowsRE but is overridable via -StagingRelativePath. Existing entries with the same name are not duplicated.
 
 ## EXAMPLES
 
@@ -308,6 +310,20 @@ Parameter Sets: ByTargetPath
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FormatTargetPartition
+Formats the target recovery partition (NTFS, quick) before a flat expansion so the image lands on a clean volume with no overlapping content. Only honoured with -ExpandBootImage on a -RecoveryPartition. DESTROYS all existing content on that partition, including any existing \Recovery\WindowsRE payload.
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

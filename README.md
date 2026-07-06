@@ -79,7 +79,7 @@ $NewWindowsRecoveryBootEntryResult = New-WindowsRecoveryBootEntry @NewWindowsRec
 Write-Output -InputObject ($NewWindowsRecoveryBootEntryResult)
 ```
 
-**Variant B — expanded (flat / non-RAM) boot into `\Recovery` on the recovery partition, targeted by its `\\?\Volume{GUID}\` / `\\?\GLOBALROOT` device path (no drive letter, no mount).** `-ExpandBootImage` applies the selected image index flat onto the partition.
+**Variant B — expanded (flat / non-RAM) boot on the recovery partition, targeted by its `\\?\Volume{GUID}\` / `\\?\GLOBALROOT` device path (no drive letter, no mount).** `-ExpandBootImage` applies the selected image index flat onto the **partition root** (Microsoft flat-boot layout: `systemroot=\Windows`), so `-StagingRelativePath` is ignored. Add `-FormatTargetPartition` to format the partition (NTFS, quick) first so the image lands on a clean volume — this **destroys all existing content on that partition**, so only use it on a partition dedicated to the flat image. Flat boot is best-effort; the ramdisk WIM boot (Variant A) is the supported default.
 
 ```powershell
 $OSRecoveryPartition = Get-RecoveryPartition -DetectionMode CurrentOSDisk -Verbose
@@ -90,7 +90,7 @@ $NewWindowsRecoveryBootEntryParameters = New-Object -TypeName 'System.Collection
     $NewWindowsRecoveryBootEntryParameters.RecoveryPartition   = $OSRecoveryPartition
     $NewWindowsRecoveryBootEntryParameters.ExpandBootImage     = $True
     $NewWindowsRecoveryBootEntryParameters.ImageIndex          = 1
-    $NewWindowsRecoveryBootEntryParameters.StagingRelativePath = '\Recovery'
+    $NewWindowsRecoveryBootEntryParameters.FormatTargetPartition = $True
     $NewWindowsRecoveryBootEntryParameters.Name                = 'Grace Solutions Recovery'
     $NewWindowsRecoveryBootEntryParameters.BootTimeout         = [TimeSpan]::FromSeconds(10)
     $NewWindowsRecoveryBootEntryParameters.BootEntryVisibility = 'Visible'
@@ -184,6 +184,7 @@ On MBR disks the module writes the partition type byte `0x27` (Windows Recovery)
 | [Disable-WindowsRecoveryEnvironment](docs/Disable-WindowsRecoveryEnvironment.md) | Disables Windows Recovery Environment. |
 | [Get-WindowsRecoveryBootEntry](docs/Get-WindowsRecoveryBootEntry.md) | Discovers recovery boot entries. |
 | [New-WindowsRecoveryBootEntry](docs/New-WindowsRecoveryBootEntry.md) | Creates a custom recovery boot entry from a boot image (WIM ramdisk or flat expand). |
+| [Set-WindowsRecoveryBootImage](docs/Set-WindowsRecoveryBootImage.md) | Replaces the boot image on an existing recovery boot entry. |
 | [Remove-WindowsRecoveryBootEntry](docs/Remove-WindowsRecoveryBootEntry.md) | Removes a recovery boot entry idempotently. |
 | [Set-WindowsRecoveryEntryPoint](docs/Set-WindowsRecoveryEntryPoint.md) | Configures push-button reset / Windows RE as a recovery entry point. |
 

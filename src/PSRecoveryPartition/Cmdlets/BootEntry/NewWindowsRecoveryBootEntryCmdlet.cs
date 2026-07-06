@@ -64,6 +64,14 @@ namespace PSRecoveryPartition.Cmdlets
         [Parameter]
         public int ImageIndex { get; set; } = 1;
 
+        // Format the target recovery partition (NTFS, quick) before a flat
+        // expansion so the image lands on a clean volume with no overlapping
+        // content. Only honoured with -ExpandBootImage on a recovery partition.
+        // DESTROYS all existing content on that partition (including any existing
+        // \Recovery\WindowsRE payload).
+        [Parameter]
+        public SwitchParameter FormatTargetPartition { get; set; }
+
         // Explicit boot.sdi (ramdisk mode). When omitted it is resolved from the
         // live OS, then extracted from the boot image.
         [Parameter]
@@ -105,6 +113,14 @@ namespace PSRecoveryPartition.Cmdlets
                     throw new ArgumentOutOfRangeException("ImageIndex", ImageIndex,
                         "The boot image contains " + count + " image(s).");
                 }
+                if (!string.Equals(StagingRelativePath, @"\Recovery\WindowsRE", StringComparison.OrdinalIgnoreCase))
+                {
+                    WriteWarning("-ExpandBootImage expands to the partition root (Microsoft flat-boot layout, systemroot=\\Windows); -StagingRelativePath is ignored.");
+                }
+            }
+            if (FormatTargetPartition.IsPresent && (!ExpandBootImage.IsPresent || ParameterSetName != "ByRecoveryPartition"))
+            {
+                WriteWarning("-FormatTargetPartition is only honoured with -ExpandBootImage on a -RecoveryPartition; it is ignored here.");
             }
 
             // Idempotency: never create a duplicate entry with the same name.
@@ -157,13 +173,33 @@ namespace PSRecoveryPartition.Cmdlets
 
             if (ExpandBootImage.IsPresent)
             {
+                if (FormatTargetPartition.IsPresent)
+                {
+                    var volPath = VolumeStaging.ResolveVolumePath(part.DiskNumber, part.PartitionNumber);
+                    if (string.IsNullOrEmpty(volPath))
+                    {
+                        throw new InvalidOperationException(
+                            "-FormatTargetPartition requires a Windows volume name for disk " + part.DiskNumber +
+                            " partition " + part.PartitionNumber + ", but none is registered.");
+                    }
+                    WriteWarning("Formatting disk " + part.DiskNumber + " partition " + part.PartitionNumber +
+                        " (NTFS, quick) before flat expansion; all existing content on it will be lost.");
+                    ReportActivity("Formatting target partition (NTFS)");
+                    Win32VolumeFormatter.Format(volPath, "NTFS", label: "Recovery", quickFormat: true);
+                }
+
                 // WIMGAPI needs an ordinary FS path; use a transient junction (no
                 // drive letter) to expand, then the drive letter only for bcdedit.
                 VolumeStaging.WithVolumeRoot(part.DiskNumber, part.PartitionNumber, root =>
                 {
-                    var destDir = JoinLocal(root, StagingRelativePath);
-                    ReportActivity("Expanding boot image (flat)");
+                    // Flat boot expands to the volume root (systemroot = \Windows).
+                    var destDir = root;
+                    TransferLog.Attempt(this, download: false,
+                        source: BootImagePath.FullName + " (image index " + ImageIndex + ")",
+                        destination: @"\ (root) on disk " + part.DiskNumber + " partition " + part.PartitionNumber + " (flat expand)");
+                    ReportActivity("Expanding boot image (flat); this can take several minutes");
                     WimgApi.ApplyImage(BootImagePath.FullName, ImageIndex, destDir, null, p => ReportProgress("Expanding boot image", p));
+                    WriteVerbose("Flat expansion completed.");
                 });
                 ConfigureFlat(req);
             }
@@ -178,10 +214,16 @@ namespace PSRecoveryPartition.Cmdlets
                 {
                     var destDir = JoinLocal(root, StagingRelativePath);
                     Directory.CreateDirectory(destDir);
+                    TransferLog.Attempt(this, download: false,
+                        source: BootImagePath.FullName,
+                        destination: VolRel(StagingRelativePath, BootImagePath.Name) + " on disk " + part.DiskNumber + " partition " + part.PartitionNumber);
                     ReportActivity("Staging boot image");
                     NativeFileStaging.CopyFile(BootImagePath.FullName,
                         Path.Combine(destDir, BootImagePath.Name),
                         p => ReportProgress("Staging boot image", p));
+                    TransferLog.Attempt(this, download: false,
+                        source: sdi.FullName,
+                        destination: VolRel(StagingRelativePath, "boot.sdi") + " on disk " + part.DiskNumber + " partition " + part.PartitionNumber);
                     File.Copy(sdi.FullName, Path.Combine(destDir, "boot.sdi"), true);
                 });
                 ConfigureRamdisk(req);
@@ -214,9 +256,14 @@ namespace PSRecoveryPartition.Cmdlets
 
             if (ExpandBootImage.IsPresent)
             {
-                var destDir = JoinLocal(root, StagingRelativePath);
-                ReportActivity("Expanding boot image (flat)");
+                // Flat boot expands to the volume root (systemroot = \Windows).
+                var destDir = root;
+                TransferLog.Attempt(this, download: false,
+                    source: BootImagePath.FullName + " (image index " + ImageIndex + ")",
+                    destination: destDir + " (flat expand, root)");
+                ReportActivity("Expanding boot image (flat); this can take several minutes");
                 WimgApi.ApplyImage(BootImagePath.FullName, ImageIndex, destDir, null, p => ReportProgress("Expanding boot image", p));
+                WriteVerbose("Flat expansion completed.");
                 ConfigureFlat(req);
             }
             else
@@ -224,10 +271,12 @@ namespace PSRecoveryPartition.Cmdlets
                 var destDir = JoinLocal(root, StagingRelativePath);
                 Directory.CreateDirectory(destDir);
                 var wimDest = Path.Combine(destDir, BootImagePath.Name);
+                TransferLog.Attempt(this, download: false, source: BootImagePath.FullName, destination: wimDest);
                 ReportActivity("Staging boot image");
                 NativeFileStaging.CopyFile(BootImagePath.FullName, wimDest, p => ReportProgress("Staging boot image", p));
 
                 var sdi = ResolveSdi();
+                TransferLog.Attempt(this, download: false, source: sdi.FullName, destination: Path.Combine(destDir, "boot.sdi"));
                 File.Copy(sdi.FullName, Path.Combine(destDir, "boot.sdi"), true);
                 ConfigureRamdisk(req);
             }
@@ -258,6 +307,7 @@ namespace PSRecoveryPartition.Cmdlets
             var sdiTarget = dir != null ? Path.Combine(dir.FullName, "boot.sdi") : null;
             if (sdiTarget != null && !string.Equals(sdi.FullName, sdiTarget, StringComparison.OrdinalIgnoreCase))
             {
+                TransferLog.Attempt(this, download: false, source: sdi.FullName, destination: sdiTarget);
                 File.Copy(sdi.FullName, sdiTarget, true);
             }
             var sdiRel = sdiTarget != null ? sdiTarget.Substring(volumeRoot.Length) : VolRel(null, "boot.sdi");
@@ -299,10 +349,13 @@ namespace PSRecoveryPartition.Cmdlets
         private void ConfigureFlat(BcdBootEntryRequest req)
         {
             req.Mode = RecoveryBootMode.Flat;
-            // device is partition=<token>; systemroot / loader path include the
-            // staging sub-path so an image expanded into a subfolder still boots.
-            req.SystemRoot = VolRel(StagingRelativePath, "Windows");
-            req.LoaderPath = VolRel(StagingRelativePath, @"windows\system32\" + WinloadLeaf());
+            // Microsoft's flat / non-RAM boot expects the image expanded to the
+            // volume ROOT, so systemroot is the standard \Windows and the loader
+            // is at \windows\system32\winload.*. Booting WinPE from a nested
+            // systemroot (\Recovery\WindowsRE\Windows) is what crashed the display
+            // init and rebooted; the root layout matches the supported topology.
+            req.SystemRoot = @"\Windows";
+            req.LoaderPath = @"\windows\system32\" + WinloadLeaf();
         }
 
         private FileInfo ResolveSdi()

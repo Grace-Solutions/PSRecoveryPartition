@@ -85,7 +85,7 @@ namespace PSRecoveryPartition.Cmdlets
                 }
                 else if (ShouldProcess(target, "Copy recovery image"))
                 {
-                    WriteVerbose("Copying '" + SourceImagePath.FullName + "' -> '" + destFile.FullName + "'.");
+                    TransferLog.Attempt(this, download: false, source: SourceImagePath.FullName, destination: destFile.FullName);
                     File.Copy(SourceImagePath.FullName, destFile.FullName, true);
                     destFile.Refresh();
                 }

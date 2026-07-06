@@ -77,6 +77,32 @@ namespace PSRecoveryPartition.Native
             return null;
         }
 
+        /// <summary>
+        /// Reads the first backing disk extent (disk number + starting offset)
+        /// for an arbitrary kernel device path such as
+        /// <c>\\?\GLOBALROOT\Device\HarddiskVolumeN</c> or
+        /// <c>\\?\Volume{guid}\</c>. Returns false when the device cannot be
+        /// opened or reports no extents (unformatted / offline).
+        /// </summary>
+        public static bool TryGetDiskAndOffset(string deviceName, out int diskNumber, out long startingOffset)
+        {
+            diskNumber = -1;
+            startingOffset = -1;
+            if (string.IsNullOrEmpty(deviceName)) { return false; }
+            try
+            {
+                var extents = ReadExtents(deviceName);
+                if (extents != null && extents.Count > 0)
+                {
+                    diskNumber = extents[0].DiskNumber;
+                    startingOffset = extents[0].StartingOffset;
+                    return true;
+                }
+            }
+            catch (Win32Exception) { /* device not ready / no extents */ }
+            return false;
+        }
+
         private static Win32VolumeInfo TryDescribe(string volumeName)
         {
             if (string.IsNullOrEmpty(volumeName)) { return null; }

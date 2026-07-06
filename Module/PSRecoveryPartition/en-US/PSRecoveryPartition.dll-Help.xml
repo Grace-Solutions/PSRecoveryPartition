@@ -776,7 +776,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="true" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
             <maml:para>Friendly display name of the target boot entry.</maml:para>
@@ -839,7 +839,7 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="true" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
           <maml:para>Friendly display name of the target boot entry.</maml:para>
@@ -900,9 +900,9 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
     <command:examples>
       <command:example>
         <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
-        <dev:code>Get-WindowsRecoveryBootEntry</dev:code>
+        <dev:code>Get-WindowsRecoveryBootEntry -Name 'Grace*'</dev:code>
         <dev:remarks>
-          <maml:para>Lists the recovery boot entries currently registered in BCD.</maml:para>
+          <maml:para>Lists the recovery boot entries whose name starts with "Grace".</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -1871,7 +1871,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Stages a boot image onto a destination and creates a matching BCD boot entry. The destination is a recovery partition (written through its \?\GLOBALROOT path with no mount), an already-mounted directory (-TargetPath), or the image's existing location (the default ByImagePath set). By default the WIM is staged as-is and booted as a ramdisk, and a boot.sdi is resolved automatically (or supplied with -BootSdiPath); with -ExpandBootImage the image is expanded flat onto the destination for non-RAM boot and the entry is wired to boot it in place. The staging sub-path defaults to \Recovery\WindowsRE but is fully overridable via -StagingRelativePath. Existing entries with the same name are not duplicated.</maml:para>
+      <maml:para>Stages a boot image onto a destination and creates a matching BCD boot entry. The destination is a recovery partition (written through its \?\GLOBALROOT path with no mount), an already-mounted directory (-TargetPath), or the image's existing location (the default ByImagePath set). By default the WIM is staged as-is and booted as a ramdisk, and a boot.sdi is resolved automatically (or supplied with -BootSdiPath); with -ExpandBootImage the image is expanded flat onto the partition root (Microsoft flat-boot layout, systemroot=\Windows) and the entry is wired to boot it in place. For ramdisk boot the staging sub-path defaults to \Recovery\WindowsRE but is overridable via -StagingRelativePath. Existing entries with the same name are not duplicated.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -2065,6 +2065,17 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FormatTargetPartition</maml:name>
+          <maml:description>
+            <maml:para>Formats the target recovery partition (NTFS, quick) before a flat expansion so the image lands on a clean volume with no overlapping content. Only honoured with -ExpandBootImage on a -RecoveryPartition. DESTROYS all existing content on that partition, including any existing \Recovery\WindowsRE payload.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>New-WindowsRecoveryBootEntry</maml:name>
@@ -2256,6 +2267,17 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FormatTargetPartition</maml:name>
+          <maml:description>
+            <maml:para>Formats the target recovery partition (NTFS, quick) before a flat expansion so the image lands on a clean volume with no overlapping content. Only honoured with -ExpandBootImage on a -RecoveryPartition. DESTROYS all existing content on that partition, including any existing \Recovery\WindowsRE payload.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -2463,6 +2485,18 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>FormatTargetPartition</maml:name>
+        <maml:description>
+          <maml:para>Formats the target recovery partition (NTFS, quick) before a flat expansion so the image lands on a clean volume with no overlapping content. Only honoured with -ExpandBootImage on a -RecoveryPartition. DESTROYS all existing content on that partition, including any existing \Recovery\WindowsRE payload.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -2738,7 +2772,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Removes a BCD boot entry by identifier, name, or pipeline input. Requires -Force or explicit confirmation because the operation is destructive.</maml:para>
+      <maml:para>Removes a BCD boot entry by identifier, name, or pipeline input. -Name accepts wildcards and removes every matching entry. With -DeleteImageFiles the staged WIM and boot.sdi the entry booted from are also deleted off the recovery partition. Requires -Force or explicit confirmation because the operation is destructive.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -2811,6 +2845,17 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DeleteImageFiles</maml:name>
+          <maml:description>
+            <maml:para>Also deletes the staged WIM and boot.sdi that the entry booted from off the recovery partition (best effort). Opt-in because file deletion is irreversible; by default only the BCD objects are removed and the staged files are left in place.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Remove-WindowsRecoveryBootEntry</maml:name>
@@ -2882,6 +2927,17 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DeleteImageFiles</maml:name>
+          <maml:description>
+            <maml:para>Also deletes the staged WIM and boot.sdi that the entry booted from off the recovery partition (best effort). Opt-in because file deletion is irreversible; by default only the BCD objects are removed and the staged files are left in place.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Remove-WindowsRecoveryBootEntry</maml:name>
@@ -2907,7 +2963,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="true" pipelineInput="False" position="named" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
             <maml:para>Friendly display name of the target boot entry.</maml:para>
@@ -2952,6 +3008,17 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DeleteImageFiles</maml:name>
+          <maml:description>
+            <maml:para>Also deletes the staged WIM and boot.sdi that the entry booted from off the recovery partition (best effort). Opt-in because file deletion is irreversible; by default only the BCD objects are removed and the staged files are left in place.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -3004,7 +3071,7 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="true" pipelineInput="False" position="named" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
           <maml:para>Friendly display name of the target boot entry.</maml:para>
@@ -3052,6 +3119,18 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>DeleteImageFiles</maml:name>
+        <maml:description>
+          <maml:para>Also deletes the staged WIM and boot.sdi that the entry booted from off the recovery partition (best effort). Opt-in because file deletion is irreversible; by default only the BCD objects are removed and the staged files are left in place.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes>
       <command:inputType>
@@ -3081,9 +3160,9 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
     <command:examples>
       <command:example>
         <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
-        <dev:code>Remove-WindowsRecoveryBootEntry -Name 'Recovery' -Force</dev:code>
+        <dev:code>Remove-WindowsRecoveryBootEntry -Name 'Grace*' -DeleteImageFiles -Force</dev:code>
         <dev:remarks>
-          <maml:para>Removes the recovery boot entry with the friendly name "Recovery".</maml:para>
+          <maml:para>Removes every recovery boot entry whose name starts with "Grace" and deletes their staged image files.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -4152,6 +4231,423 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)</dev:code>
         <dev:code>Set-RecoveryPartition -DiskNumber 0 -PartitionNumber 5 -Label 'Windows RE tools'</dev:code>
         <dev:remarks>
           <maml:para>Renames the recovery partition on disk 0 partition 5.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Set-WindowsRecoveryBootImage</command:name>
+      <command:verb>Set</command:verb>
+      <command:noun>WindowsRecoveryBootImage</command:noun>
+      <maml:description>
+        <maml:para>Replaces the boot image on an existing recovery boot entry.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Stages a new boot image over the WIM an existing ramdisk recovery boot entry currently boots from, so the entry immediately uses the new image. The entry's staged path and boot.sdi are preserved and the BCD store is not modified. -Name accepts wildcards and updates every matching entry. Fails for entries that are not staged-WIM ramdisk entries or whose recovery partition cannot be resolved.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Set-WindowsRecoveryBootImage</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="SourceImagePath">
+          <maml:name>BootImagePath</maml:name>
+          <maml:description>
+            <maml:para>New source WIM to stage over the entry's current boot image.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Identifier</maml:name>
+          <maml:description>
+            <maml:para>BCD GUID identifier of the target boot entry.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:description>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Set-WindowsRecoveryBootImage</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="SourceImagePath">
+          <maml:name>BootImagePath</maml:name>
+          <maml:description>
+            <maml:para>New source WIM to stage over the entry's current boot image.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+          <maml:name>InputObject</maml:name>
+          <maml:description>
+            <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">WindowsRecoveryBootEntryInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>WindowsRecoveryBootEntryInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:description>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Set-WindowsRecoveryBootImage</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="true" pipelineInput="False" position="0" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Friendly display name of the boot entry to update. Supports wildcards (for example Grace or Recovery*) and updates every match; a name with no wildcard characters matches case-insensitively.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="SourceImagePath">
+          <maml:name>BootImagePath</maml:name>
+          <maml:description>
+            <maml:para>New source WIM to stage over the entry's current boot image.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+          <dev:type>
+            <maml:name>FileInfo</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:description>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="SourceImagePath">
+        <maml:name>BootImagePath</maml:name>
+        <maml:description>
+          <maml:para>New source WIM to stage over the entry's current boot image.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">FileInfo</command:parameterValue>
+        <dev:type>
+          <maml:name>FileInfo</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+        <maml:name>Confirm</maml:name>
+        <maml:description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:description>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Identifier</maml:name>
+        <maml:description>
+          <maml:para>BCD GUID identifier of the target boot entry.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+        <maml:name>InputObject</maml:name>
+        <maml:description>
+          <maml:para>Object received from the pipeline that the cmdlet should act on.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">WindowsRecoveryBootEntryInfo</command:parameterValue>
+        <dev:type>
+          <maml:name>WindowsRecoveryBootEntryInfo</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="true" pipelineInput="False" position="0" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Friendly display name of the boot entry to update. Supports wildcards (for example Grace or Recovery*) and updates every match; a name with no wildcard characters matches case-insensitively.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PassThru</maml:name>
+        <maml:description>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+        <maml:name>WhatIf</maml:name>
+        <maml:description>
+          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>PSRecoveryPartition.WindowsRecoveryBootEntryInfo</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.IO.FileInfo</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>PSRecoveryPartition.WindowsRecoveryBootEntryInfo</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
+        <dev:code>Set-WindowsRecoveryBootImage -Name 'Grace Solutions Recovery' -BootImagePath 'C:\RecoveryImages\winre-new.wim' -PassThru</dev:code>
+        <dev:remarks>
+          <maml:para>Replaces the boot image on the named recovery entry with winre-new.wim.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

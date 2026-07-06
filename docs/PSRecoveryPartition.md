@@ -2,7 +2,7 @@
 Module Name: PSRecoveryPartition
 Module Guid: d6d6f0b8-2a4b-4a8d-9d2a-7c0f4c2b5e9a
 Download Help Link: https://github.com/GraceSolutions/PSRecoveryPartition
-Help Version: 2026.6.22.1713
+Help Version: 2026.7.6.1552
 Locale: en-US
 ---
 
@@ -55,6 +55,9 @@ Downloads or copies a recovery boot image to a local destination.
 
 ### [Set-RecoveryPartition](Set-RecoveryPartition.md)
 Updates the metadata of an existing recovery partition.
+
+### [Set-WindowsRecoveryBootImage](Set-WindowsRecoveryBootImage.md)
+Replaces the boot image on an existing recovery boot entry.
 
 ### [Set-WindowsRecoveryEntryPoint](Set-WindowsRecoveryEntryPoint.md)
 Configures Windows RE / push-button reset as a recovery entry point.

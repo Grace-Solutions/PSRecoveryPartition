@@ -148,6 +148,98 @@ namespace PSRecoveryPartition
             catch { /* best effort rollback */ }
         }
 
+        private static readonly Regex RamdiskDeviceRegex = new Regex(
+            @"ramdisk=\[(?<vol>[^\]]+)\](?<path>[^,\r\n]+),(?<sdi>\{[0-9a-fA-F\-]+\})",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        /// <summary>
+        /// Reads a boot entry from the BCD store and resolves where its ramdisk
+        /// payload (staged WIM + boot.sdi) lives, including the physical disk and
+        /// partition when they can be mapped from the volume token. Returns an
+        /// object with <see cref="RamdiskStagingLocation.IsRamdisk"/> = false when
+        /// the entry is not a staged-WIM ramdisk entry (for example a flat/in-place
+        /// entry), in which case there is no single image file to act on.
+        /// </summary>
+        public RamdiskStagingLocation ResolveRamdiskStaging(string identifier)
+        {
+            if (string.IsNullOrEmpty(identifier)) { throw new ArgumentNullException("identifier"); }
+
+            var loc = new RamdiskStagingLocation();
+            var enumRes = Run(new List<string> { "/enum", identifier, "/v" }, "read boot entry " + identifier);
+            var m = RamdiskDeviceRegex.Match(enumRes.StandardOutput ?? string.Empty);
+            if (!m.Success)
+            {
+                return loc; // not a ramdisk entry
+            }
+
+            loc.IsRamdisk = true;
+            loc.VolumeToken = m.Groups["vol"].Value.Trim();
+            loc.ImageRelativePath = EnsureLeadingBackslash(m.Groups["path"].Value.Trim());
+            var sdiId = m.Groups["sdi"].Value.Trim();
+            if (!sdiId.Equals("{ramdiskoptions}", StringComparison.OrdinalIgnoreCase))
+            {
+                loc.DeviceOptionsId = sdiId;
+            }
+
+            // The boot.sdi path lives on the referenced device-options object.
+            var sdiTarget = loc.DeviceOptionsId ?? "{ramdiskoptions}";
+            try
+            {
+                var sdiRes = Run(new List<string> { "/enum", sdiTarget, "/v" }, "read ramdisk device options " + sdiTarget);
+                var sm = Regex.Match(sdiRes.StandardOutput ?? string.Empty,
+                    @"ramdisksdipath\s+(?<p>\S.*)$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                if (sm.Success) { loc.SdiRelativePath = EnsureLeadingBackslash(sm.Groups["p"].Value.Trim()); }
+            }
+            catch { /* best effort: sdi path is optional for cleanup */ }
+
+            ResolveDiskPartition(loc);
+            return loc;
+        }
+
+        // Maps the BCD volume token to a physical disk/partition so file I/O can go
+        // through the module's transient-junction staging path.
+        private static void ResolveDiskPartition(RamdiskStagingLocation loc)
+        {
+            var token = loc.VolumeToken;
+            if (string.IsNullOrEmpty(token)) { return; }
+
+            string deviceName = null;
+            if (token.StartsWith(@"\Device\", StringComparison.OrdinalIgnoreCase))
+            {
+                deviceName = @"\\?\GLOBALROOT" + token;
+            }
+            else if (token.StartsWith(@"\\?\", StringComparison.Ordinal))
+            {
+                deviceName = token;
+            }
+            else if (token.Length == 2 && token[1] == ':')
+            {
+                // Drive-letter token: match by mount point.
+                var vol = Native.Win32VolumeMapper.EnumerateAll()
+                    .FirstOrDefault(v => v.MountPoints != null &&
+                        v.MountPoints.Any(mp => mp.TrimEnd('\\').Equals(token, StringComparison.OrdinalIgnoreCase)));
+                if (vol != null) { deviceName = vol.VolumeName; }
+            }
+            if (deviceName == null) { return; }
+
+            int disk;
+            long offset;
+            if (!Native.Win32VolumeMapper.TryGetDiskAndOffset(deviceName, out disk, out offset)) { return; }
+
+            try
+            {
+                var info = Native.Win32DiskInfoReader.Read(disk);
+                var part = info.Partitions.FirstOrDefault(p => p.StartingOffset == offset);
+                if (part != null)
+                {
+                    loc.DiskNumber = disk;
+                    loc.PartitionNumber = part.PartitionNumber;
+                    loc.LocationResolved = true;
+                }
+            }
+            catch { /* disk not readable; leave unresolved */ }
+        }
+
         private static string EnsureLeadingBackslash(string relative)
         {
             var r = (relative ?? string.Empty).Replace('/', '\\');

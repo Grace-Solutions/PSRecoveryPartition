@@ -29,6 +29,7 @@
         'Disable-WindowsRecoveryEnvironment'
         'Get-WindowsRecoveryBootEntry'
         'New-WindowsRecoveryBootEntry'
+        'Set-WindowsRecoveryBootImage'
         'Remove-WindowsRecoveryBootEntry'
         'Set-WindowsRecoveryEntryPoint'
         'Save-RecoveryBootImage'

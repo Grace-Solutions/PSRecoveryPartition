@@ -121,6 +121,8 @@ namespace PSRecoveryPartition
             PSCmdlet owner,
             Action<string> writeVerbose)
         {
+            TransferLog.Attempt(owner, download: true, source: uri != null ? uri.OriginalString : null, destination: destFile.FullName);
+
             DateTimeOffset? since = null;
             string ifNoneMatch = null;
             if (!force && destFile.Exists)

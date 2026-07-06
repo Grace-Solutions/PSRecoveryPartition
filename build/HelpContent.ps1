@@ -16,9 +16,11 @@
         PushButtonAction        = 'Friendly action keyword translated to a Windows recovery push-button reset action (for example Reset, Refresh, FactoryReset, BootToRE).'
         RecoveryPartition       = 'Recovery partition (RecoveryPartitionInfo, typically piped from Get-RecoveryPartition) to stage the boot image onto and target with the BCD entry. Files are written through the partition''s \\?\GLOBALROOT path without assigning a drive letter or mounting the volume.'
         TargetPath              = 'An already-mounted directory to stage the boot image into. Use this when the destination volume has a drive letter or mount point.'
-        StagingRelativePath     = 'Volume-relative folder the image (and boot.sdi) are staged into. Defaults to \Recovery\WindowsRE; pass an empty string or a single backslash (\) to stage at the volume root.'
-        ExpandBootImage         = 'Expands the boot image flat onto the destination (non-RAM / flat boot) and wires the entry to boot it in place, instead of staging the WIM for ramdisk boot. Requires a destination (-RecoveryPartition or -TargetPath).'
+        StagingRelativePath     = 'Volume-relative folder the WIM (and boot.sdi) are staged into for ramdisk boot. Defaults to \Recovery\WindowsRE; pass an empty string or a single backslash (\) to stage at the volume root. Ignored with -ExpandBootImage, which always expands to the partition root.'
+        ExpandBootImage         = 'Expands the boot image flat onto the destination (non-RAM / flat boot) and wires the entry to boot it in place, instead of staging the WIM for ramdisk boot. The image is expanded to the partition root (Microsoft flat-boot layout, systemroot=\Windows), so -StagingRelativePath is ignored. Requires a destination (-RecoveryPartition or -TargetPath).'
         ImageIndex              = 'One-based image index inside the WIM to expand when -ExpandBootImage is used. Defaults to 1.'
+        FormatTargetPartition   = 'Formats the target recovery partition (NTFS, quick) before a flat expansion so the image lands on a clean volume with no overlapping content. Only honoured with -ExpandBootImage on a -RecoveryPartition. DESTROYS all existing content on that partition, including any existing \Recovery\WindowsRE payload.'
+        DeleteImageFiles        = 'Also deletes the staged WIM and boot.sdi that the entry booted from off the recovery partition (best effort). Opt-in because file deletion is irreversible; by default only the BCD objects are removed and the staged files are left in place.'
         BootSdiPath             = 'Explicit boot.sdi to stage for ramdisk boot. When omitted it is resolved from the live OS and then extracted from the boot image.'
         AccessPath              = 'Folder mount path (for example C:\Mounts\Recovery) used as an access path for the recovery partition.'
         NoDefaultDriveLetter    = 'When set, prevents Windows from automatically assigning a drive letter to the partition.'
@@ -168,20 +170,36 @@ Write-Output -InputObject ($NewRecoveryPartitionResult)
     'Get-WindowsRecoveryBootEntry' = @{
         Synopsis    = 'Discovers recovery boot entries.'
         Description = 'Enumerates Boot Configuration Data entries and returns those that look like recovery boot entries. Use -IncludeAll to return every entry regardless of recovery heuristics.'
-        OneLiner    = 'Get-WindowsRecoveryBootEntry'
-        OneLinerDescription = 'Lists the recovery boot entries currently registered in BCD.'
+        OneLiner    = "Get-WindowsRecoveryBootEntry -Name 'Grace*'"
+        OneLinerDescription = 'Lists the recovery boot entries whose name starts with "Grace".'
+        Parameters  = @{
+            Name = 'Friendly display name of the target boot entry. Supports wildcards (for example Grace* or *Recovery*); a name with no wildcard characters matches case-insensitively.'
+        }
     }
     'New-WindowsRecoveryBootEntry' = @{
         Synopsis    = 'Creates a custom recovery boot entry from a boot image.'
-        Description = 'Stages a boot image onto a destination and creates a matching BCD boot entry. The destination is a recovery partition (written through its \\?\GLOBALROOT path with no mount), an already-mounted directory (-TargetPath), or the image''s existing location (the default ByImagePath set). By default the WIM is staged as-is and booted as a ramdisk, and a boot.sdi is resolved automatically (or supplied with -BootSdiPath); with -ExpandBootImage the image is expanded flat onto the destination for non-RAM boot and the entry is wired to boot it in place. The staging sub-path defaults to \Recovery\WindowsRE but is fully overridable via -StagingRelativePath. Existing entries with the same name are not duplicated.'
+        Description = 'Stages a boot image onto a destination and creates a matching BCD boot entry. The destination is a recovery partition (written through its \\?\GLOBALROOT path with no mount), an already-mounted directory (-TargetPath), or the image''s existing location (the default ByImagePath set). By default the WIM is staged as-is and booted as a ramdisk, and a boot.sdi is resolved automatically (or supplied with -BootSdiPath); with -ExpandBootImage the image is expanded flat onto the partition root (Microsoft flat-boot layout, systemroot=\Windows) and the entry is wired to boot it in place. For ramdisk boot the staging sub-path defaults to \Recovery\WindowsRE but is overridable via -StagingRelativePath. Existing entries with the same name are not duplicated.'
         OneLiner    = "Get-RecoveryPartition | New-WindowsRecoveryBootEntry -BootImagePath 'C:\RecoveryImages\winre.wim' -PassThru"
         OneLinerDescription = 'Stages winre.wim onto the recovery partition and creates a ramdisk recovery boot entry.'
     }
+    'Set-WindowsRecoveryBootImage' = @{
+        Synopsis    = 'Replaces the boot image on an existing recovery boot entry.'
+        Description = 'Stages a new boot image over the WIM an existing ramdisk recovery boot entry currently boots from, so the entry immediately uses the new image. The entry''s staged path and boot.sdi are preserved and the BCD store is not modified. -Name accepts wildcards and updates every matching entry. Fails for entries that are not staged-WIM ramdisk entries or whose recovery partition cannot be resolved.'
+        OneLiner    = "Set-WindowsRecoveryBootImage -Name 'Grace Solutions Recovery' -BootImagePath 'C:\RecoveryImages\winre-new.wim' -PassThru"
+        OneLinerDescription = 'Replaces the boot image on the named recovery entry with winre-new.wim.'
+        Parameters  = @{
+            Name          = 'Friendly display name of the boot entry to update. Supports wildcards (for example Grace* or *Recovery*) and updates every match; a name with no wildcard characters matches case-insensitively.'
+            BootImagePath = 'New source WIM to stage over the entry''s current boot image.'
+        }
+    }
     'Remove-WindowsRecoveryBootEntry' = @{
         Synopsis    = 'Removes a recovery boot entry idempotently.'
-        Description = 'Removes a BCD boot entry by identifier, name, or pipeline input. Requires -Force or explicit confirmation because the operation is destructive.'
-        OneLiner    = "Remove-WindowsRecoveryBootEntry -Name 'Recovery' -Force"
-        OneLinerDescription = 'Removes the recovery boot entry with the friendly name "Recovery".'
+        Description = 'Removes a BCD boot entry by identifier, name, or pipeline input. -Name accepts wildcards and removes every matching entry. With -DeleteImageFiles the staged WIM and boot.sdi the entry booted from are also deleted off the recovery partition. Requires -Force or explicit confirmation because the operation is destructive.'
+        OneLiner    = "Remove-WindowsRecoveryBootEntry -Name 'Grace*' -DeleteImageFiles -Force"
+        OneLinerDescription = 'Removes every recovery boot entry whose name starts with "Grace" and deletes their staged image files.'
+        Parameters  = @{
+            Name = 'Friendly display name of the target boot entry. Supports wildcards (for example Grace* or *Recovery*) and removes every match; a name with no wildcard characters matches case-insensitively.'
+        }
     }
     'Set-WindowsRecoveryEntryPoint' = @{
         Synopsis    = 'Configures Windows RE / push-button reset as a recovery entry point.'

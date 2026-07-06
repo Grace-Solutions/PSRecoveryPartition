@@ -5,44 +5,59 @@ online version:
 schema: 2.0.0
 ---
 
-# Remove-WindowsRecoveryBootEntry
+# Set-WindowsRecoveryBootImage
 
 ## SYNOPSIS
-Removes a recovery boot entry idempotently.
+Replaces the boot image on an existing recovery boot entry.
 
 ## SYNTAX
 
-### ByIdentifier (Default)
+### ByName (Default)
 ```
-Remove-WindowsRecoveryBootEntry -Identifier <String> [-DeleteImageFiles] [-PassThru] [-Force]
+Set-WindowsRecoveryBootImage [-Name] <String> -BootImagePath <FileInfo> [-Force] [-PassThru]
  [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByInput
 ```
-Remove-WindowsRecoveryBootEntry -InputObject <WindowsRecoveryBootEntryInfo> [-DeleteImageFiles] [-PassThru]
- [-Force] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-WindowsRecoveryBootImage -InputObject <WindowsRecoveryBootEntryInfo> -BootImagePath <FileInfo> [-Force]
+ [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
-### ByName
+### ByIdentifier
 ```
-Remove-WindowsRecoveryBootEntry -Name <String> [-DeleteImageFiles] [-PassThru] [-Force]
+Set-WindowsRecoveryBootImage -Identifier <String> -BootImagePath <FileInfo> [-Force] [-PassThru]
  [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Removes a BCD boot entry by identifier, name, or pipeline input. -Name accepts wildcards and removes every matching entry. With -DeleteImageFiles the staged WIM and boot.sdi the entry booted from are also deleted off the recovery partition. Requires -Force or explicit confirmation because the operation is destructive.
+Stages a new boot image over the WIM an existing ramdisk recovery boot entry currently boots from, so the entry immediately uses the new image. The entry's staged path and boot.sdi are preserved and the BCD store is not modified. -Name accepts wildcards and updates every matching entry. Fails for entries that are not staged-WIM ramdisk entries or whose recovery partition cannot be resolved.
 
 ## EXAMPLES
 
 ### Example 1: Single-line usage
 ```powershell
-Remove-WindowsRecoveryBootEntry -Name 'Grace*' -DeleteImageFiles -Force
+Set-WindowsRecoveryBootImage -Name 'Grace Solutions Recovery' -BootImagePath 'C:\RecoveryImages\winre-new.wim' -PassThru
 ```
 
-Removes every recovery boot entry whose name starts with "Grace" and deletes their staged image files.
+Replaces the boot image on the named recovery entry with winre-new.wim.
 
 ## PARAMETERS
+
+### -BootImagePath
+New source WIM to stage over the entry's current boot image.
+
+```yaml
+Type: FileInfo
+Parameter Sets: (All)
+Aliases: SourceImagePath
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
 
 ### -Confirm
 Prompts you for confirmation before running the cmdlet.
@@ -105,7 +120,8 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-Friendly display name of the target boot entry.
+Friendly display name of the boot entry to update.
+Supports wildcards (for example Grace or Recovery*) and updates every match; a name with no wildcard characters matches case-insensitively.
 
 ```yaml
 Type: String
@@ -113,7 +129,7 @@ Parameter Sets: ByName
 Aliases:
 
 Required: True
-Position: Named
+Position: 0
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: True
@@ -166,28 +182,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DeleteImageFiles
-Also deletes the staged WIM and boot.sdi that the entry booted from off the recovery partition (best effort).
-Opt-in because file deletion is irreversible; by default only the BCD objects are removed and the staged files are left in place.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryBootEntryInfo
+### System.IO.FileInfo
 ## OUTPUTS
 
 ### PSRecoveryPartition.WindowsRecoveryBootEntryInfo

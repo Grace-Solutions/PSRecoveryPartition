@@ -27,9 +27,12 @@ namespace PSRecoveryPartition.Native
         // Compression (ignored for OPEN_EXISTING but must be passed).
         private const uint WIM_COMPRESS_NONE  = 0;
 
-        // Message-callback ids (WIM_MSG = WM_APP(0x8000) + 0x1476).
+        // Message-callback ids (WIM_MSG = WM_APP(0x8000) + 0x1476). Offsets per
+        // wimgapi.h: +1 = WIM_MSG_TEXT, +2 = WIM_MSG_PROGRESS (percent in wParam),
+        // +3 = WIM_MSG_PROCESS. Using +1 here previously meant we listened for the
+        // text message and never received the apply progress at all.
         private const uint WIM_MSG          = 0x8000 + 0x1476;
-        private const uint WIM_MSG_PROGRESS = WIM_MSG + 1;
+        private const uint WIM_MSG_PROGRESS = WIM_MSG + 2;
 
         // Message-callback return values.
         private const uint WIM_MSG_SUCCESS    = 0;

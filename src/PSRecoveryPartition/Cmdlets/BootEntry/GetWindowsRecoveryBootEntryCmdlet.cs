@@ -12,6 +12,7 @@ namespace PSRecoveryPartition.Cmdlets
     public sealed class GetWindowsRecoveryBootEntryCmdlet : RecoveryCmdletBase
     {
         [Parameter(ValueFromPipelineByPropertyName = true)]
+        [SupportsWildcards]
         public string Name { get; set; }
 
         [Parameter(ValueFromPipelineByPropertyName = true)]
@@ -26,11 +27,14 @@ namespace PSRecoveryPartition.Cmdlets
         protected override void ProcessRecord()
         {
             var engine = new BcdEditEngine(this);
+            var namePattern = string.IsNullOrEmpty(Name)
+                ? null
+                : WildcardPattern.Get(Name, WildcardOptions.IgnoreCase);
             var entries = engine.Enumerate(IncludeHidden.IsPresent || IncludeAll.IsPresent);
             foreach (var entry in entries)
             {
                 if (!IncludeAll.IsPresent && !entry.IsRecoveryEntry) { continue; }
-                if (!string.IsNullOrEmpty(Name) && !string.Equals(entry.Name, Name, System.StringComparison.OrdinalIgnoreCase)) { continue; }
+                if (namePattern != null && !namePattern.IsMatch(entry.Name ?? string.Empty)) { continue; }
                 Stamp(entry);
                 WriteObject(entry);
             }

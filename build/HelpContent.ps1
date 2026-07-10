@@ -58,11 +58,50 @@
         Parameters  = @{
             DiskNumber = 'Number of the physical disk to erase and repartition, as reported by Get-Disk. Aliased to -DiskId.'
         }
+        Notes       = @'
+GPT partition attributes
+
+A Recovery partition is automatically tagged with the canonical Microsoft mask
+PLATFORM_REQUIRED | NO_DRIVE_LETTER (0x8000000000000001), so you do not need to
+supply it. The mask is applied natively (IOCTL_DISK_SET_DRIVE_LAYOUT_EX) after
+the volume is formatted, because a partition that already carries the recovery
+type GUID or the no-drive-letter bit will not mount and therefore cannot be
+formatted.
+
+To override the mask, use the five-argument DiskPartitionSpec overload together
+with the [PSRecoveryPartition.GptPartitionAttributes] constants: None,
+PlatformRequired, NoAutomount, ReadOnly, ShadowCopy, Hidden, NoDriveLetter, and
+the composite Recovery. Combine them with -bor.
+
+Do not write the mask as a raw PowerShell hex literal. 0x8000000000000001 exceeds
+[Int64]::MaxValue, so PowerShell coerces it to a negative number and the value
+you get is not the value you wrote. Reference the constants instead.
+'@
+        ExtraExamples = @(
+            @{
+                Title = 'Custom recovery GPT attributes'
+                Code  = @'
+$Attr = [PSRecoveryPartition.GptPartitionAttributes]
+
+# The default a Recovery partition already receives (PlatformRequired + NoDriveLetter).
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', $Attr::Recovery)
+
+# Same, but also hidden from ordinary enumeration.
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', ($Attr::Recovery -bor $Attr::Hidden))
+
+# A basic data partition that never receives a drive letter, formatted exFAT.
+[PSRecoveryPartition.DiskPartitionSpec]::New('DATA', 'Percentage', 100, 'Basic', $Attr::NoDriveLetter, 'exFAT')
+'@
+                Description = 'Builds DiskPartitionSpec entries with an explicit GPT attribute mask. The five-argument overload takes the mask; the six-argument overload additionally takes the file system. Use the GptPartitionAttributes constants rather than a hex literal, because 0x8000000000000001 does not survive PowerShell''s Int64 numeric literal parsing.'
+            }
+        )
         Splat       = @'
+$Attr = [PSRecoveryPartition.GptPartitionAttributes]
+
 $PartitionLayout = New-Object -TypeName 'System.Collections.Generic.List[PSRecoveryPartition.DiskPartitionSpec]'
     $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('EFI',      'Size',       1GB))
     $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('MSR',      'Size',       1GB))
-    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', ($Attr::Recovery -bor $Attr::Hidden)))
     $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('OS',       'Percentage', 100))
 
 $InitializeRecoveryDiskParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
@@ -77,7 +116,7 @@ $InitializeRecoveryDiskResult = Initialize-RecoveryDisk @InitializeRecoveryDiskP
 
 Write-Output -InputObject ($InitializeRecoveryDiskResult)
 '@
-        SplatDescription = 'Erases disk 1 and applies a custom ordered layout: a 1 GiB EFI system partition, a 1 GiB Microsoft Reserved partition, a recovery partition sized at 20% of the remaining space, and an OS partition that consumes the rest.'
+        SplatDescription = 'Erases disk 1 and applies a custom ordered layout: a 1 GiB EFI system partition, a 1 GiB Microsoft Reserved partition, a recovery partition sized at 20% of the remaining space and tagged with the recovery attribute mask plus the hidden bit, and an OS partition that consumes the rest.'
     }
     'Get-RecoveryPartition' = @{
         Synopsis    = 'Discovers recovery partitions on local disks.'

@@ -27,10 +27,9 @@ namespace PSRecoveryPartition
         private static readonly Guid GptTypeMsr       = new Guid(NativeConstants.GPT_PARTITION_TYPE_MICROSOFT_RESERVED);
         private static readonly Guid GptTypeRecovery  = new Guid(NativeConstants.GPT_PARTITION_TYPE_MICROSOFT_RECOVERY);
 
-        // PLATFORM_REQUIRED | NO_DRIVE_LETTER -- the canonical Microsoft recovery mask.
-        private const ulong RecoveryGptAttributes =
-            NativeConstants.GPT_ATTRIBUTE_PLATFORM_REQUIRED |
-            NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_NO_DRIVE_LETTER;
+        // PLATFORM_REQUIRED | NO_DRIVE_LETTER -- the canonical Microsoft recovery
+        // mask, surfaced publicly so callers can reference or extend it.
+        private const ulong RecoveryGptAttributes = GptPartitionAttributes.Recovery;
 
         private readonly PSCmdlet _owner;
 

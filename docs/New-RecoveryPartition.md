@@ -14,21 +14,21 @@ Creates a recovery partition on a target disk.
 
 ### DefaultSize (Default)
 ```
-New-RecoveryPartition -DiskNumber <Int32> [-Label <String>] [-FileSystem <String>]
+New-RecoveryPartition -DiskNumber <Int32> [-Label <String>] [-FileSystem <DiskFileSystem>]
  [-CreationMode <RecoveryPartitionCreationMode>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ExplicitSize
 ```
-New-RecoveryPartition -DiskNumber <Int32> -SizeBytes <Int64> [-Label <String>] [-FileSystem <String>]
+New-RecoveryPartition -DiskNumber <Int32> -SizeBytes <Int64> [-Label <String>] [-FileSystem <DiskFileSystem>]
  [-CreationMode <RecoveryPartitionCreationMode>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### PercentSize
 ```
-New-RecoveryPartition -DiskNumber <Int32> -SizePercent <Int32> [-Label <String>] [-FileSystem <String>]
+New-RecoveryPartition -DiskNumber <Int32> -SizePercent <Int32> [-Label <String>] [-FileSystem <DiskFileSystem>]
  [-CreationMode <RecoveryPartitionCreationMode>] [-PassThru] [-Force] [-ProgressAction <ActionPreference>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
@@ -100,7 +100,7 @@ File system used to format the recovery partition.
 Defaults to NTFS.
 
 ```yaml
-Type: String
+Type: DiskFileSystem
 Parameter Sets: (All)
 Aliases:
 Accepted values: NTFS, FAT32, ReFS

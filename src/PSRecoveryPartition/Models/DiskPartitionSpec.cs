@@ -37,13 +37,16 @@ namespace PSRecoveryPartition
         public DiskPartitionKind Kind { get; set; }
 
         /// <summary>File system to format with. Null selects the default for the kind (FAT32 for EFI, NTFS otherwise). MSR is never formatted.</summary>
-        public string FileSystem { get; set; }
+        public DiskFileSystem? FileSystem { get; set; }
 
-        /// <summary>Explicit GPT attribute bitmask. When not supplied the default for the kind is used.</summary>
-        public ulong GptAttributes { get; set; }
+        /// <summary>Explicit GPT attribute mask. When not supplied the default for the kind is used.</summary>
+        public GptPartitionAttributes GptAttributes { get; set; }
 
         /// <summary>True when <see cref="GptAttributes"/> was supplied explicitly.</summary>
         public bool HasExplicitGptAttributes { get; set; }
+
+        /// <summary>The GPT partition type this entry receives once fully tagged, derived from <see cref="Kind"/>.</summary>
+        public GptPartitionType GptType { get { return DiskEnumMaps.ToGptType(Kind); } }
 
         public DiskPartitionSpec() { }
 
@@ -59,18 +62,24 @@ namespace PSRecoveryPartition
             Validate();
         }
 
-        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, ulong gptAttributes)
+        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, GptPartitionAttributes gptAttributes)
             : this(label, sizeMode, value, kind)
         {
             GptAttributes = gptAttributes;
             HasExplicitGptAttributes = true;
         }
 
-        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, ulong gptAttributes, string fileSystem)
+        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, GptPartitionAttributes gptAttributes, DiskFileSystem fileSystem)
             : this(label, sizeMode, value, kind, gptAttributes)
         {
             FileSystem = fileSystem;
         }
+
+        // No (label, sizeMode, value, kind, DiskFileSystem) overload: it would be
+        // ambiguous with the GptPartitionAttributes overload above, since
+        // PowerShell ranks string-to-enum conversions identically for both. To set
+        // a file system without an explicit mask, pass GptPartitionAttributes.None
+        // to the six-argument form, or assign the FileSystem property.
 
         private void Validate()
         {

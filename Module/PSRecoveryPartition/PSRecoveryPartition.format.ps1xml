@@ -104,6 +104,7 @@
               <ListItem><PropertyName>FileSystem</PropertyName></ListItem>
               <ListItem><PropertyName>SizeBytes</PropertyName></ListItem>
               <ListItem><PropertyName>Offset</PropertyName></ListItem>
+              <ListItem><PropertyName>KnownGptType</PropertyName></ListItem>
               <ListItem><PropertyName>GptType</PropertyName></ListItem>
               <ListItem><PropertyName>MbrType</PropertyName></ListItem>
               <ListItem><PropertyName>DriveLetter</PropertyName></ListItem>

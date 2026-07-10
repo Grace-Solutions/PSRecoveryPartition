@@ -31,6 +31,7 @@ namespace PSRecoveryPartition
                 info.Guid              = "{" + partition.GptId.ToString("D").ToLowerInvariant() + "}";
                 info.PartitionUniqueId = info.Guid;
                 info.GptType           = "{" + partition.GptType.ToString("D").ToLowerInvariant() + "}";
+                info.KnownGptType      = DiskEnumMaps.FromGuid(partition.GptType);
                 info.NoDefaultDriveLetter = (partition.GptAttributes
                     & NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_NO_AUTOMOUNT) != 0;
                 info.IsHidden = (partition.GptAttributes

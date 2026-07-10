@@ -22,14 +22,10 @@ namespace PSRecoveryPartition
     /// </summary>
     internal sealed class DiskInitializationEngine
     {
-        private static readonly Guid GptTypeBasicData = new Guid(NativeConstants.GPT_PARTITION_TYPE_BASIC_DATA);
-        private static readonly Guid GptTypeEfiSystem = new Guid(NativeConstants.GPT_PARTITION_TYPE_EFI_SYSTEM);
-        private static readonly Guid GptTypeMsr       = new Guid(NativeConstants.GPT_PARTITION_TYPE_MICROSOFT_RESERVED);
-        private static readonly Guid GptTypeRecovery  = new Guid(NativeConstants.GPT_PARTITION_TYPE_MICROSOFT_RECOVERY);
-
-        // PLATFORM_REQUIRED | NO_DRIVE_LETTER -- the canonical Microsoft recovery
-        // mask, surfaced publicly so callers can reference or extend it.
-        private const ulong RecoveryGptAttributes = GptPartitionAttributes.Recovery;
+        private static readonly Guid GptTypeBasicData = DiskEnumMaps.ToGuid(GptPartitionType.BasicData);
+        private static readonly Guid GptTypeEfiSystem = DiskEnumMaps.ToGuid(GptPartitionType.EfiSystem);
+        private static readonly Guid GptTypeMsr       = DiskEnumMaps.ToGuid(GptPartitionType.MicrosoftReserved);
+        private static readonly Guid GptTypeRecovery  = DiskEnumMaps.ToGuid(GptPartitionType.WindowsRecovery);
 
         private readonly PSCmdlet _owner;
 
@@ -146,8 +142,8 @@ namespace PSRecoveryPartition
 
         private static string ResolveFileSystem(DiskPartitionSpec spec)
         {
-            if (!string.IsNullOrEmpty(spec.FileSystem)) { return spec.FileSystem; }
-            return spec.Kind == DiskPartitionKind.Efi ? "FAT32" : "NTFS";
+            var fs = spec.FileSystem ?? DiskEnumMaps.DefaultFileSystem(spec.Kind);
+            return DiskEnumMaps.ToNativeName(fs);
         }
 
         private static string WaitForVolume(int diskNumber, long startingOffset, TimeSpan timeout)
@@ -178,7 +174,7 @@ namespace PSRecoveryPartition
             if (style == PartitionStyle.Gpt)
             {
                 Guid? finalType = null;
-                ulong attributes = 0;
+                var attributes = GptPartitionAttributes.None;
 
                 switch (spec.Kind)
                 {
@@ -187,7 +183,7 @@ namespace PSRecoveryPartition
                         break;
                     case DiskPartitionKind.Recovery:
                         finalType = GptTypeRecovery;
-                        attributes = RecoveryGptAttributes;
+                        attributes = GptPartitionAttributes.Recovery;
                         break;
                     case DiskPartitionKind.Msr:
                     case DiskPartitionKind.Basic:
@@ -195,13 +191,13 @@ namespace PSRecoveryPartition
                 }
                 if (spec.HasExplicitGptAttributes) { attributes = spec.GptAttributes; }
 
-                if (finalType.HasValue || attributes != 0)
+                if (finalType.HasValue || attributes != GptPartitionAttributes.None)
                 {
-                    Verbose("Tagging '" + spec.Label + "' with type " +
-                        (finalType.HasValue ? finalType.Value.ToString("B") : "(unchanged)") +
-                        " attributes 0x" + attributes.ToString("X16") + ".");
+                    Verbose("Tagging '" + spec.Label + "' as " + spec.GptType +
+                        " with attributes " + attributes +
+                        " (0x" + ((ulong)attributes).ToString("X16") + ").");
                     Win32PartitionWriter.SetGptAttributes(
-                        diskNumber, p.PartitionNumber, attributes, finalType, spec.Label);
+                        diskNumber, p.PartitionNumber, (ulong)attributes, finalType, spec.Label);
                 }
             }
             else if (spec.Kind == DiskPartitionKind.Recovery)

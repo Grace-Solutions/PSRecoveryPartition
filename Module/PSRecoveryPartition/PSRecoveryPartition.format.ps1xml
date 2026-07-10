@@ -182,5 +182,25 @@
       </ListControl>
     </View>
 
+    <View>
+      <Name>PSRecoveryPartition.DiskInitializationResult</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.DiskInitializationResult</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>DiskNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>PartitionScheme</PropertyName></ListItem>
+              <ListItem><PropertyName>DiskSizeBytes</PropertyName></ListItem>
+              <ListItem><PropertyName>Changed</PropertyName></ListItem>
+              <ListItem><PropertyName>Partitions</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
   </ViewDefinitions>
 </Configuration>

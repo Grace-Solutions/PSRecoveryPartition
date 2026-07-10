@@ -317,7 +317,10 @@ Accept wildcard characters: False
 ```
 
 ### -FormatTargetPartition
-Formats the target recovery partition (NTFS, quick) before a flat expansion so the image lands on a clean volume with no overlapping content. Only honoured with -ExpandBootImage on a -RecoveryPartition. DESTROYS all existing content on that partition, including any existing \Recovery\WindowsRE payload.
+Formats the target recovery partition (NTFS, quick) before a flat expansion so the image lands on a clean volume with no overlapping content.
+Only honoured with -ExpandBootImage on a -RecoveryPartition.
+DESTROYS all existing content on that partition, including any existing \Recovery\WindowsRE payload.
+
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
@@ -325,7 +328,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

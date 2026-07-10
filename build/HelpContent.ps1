@@ -44,8 +44,40 @@
         AddLast                 = 'When set, appends the new BCD entry to the end of the boot order instead of the default position.'
         SetDefault              = 'When set, marks the new boot entry as the default in BCD.'
         SetDefaultBootEntry     = 'When set in a plan, instructs the plan to make the recovery BCD entry the default boot entry.'
+        PartitionScheme         = 'Partition table style written to the disk: Gpt (default, UEFI) or Mbr (legacy BIOS; at most four primary partitions and no Microsoft Reserved partition).'
+        PartitionLayoutPreset   = 'Named disk layout. RecoveryLast (default) is EFI 1 GiB, MSR 1 GiB, OS 80% of remaining, RECOVERY 100% of remaining. RecoveryFirst is EFI 1 GiB, MSR 1 GiB, RECOVERY 20% of remaining, OS 100% of remaining. NoRecovery is EFI 1 GiB, MSR 1 GiB, OS 100% of remaining.'
+        PartitionLayout         = 'Ordered list of DiskPartitionSpec entries describing a custom layout. Entries are created in list order; a Percentage entry takes that percentage of the free space remaining at that point, so a trailing 100% entry consumes the rest of the disk.'
         Force                   = 'Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.'
         PassThru                = 'Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.'
+    }
+    'Initialize-RecoveryDisk' = @{
+        Synopsis    = 'Erases a disk and lays down a complete partition set.'
+        Description = 'Rewrites the partition table on the target disk, creates every partition in order, and formats each one. Use -PartitionLayoutPreset for a named layout or -PartitionLayout for a custom ordered list of DiskPartitionSpec entries. Percentage entries are taken against the free space remaining at that point, so a trailing 100% entry consumes the rest of the disk. All work is done through native disk IOCTLs and fmifs!FormatEx; diskpart and format.com are never invoked. This is destructive and irreversible: the disk hosting the running operating system is always refused, so run from Windows PE to lay out the system disk.'
+        OneLiner    = 'Initialize-RecoveryDisk -DiskNumber 1 -PartitionScheme GPT -PartitionLayoutPreset RecoveryLast -Force -PassThru'
+        OneLinerDescription = 'Erases disk 1 and creates EFI (1 GiB), MSR (1 GiB), OS (80% of remaining), and RECOVERY (the rest).'
+        Parameters  = @{
+            DiskNumber = 'Number of the physical disk to erase and repartition, as reported by Get-Disk. Aliased to -DiskId.'
+        }
+        Splat       = @'
+$PartitionLayout = New-Object -TypeName 'System.Collections.Generic.List[PSRecoveryPartition.DiskPartitionSpec]'
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('EFI',      'Size',       1GB))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('MSR',      'Size',       1GB))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('OS',       'Percentage', 100))
+
+$InitializeRecoveryDiskParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $InitializeRecoveryDiskParameters.DiskNumber      = 1
+    $InitializeRecoveryDiskParameters.PartitionScheme = 'GPT'
+    $InitializeRecoveryDiskParameters.PartitionLayout = $PartitionLayout
+    $InitializeRecoveryDiskParameters.Force           = $True
+    $InitializeRecoveryDiskParameters.PassThru        = $True
+    $InitializeRecoveryDiskParameters.Verbose         = $True
+
+$InitializeRecoveryDiskResult = Initialize-RecoveryDisk @InitializeRecoveryDiskParameters
+
+Write-Output -InputObject ($InitializeRecoveryDiskResult)
+'@
+        SplatDescription = 'Erases disk 1 and applies a custom ordered layout: a 1 GiB EFI system partition, a 1 GiB Microsoft Reserved partition, a recovery partition sized at 20% of the remaining space, and an OS partition that consumes the rest.'
     }
     'Get-RecoveryPartition' = @{
         Synopsis    = 'Discovers recovery partitions on local disks.'

@@ -39,6 +39,10 @@ namespace PSRecoveryPartition.Native
         public const uint IOCTL_DISK_SET_DRIVE_LAYOUT_EX   = 0x0007C054;
         public const uint IOCTL_DISK_UPDATE_PROPERTIES     = 0x00070140;
         public const uint IOCTL_DISK_GROW_PARTITION        = 0x0007C0D0;
+        // CTL_CODE(0x07, 0x0016, METHOD_BUFFERED, FILE_READ_ACCESS|FILE_WRITE_ACCESS)
+        public const uint IOCTL_DISK_CREATE_DISK           = 0x0007C058;
+        // CTL_CODE(0x07, 0x0040, METHOD_BUFFERED, FILE_READ_ACCESS|FILE_WRITE_ACCESS)
+        public const uint IOCTL_DISK_DELETE_DRIVE_LAYOUT   = 0x0007C100;
 
         // Volume IOCTLs (IOCTL_VOLUME_BASE = 0x56).
         public const uint IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS = 0x00560000;

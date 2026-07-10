@@ -32,8 +32,12 @@ namespace PSRecoveryPartition
                 info.PartitionUniqueId = info.Guid;
                 info.GptType           = "{" + partition.GptType.ToString("D").ToLowerInvariant() + "}";
                 info.KnownGptType      = DiskEnumMaps.FromGuid(partition.GptType);
+                // NO_DRIVE_LETTER (bit 63) is the bit Set-RecoveryPartition and the
+                // recovery attribute mask actually write. Reading NO_AUTOMOUNT
+                // (bit 31) here meant a partition stamped "no drive letter" was
+                // always reported back as false.
                 info.NoDefaultDriveLetter = (partition.GptAttributes
-                    & NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_NO_AUTOMOUNT) != 0;
+                    & NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_NO_DRIVE_LETTER) != 0;
                 info.IsHidden = (partition.GptAttributes
                     & NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_HIDDEN) != 0;
             }

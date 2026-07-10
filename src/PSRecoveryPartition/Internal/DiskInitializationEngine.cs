@@ -183,7 +183,9 @@ namespace PSRecoveryPartition
                         break;
                     case DiskPartitionKind.Recovery:
                         finalType = GptTypeRecovery;
-                        attributes = GptPartitionAttributes.Recovery;
+                        // No drive letter and hidden by default, matching what
+                        // New-RecoveryPartition stamps. An explicit mask overrides.
+                        attributes = GptPartitionAttributes.RecoveryHidden;
                         break;
                     case DiskPartitionKind.Msr:
                     case DiskPartitionKind.Basic:

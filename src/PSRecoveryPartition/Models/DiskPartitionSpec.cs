@@ -62,24 +62,40 @@ namespace PSRecoveryPartition
             Validate();
         }
 
-        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, GptPartitionAttributes gptAttributes)
+        /// <summary>
+        /// Attributes are taken as an array so they read naturally from PowerShell:
+        /// <c>@('Recovery','Hidden')</c>. A single value binds too (PowerShell wraps
+        /// a scalar into a one-element array), as does a pre-combined mask built
+        /// with <c>-bor</c>. The values are OR-ed together.
+        /// </summary>
+        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, GptPartitionAttributes[] gptAttributes)
             : this(label, sizeMode, value, kind)
         {
-            GptAttributes = gptAttributes;
+            GptAttributes = Combine(gptAttributes);
             HasExplicitGptAttributes = true;
         }
 
-        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, GptPartitionAttributes gptAttributes, DiskFileSystem fileSystem)
+        public DiskPartitionSpec(string label, DiskPartitionSizeMode sizeMode, long value, DiskPartitionKind kind, GptPartitionAttributes[] gptAttributes, DiskFileSystem fileSystem)
             : this(label, sizeMode, value, kind, gptAttributes)
         {
             FileSystem = fileSystem;
         }
 
         // No (label, sizeMode, value, kind, DiskFileSystem) overload: it would be
-        // ambiguous with the GptPartitionAttributes overload above, since
-        // PowerShell ranks string-to-enum conversions identically for both. To set
-        // a file system without an explicit mask, pass GptPartitionAttributes.None
-        // to the six-argument form, or assign the FileSystem property.
+        // ambiguous with the attributes overload above, since PowerShell ranks the
+        // string-to-enum conversions identically for both. To set a file system
+        // without an explicit mask, pass @('None') to the six-argument form, or
+        // assign the FileSystem property.
+
+        private static GptPartitionAttributes Combine(GptPartitionAttributes[] values)
+        {
+            var combined = GptPartitionAttributes.None;
+            if (values != null)
+            {
+                foreach (var v in values) { combined |= v; }
+            }
+            return combined;
+        }
 
         private void Validate()
         {

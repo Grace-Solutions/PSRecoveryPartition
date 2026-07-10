@@ -6,11 +6,11 @@ namespace PSRecoveryPartition
     /// GPT partition attribute bits, as a flags enum over the native 64-bit mask.
     ///
     /// <para>Because this is an enum, PowerShell binds the member names directly --
-    /// no hex literals and no helper variable:</para>
+    /// no hex literals and no helper variable. The spec constructors take the
+    /// attributes as an array, so several bits read naturally:</para>
     /// <code>
-    /// [PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', 'Recovery')
-    /// [PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', 'Recovery, Hidden')
-    /// [PSRecoveryPartition.GptPartitionAttributes]::Recovery -bor [PSRecoveryPartition.GptPartitionAttributes]::Hidden
+    /// [PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('NoDriveLetter'))
+    /// [PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('Recovery','Hidden'))
     /// </code>
     /// <para>Writing the mask as a raw literal does not work: <c>0x8000000000000001</c>
     /// exceeds <c>[Int64]::MaxValue</c>, so PowerShell coerces it to a negative
@@ -43,9 +43,17 @@ namespace PSRecoveryPartition
         /// <summary>
         /// The canonical Microsoft Windows RE recovery mask
         /// (<c>0x8000000000000001</c>): <see cref="PlatformRequired"/> plus
-        /// <see cref="NoDriveLetter"/>. Applied automatically to a
-        /// <see cref="DiskPartitionKind.Recovery"/> partition.
+        /// <see cref="NoDriveLetter"/>.
         /// </summary>
         Recovery = PlatformRequired | NoDriveLetter,
+
+        /// <summary>
+        /// The mask this module applies to a <see cref="DiskPartitionKind.Recovery"/>
+        /// partition by default (<c>0xC000000000000001</c>): <see cref="Recovery"/>
+        /// plus <see cref="Hidden"/>, so the partition takes no drive letter and is
+        /// hidden from ordinary enumeration. This matches what
+        /// <c>New-RecoveryPartition</c> stamps. Pass an explicit mask to override.
+        /// </summary>
+        RecoveryHidden = Recovery | Hidden,
     }
 }

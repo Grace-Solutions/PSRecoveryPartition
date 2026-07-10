@@ -43,7 +43,7 @@ Erases disk 1 and creates EFI (1 GiB), MSR (1 GiB), OS (80% of remaining), and R
 $PartitionLayout = New-Object -TypeName 'System.Collections.Generic.List[PSRecoveryPartition.DiskPartitionSpec]'
     $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('EFI',      'Size',       1GB))
     $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('MSR',      'Size',       1GB))
-    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', 'Recovery, Hidden'))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('Recovery', 'Hidden')))
     $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('OS',       'Percentage', 100))
 
 $InitializeRecoveryDiskParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
@@ -63,24 +63,24 @@ Erases disk 1 and applies a custom ordered layout: a 1 GiB EFI system partition,
 
 ### Example 3: Custom GPT attributes and file systems
 ```powershell
-# The default a Recovery partition already receives (PlatformRequired + NoDriveLetter).
-[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', 'Recovery')
+# A Recovery partition is already no-drive-letter and hidden by default, so the
+# three-argument form is all you normally need.
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20)
 
-# Same, but also hidden from ordinary enumeration. Flags combine in one string.
-[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', 'Recovery, Hidden')
+# Override the mask: attributes are an array of enum member names.
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('Recovery', 'Hidden'))
 
-# ...or with -bor, if you prefer the explicit form.
-$Attr = [PSRecoveryPartition.GptPartitionAttributes]
-[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', ($Attr::Recovery -bor $Attr::Hidden))
+# Drop the hidden bit and keep only the canonical Microsoft mask.
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('Recovery'))
 
 # A basic data partition that never receives a drive letter, formatted exFAT.
-[PSRecoveryPartition.DiskPartitionSpec]::New('DATA', 'Percentage', 100, 'Basic', 'NoDriveLetter', 'exFAT')
+[PSRecoveryPartition.DiskPartitionSpec]::New('DATA', 'Percentage', 100, 'Basic', @('NoDriveLetter'), 'exFAT')
 
-# No explicit mask, just a file system: pass None for the attributes.
-[PSRecoveryPartition.DiskPartitionSpec]::New('DATA', 'Percentage', 100, 'Basic', 'None', 'ReFs')
+# No explicit mask, just a file system: pass @('None') for the attributes.
+[PSRecoveryPartition.DiskPartitionSpec]::New('DATA', 'Percentage', 100, 'Basic', @('None'), 'ReFs')
 ```
 
-The five-argument overload takes a GptPartitionAttributes mask; the six-argument overload additionally takes a DiskFileSystem. Both are enums, so the member names bind directly from strings -- no hex literals and no helper variables. Pass 'None' for the attributes when you only want to choose a file system.
+The five-argument overload takes an array of GptPartitionAttributes; the six-argument overload additionally takes a DiskFileSystem. Every value is an enum, so member names bind directly from strings -- no hex literals and no helper variables -- and the array is OR-ed together. Pass @('None') for the attributes when you only want to choose a file system.
 
 ## PARAMETERS
 
@@ -246,20 +246,28 @@ from a plain string and rejects a typo at bind time:
   DiskPartitionKind       Basic, Efi, Msr, Recovery
   DiskFileSystem          Ntfs, Fat32, ExFat, Fat, ReFs
   GptPartitionAttributes  None, PlatformRequired, NoAutomount, ReadOnly,
-                          ShadowCopy, Hidden, NoDriveLetter, Recovery
+                          ShadowCopy, Hidden, NoDriveLetter, Recovery,
+                          RecoveryHidden
   GptPartitionType        BasicData, EfiSystem, MicrosoftReserved,
                           WindowsRecovery  (derived from the Kind; read-only)
 
 The GPT partition type is chosen from the Kind, so you never pass a type GUID.
-GptPartitionAttributes is a [Flags] enum, so several bits combine either as a
-single string ('Recovery, Hidden') or with -bor.
+Attributes are supplied as an array, so several bits read naturally:
 
-A Recovery partition is automatically tagged with the canonical Microsoft mask
-PLATFORM_REQUIRED | NO_DRIVE_LETTER (0x8000000000000001), so you do not need to
-supply it. The mask is applied natively (IOCTL_DISK_SET_DRIVE_LAYOUT_EX) after
-the volume is formatted, because a partition that already carries the recovery
-type GUID or the no-drive-letter bit will not mount and therefore cannot be
-formatted.
+  @('Recovery', 'Hidden')
+
+A single value also binds, and a mask pre-combined with -bor is accepted too.
+
+By default a Recovery partition -- in every preset and in any custom entry with
+Kind Recovery -- is tagged RecoveryHidden: PLATFORM_REQUIRED | NO_DRIVE_LETTER |
+HIDDEN (0xC000000000000001). It therefore takes no drive letter and is hidden
+from ordinary enumeration, matching what New-RecoveryPartition stamps. Supply an
+explicit attribute array to override this. (The canonical Microsoft mask without
+the hidden bit is available as the Recovery member.)
+
+The mask is applied natively (IOCTL_DISK_SET_DRIVE_LAYOUT_EX) after the volume is
+formatted, because a partition that already carries the recovery type GUID or the
+no-drive-letter bit will not mount and therefore cannot be formatted.
 
 Never write the mask as a raw PowerShell hex literal: 0x8000000000000001 exceeds
 [Int64]::MaxValue, so PowerShell coerces it to a negative number and the value

@@ -13,6 +13,7 @@
     ProcessorArchitecture = 'None'
 
     CmdletsToExport = @(
+        'Initialize-RecoveryDisk'
         'Get-RecoveryPartition'
         'New-RecoveryPartition'
         'Set-RecoveryPartition'

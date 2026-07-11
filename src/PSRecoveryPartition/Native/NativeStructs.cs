@@ -166,6 +166,30 @@ namespace PSRecoveryPartition.Native
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    internal struct CREATE_DISK_MBR
+    {
+        public uint Signature;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct CREATE_DISK_GPT
+    {
+        public Guid DiskId;
+        public uint MaxPartitionCount;
+    }
+
+    // CREATE_DISK is PARTITION_STYLE followed by a union of the MBR (4-byte) and
+    // GPT (20-byte) variants. The union starts at offset 4; Guid aligns to 4, so
+    // the whole struct sizes out to 24 bytes exactly as winioctl.h declares it.
+    [StructLayout(LayoutKind.Explicit, Size = 24)]
+    internal struct CREATE_DISK
+    {
+        [FieldOffset(0)] public PartitionStyle PartitionStyle;
+        [FieldOffset(4)] public CREATE_DISK_MBR Mbr;
+        [FieldOffset(4)] public CREATE_DISK_GPT Gpt;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     internal struct SET_PARTITION_INFORMATION_EX_GPT
     {
         public PartitionStyle PartitionStyle;

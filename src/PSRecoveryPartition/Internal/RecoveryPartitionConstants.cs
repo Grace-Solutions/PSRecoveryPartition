@@ -11,10 +11,10 @@ namespace PSRecoveryPartition
         // MBR partition type byte (0x27) for Windows Recovery Environment.
         public const int MbrTypeRecovery = 0x27;
 
-        // GPT attributes for a recovery partition: required, no drive letter,
-        // hidden, no automount. Combined value 0x8000000000000001 historically;
-        // we expose individual flags here for the Storage cmdlet path.
-        public const long GptAttributesRecovery = unchecked((long)0x8000000000000001UL);
+        // GPT attributes for a recovery partition live on the public
+        // GptPartitionAttributes flags enum (Recovery, RecoveryHidden), which is
+        // the single source of truth for both New-RecoveryPartition and
+        // Initialize-RecoveryDisk.
 
         public const string DefaultLabel = "RECOVERY";
         public const long DefaultSizeBytes = 1024L * 1024L * 1024L; // 1 GiB

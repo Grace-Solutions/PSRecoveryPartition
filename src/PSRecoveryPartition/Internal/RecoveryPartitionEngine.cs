@@ -104,9 +104,9 @@ namespace PSRecoveryPartition
         {
             var disk = Win32DiskInfoReader.Read(diskNumber);
             var gptType = new Guid(RecoveryPartitionConstants.GptTypeRecovery.Trim('{', '}'));
-            var finalAttributes = NativeConstants.GPT_ATTRIBUTE_PLATFORM_REQUIRED
-                                  | NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_NO_DRIVE_LETTER
-                                  | NativeConstants.GPT_BASIC_DATA_ATTRIBUTE_HIDDEN;
+            // PlatformRequired | NoDriveLetter | Hidden -- the same default
+            // Initialize-RecoveryDisk applies to a Recovery partition.
+            var finalAttributes = (ulong)GptPartitionAttributes.RecoveryHidden;
             var resolvedLabel = string.IsNullOrEmpty(label) ? RecoveryPartitionConstants.DefaultLabel : label;
             var resolvedFs    = string.IsNullOrEmpty(fileSystem) ? "NTFS" : fileSystem;
 

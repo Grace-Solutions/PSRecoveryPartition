@@ -1193,6 +1193,421 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Initialize-RecoveryDisk</command:name>
+      <command:verb>Initialize</command:verb>
+      <command:noun>RecoveryDisk</command:noun>
+      <maml:description>
+        <maml:para>Erases a disk and lays down a complete partition set.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Rewrites the partition table on the target disk, creates every partition in order, and formats each one. Use -PartitionLayoutPreset for a named layout or -PartitionLayout for a custom ordered list of DiskPartitionSpec entries. Percentage entries are taken against the free space remaining at that point, so a trailing 100% entry consumes the rest of the disk. All work is done through native disk IOCTLs and fmifs!FormatEx; diskpart and format.com are never invoked. This is destructive and irreversible: the disk hosting the running operating system is always refused, so run from Windows PE to lay out the system disk.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Initialize-RecoveryDisk</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="0" aliases="DiskId">
+          <maml:name>DiskNumber</maml:name>
+          <maml:description>
+            <maml:para>Number of the physical disk to erase and repartition, as reported by Get-Disk. Aliased to -DiskId.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PartitionLayout</maml:name>
+          <maml:description>
+            <maml:para>Ordered list of DiskPartitionSpec entries describing a custom layout. Entries are created in list order; a Percentage entry takes that percentage of the free space remaining at that point, so a trailing 100% entry consumes the rest of the disk.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">DiskPartitionSpec[]</command:parameterValue>
+          <dev:type>
+            <maml:name>DiskPartitionSpec[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PartitionScheme</maml:name>
+          <maml:description>
+            <maml:para>Partition table style written to the disk: Gpt (default, UEFI) or Mbr (legacy BIOS; at most four primary partitions and no Microsoft Reserved partition).</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">Gpt</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">Mbr</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">DiskPartitionScheme</command:parameterValue>
+          <dev:type>
+            <maml:name>DiskPartitionScheme</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:description>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Initialize-RecoveryDisk</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="0" aliases="DiskId">
+          <maml:name>DiskNumber</maml:name>
+          <maml:description>
+            <maml:para>Number of the physical disk to erase and repartition, as reported by Get-Disk. Aliased to -DiskId.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PartitionLayoutPreset</maml:name>
+          <maml:description>
+            <maml:para>Named disk layout. RecoveryLast (default) is EFI 1 GiB, MSR 1 GiB, OS 80% of remaining, RECOVERY 100% of remaining. RecoveryFirst is EFI 1 GiB, MSR 1 GiB, RECOVERY 20% of remaining, OS 100% of remaining. NoRecovery is EFI 1 GiB, MSR 1 GiB, OS 100% of remaining.</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">RecoveryFirst</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">RecoveryLast</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">NoRecovery</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">DiskPartitionLayoutPreset</command:parameterValue>
+          <dev:type>
+            <maml:name>DiskPartitionLayoutPreset</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PartitionScheme</maml:name>
+          <maml:description>
+            <maml:para>Partition table style written to the disk: Gpt (default, UEFI) or Mbr (legacy BIOS; at most four primary partitions and no Microsoft Reserved partition).</maml:para>
+          </maml:description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">Gpt</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">Mbr</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">DiskPartitionScheme</command:parameterValue>
+          <dev:type>
+            <maml:name>DiskPartitionScheme</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:description>
+            <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+          <maml:name>ProgressAction</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+          <dev:type>
+            <maml:name>ActionPreference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+        <maml:name>Confirm</maml:name>
+        <maml:description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="0" aliases="DiskId">
+        <maml:name>DiskNumber</maml:name>
+        <maml:description>
+          <maml:para>Number of the physical disk to erase and repartition, as reported by Get-Disk. Aliased to -DiskId.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:description>
+          <maml:para>Suppresses interactive prompts and overrides safety refusals that would otherwise block destructive or risky changes.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PartitionLayout</maml:name>
+        <maml:description>
+          <maml:para>Ordered list of DiskPartitionSpec entries describing a custom layout. Entries are created in list order; a Percentage entry takes that percentage of the free space remaining at that point, so a trailing 100% entry consumes the rest of the disk.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">DiskPartitionSpec[]</command:parameterValue>
+        <dev:type>
+          <maml:name>DiskPartitionSpec[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PartitionLayoutPreset</maml:name>
+        <maml:description>
+          <maml:para>Named disk layout. RecoveryLast (default) is EFI 1 GiB, MSR 1 GiB, OS 80% of remaining, RECOVERY 100% of remaining. RecoveryFirst is EFI 1 GiB, MSR 1 GiB, RECOVERY 20% of remaining, OS 100% of remaining. NoRecovery is EFI 1 GiB, MSR 1 GiB, OS 100% of remaining.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">DiskPartitionLayoutPreset</command:parameterValue>
+        <dev:type>
+          <maml:name>DiskPartitionLayoutPreset</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PartitionScheme</maml:name>
+        <maml:description>
+          <maml:para>Partition table style written to the disk: Gpt (default, UEFI) or Mbr (legacy BIOS; at most four primary partitions and no Microsoft Reserved partition).</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">DiskPartitionScheme</command:parameterValue>
+        <dev:type>
+          <maml:name>DiskPartitionScheme</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PassThru</maml:name>
+        <maml:description>
+          <maml:para>Returns the resulting object after the operation completes. By default the cmdlet returns nothing on success.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+        <maml:name>WhatIf</maml:name>
+        <maml:description>
+          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="proga">
+        <maml:name>ProgressAction</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill ProgressAction Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">ActionPreference</command:parameterValue>
+        <dev:type>
+          <maml:name>ActionPreference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Int32</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>PSRecoveryPartition.DiskInitializationResult</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>GPT partition types and attributes</maml:para>
+        <maml:para>Every DiskPartitionSpec value is an enum, so PowerShell binds the member name from a plain string and rejects a typo at bind time:</maml:para>
+        <maml:para>  DiskPartitionKind       Basic, Efi, Msr, Recovery   DiskFileSystem          Ntfs, Fat32, ExFat, Fat, ReFs   GptPartitionAttributes  None, PlatformRequired, NoAutomount, ReadOnly,                           ShadowCopy, Hidden, NoDriveLetter, Recovery,                           RecoveryHidden   GptPartitionType        BasicData, EfiSystem, MicrosoftReserved,                           WindowsRecovery  (derived from the Kind; read-only)</maml:para>
+        <maml:para>The GPT partition type is chosen from the Kind, so you never pass a type GUID. Attributes are supplied as an array, so several bits read naturally:</maml:para>
+        <maml:para>  @('Recovery', 'Hidden')</maml:para>
+        <maml:para>A single value also binds, and a mask pre-combined with -bor is accepted too.</maml:para>
+        <maml:para>By default a Recovery partition -- in every preset and in any custom entry with Kind Recovery -- is tagged RecoveryHidden: PLATFORM_REQUIRED | NO_DRIVE_LETTER | HIDDEN (0xC000000000000001). It therefore takes no drive letter and is hidden from ordinary enumeration, matching what New-RecoveryPartition stamps. Supply an explicit attribute array to override this. (The canonical Microsoft mask without the hidden bit is available as the Recovery member.)</maml:para>
+        <maml:para>The mask is applied natively (IOCTL_DISK_SET_DRIVE_LAYOUT_EX) after the volume is formatted, because a partition that already carries the recovery type GUID or the no-drive-letter bit will not mount and therefore cannot be formatted.</maml:para>
+        <maml:para>Never write the mask as a raw PowerShell hex literal: 0x8000000000000001 exceeds [Int64]::MaxValue, so PowerShell coerces it to a negative number and the value you get is not the value you wrote. Use the enum member names.</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>----------------- Example 1: Single-line usage -----------------</maml:title>
+        <dev:code>Initialize-RecoveryDisk -DiskNumber 1 -PartitionScheme GPT -PartitionLayoutPreset RecoveryLast -Force -PassThru</dev:code>
+        <dev:remarks>
+          <maml:para>Erases disk 1 and creates EFI (1 GiB), MSR (1 GiB), OS (80% of remaining), and RECOVERY (the rest).</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>---- Example 2: Splatted parameters with OrderedDictionary ----</maml:title>
+        <dev:code>$PartitionLayout = New-Object -TypeName 'System.Collections.Generic.List[PSRecoveryPartition.DiskPartitionSpec]'
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('EFI',      'Size',       1GB))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('MSR',      'Size',       1GB))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('Recovery', 'Hidden')))
+    $PartitionLayout.Add([PSRecoveryPartition.DiskPartitionSpec]::New('OS',       'Percentage', 100))
+
+$InitializeRecoveryDiskParameters = New-Object -TypeName 'System.Collections.Specialized.OrderedDictionary' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    $InitializeRecoveryDiskParameters.DiskNumber      = 1
+    $InitializeRecoveryDiskParameters.PartitionScheme = 'GPT'
+    $InitializeRecoveryDiskParameters.PartitionLayout = $PartitionLayout
+    $InitializeRecoveryDiskParameters.Force           = $True
+    $InitializeRecoveryDiskParameters.PassThru        = $True
+    $InitializeRecoveryDiskParameters.Verbose         = $True
+
+$InitializeRecoveryDiskResult = Initialize-RecoveryDisk @InitializeRecoveryDiskParameters
+
+Write-Output -InputObject ($InitializeRecoveryDiskResult)</dev:code>
+        <dev:remarks>
+          <maml:para>Erases disk 1 and applies a custom ordered layout: a 1 GiB EFI system partition, a 1 GiB Microsoft Reserved partition, a recovery partition sized at 20% of the remaining space and tagged with the recovery attribute mask plus the hidden bit, and an OS partition that consumes the rest.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>------ Example 3: Custom GPT attributes and file systems ------</maml:title>
+        <dev:code># A Recovery partition is already no-drive-letter and hidden by default, so the
+# three-argument form is all you normally need.
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20)
+
+# Override the mask: attributes are an array of enum member names.
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('Recovery', 'Hidden'))
+
+# Drop the hidden bit and keep only the canonical Microsoft mask.
+[PSRecoveryPartition.DiskPartitionSpec]::New('RECOVERY', 'Percentage', 20, 'Recovery', @('Recovery'))
+
+# A basic data partition that never receives a drive letter, formatted exFAT.
+[PSRecoveryPartition.DiskPartitionSpec]::New('DATA', 'Percentage', 100, 'Basic', @('NoDriveLetter'), 'exFAT')
+
+# No explicit mask, just a file system: pass @('None') for the attributes.
+[PSRecoveryPartition.DiskPartitionSpec]::New('DATA', 'Percentage', 100, 'Basic', @('None'), 'ReFs')</dev:code>
+        <dev:remarks>
+          <maml:para>The five-argument overload takes an array of GptPartitionAttributes; the six-argument overload additionally takes a DiskFileSystem. Every value is an enum, so member names bind directly from strings -- no hex literals and no helper variables -- and the array is OR-ed together. Pass @('None') for the attributes when you only want to choose a file system.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Mount-RecoveryPartition</command:name>
       <command:verb>Mount</command:verb>
       <command:noun>RecoveryPartition</command:noun>
@@ -1459,9 +1874,9 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
             <command:parameterValue required="false" command:variableLength="false">FAT32</command:parameterValue>
             <command:parameterValue required="false" command:variableLength="false">ReFS</command:parameterValue>
           </command:parameterValueGroup>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">DiskFileSystem</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>DiskFileSystem</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -1583,9 +1998,9 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
             <command:parameterValue required="false" command:variableLength="false">FAT32</command:parameterValue>
             <command:parameterValue required="false" command:variableLength="false">ReFS</command:parameterValue>
           </command:parameterValueGroup>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">DiskFileSystem</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>DiskFileSystem</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -1703,9 +2118,9 @@ Write-Output -InputObject ($GetRecoveryPartitionResult)</dev:code>
         <maml:description>
           <maml:para>File system used to format the recovery partition. Defaults to NTFS.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">DiskFileSystem</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>DiskFileSystem</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>

@@ -2,7 +2,7 @@
 Module Name: PSRecoveryPartition
 Module Guid: d6d6f0b8-2a4b-4a8d-9d2a-7c0f4c2b5e9a
 Download Help Link: https://github.com/GraceSolutions/PSRecoveryPartition
-Help Version: 2026.7.6.1552
+Help Version: 2026.7.10.142
 Locale: en-US
 ---
 
@@ -31,6 +31,9 @@ Returns the current Windows Recovery Environment configuration.
 
 ### [Get-WindowsRecoveryImage](Get-WindowsRecoveryImage.md)
 Discovers Windows RE or Windows PE image files.
+
+### [Initialize-RecoveryDisk](Initialize-RecoveryDisk.md)
+Erases a disk and lays down a complete partition set.
 
 ### [Mount-RecoveryPartition](Mount-RecoveryPartition.md)
 Mounts a recovery partition at a folder mount point.

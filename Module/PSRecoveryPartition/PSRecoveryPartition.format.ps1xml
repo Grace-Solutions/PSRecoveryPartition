@@ -104,6 +104,7 @@
               <ListItem><PropertyName>FileSystem</PropertyName></ListItem>
               <ListItem><PropertyName>SizeBytes</PropertyName></ListItem>
               <ListItem><PropertyName>Offset</PropertyName></ListItem>
+              <ListItem><PropertyName>KnownGptType</PropertyName></ListItem>
               <ListItem><PropertyName>GptType</PropertyName></ListItem>
               <ListItem><PropertyName>MbrType</PropertyName></ListItem>
               <ListItem><PropertyName>DriveLetter</PropertyName></ListItem>
@@ -176,6 +177,26 @@
               <ListItem><PropertyName>EntryPointMode</PropertyName></ListItem>
               <ListItem><PropertyName>Changed</PropertyName></ListItem>
               <ListItem><PropertyName>Steps</PropertyName></ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+    <View>
+      <Name>PSRecoveryPartition.DiskInitializationResult</Name>
+      <ViewSelectedBy>
+        <TypeName>PSRecoveryPartition.DiskInitializationResult</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem><PropertyName>DiskNumber</PropertyName></ListItem>
+              <ListItem><PropertyName>PartitionScheme</PropertyName></ListItem>
+              <ListItem><PropertyName>DiskSizeBytes</PropertyName></ListItem>
+              <ListItem><PropertyName>Changed</PropertyName></ListItem>
+              <ListItem><PropertyName>Partitions</PropertyName></ListItem>
             </ListItems>
           </ListEntry>
         </ListEntries>

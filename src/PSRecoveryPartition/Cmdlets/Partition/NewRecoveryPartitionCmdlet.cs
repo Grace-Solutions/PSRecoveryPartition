@@ -30,8 +30,7 @@ namespace PSRecoveryPartition.Cmdlets
         public string Label { get; set; }
 
         [Parameter]
-        [ValidateSet("NTFS", "FAT32", "ReFS")]
-        public string FileSystem { get; set; } = "NTFS";
+        public DiskFileSystem FileSystem { get; set; } = DiskFileSystem.Ntfs;
 
         // Where/how the partition is placed. The recovery partition is always
         // created after the existing partitions (never before the OS); the mode
@@ -64,7 +63,7 @@ namespace PSRecoveryPartition.Cmdlets
                 " bytes (" + mode + "), " + FileSystem + ", label '" + (Label ?? "RECOVERY") +
                 "', placement " + CreationMode + ".");
             var engine = new RecoveryPartitionEngine(this);
-            var info = engine.Create(DiskNumber, resolved, Label, FileSystem, CreationMode);
+            var info = engine.Create(DiskNumber, resolved, Label, DiskEnumMaps.ToNativeName(FileSystem), CreationMode);
             WriteVerbose("Created recovery partition: disk " + info.DiskNumber + " partition " +
                 info.PartitionNumber + " at offset " + info.Offset + ".");
             Stamp(info);

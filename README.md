@@ -167,6 +167,7 @@ On MBR disks the module writes the partition type byte `0x27` (Windows Recovery)
 
 | Cmdlet | Synopsis |
 |--------|----------|
+| [Initialize-RecoveryDisk](docs/Initialize-RecoveryDisk.md) | Erases a disk and lays down a complete partition set. |
 | [Get-RecoveryPartition](docs/Get-RecoveryPartition.md) | Discovers recovery partitions on local disks. |
 | [New-RecoveryPartition](docs/New-RecoveryPartition.md) | Creates a recovery partition on a target disk. |
 | [Set-RecoveryPartition](docs/Set-RecoveryPartition.md) | Updates the metadata of an existing recovery partition. |

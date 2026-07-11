@@ -11,7 +11,12 @@ namespace PSRecoveryPartition
         public string DiskPath { get; set; }
         public string PartitionUniqueId { get; set; }
         public string Guid { get; set; }
+        // Raw GPT type GUID, e.g. {de94bba4-06d1-4d40-a16a-bfd50179d6ac}. Always
+        // authoritative, including for types outside the well-known set.
         public string GptType { get; set; }
+        // Friendly name for GptType when it is one this module recognises;
+        // Unknown otherwise (and on MBR disks).
+        public GptPartitionType KnownGptType { get; set; }
         public string MbrType { get; set; }
         public long Offset { get; set; }
         public long SizeBytes { get; set; }

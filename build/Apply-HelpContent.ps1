@@ -5,6 +5,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $docsDir = Join-Path $repoRoot 'docs'
 
 # Per-cmdlet content. Each entry supplies: Synopsis, Description, OneLiner, Splat (optional),
+# ExtraExamples (optional; array of @{Title;Code;Description}), Notes (optional),
 # Parameters (optional). A '__Common' entry supplies cross-cutting parameter descriptions.
 $content = . (Join-Path $PSScriptRoot 'HelpContent.ps1')
 $common  = if ($content.ContainsKey('__Common')) { $content['__Common'] } else { @{} }
@@ -47,10 +48,23 @@ foreach ($cmd in $content.Keys) {
     $text = Update-Section -Text $text -Heading '## DESCRIPTION' -Replacement $desc
 
     $examples = "## EXAMPLES`r`n`r`n### Example 1: Single-line usage`r`n``````powershell`r`n$($entry.OneLiner)`r`n```````r`n`r`n$($entry.OneLinerDescription)`r`n`r`n"
+    $exampleNumber = 2
     if ($entry.ContainsKey('Splat')) {
-        $examples += "### Example 2: Splatted parameters with OrderedDictionary`r`n``````powershell`r`n$($entry.Splat)`r`n```````r`n`r`n$($entry.SplatDescription)`r`n`r`n"
+        $examples += "### Example ${exampleNumber}: Splatted parameters with OrderedDictionary`r`n``````powershell`r`n$($entry.Splat)`r`n```````r`n`r`n$($entry.SplatDescription)`r`n`r`n"
+        $exampleNumber++
+    }
+    if ($entry.ContainsKey('ExtraExamples')) {
+        foreach ($ex in @($entry['ExtraExamples'])) {
+            $examples += "### Example ${exampleNumber}: $($ex.Title)`r`n``````powershell`r`n$($ex.Code)`r`n```````r`n`r`n$($ex.Description)`r`n`r`n"
+            $exampleNumber++
+        }
     }
     $text = Update-Section -Text $text -Heading '## EXAMPLES' -Replacement $examples
+
+    if ($entry.ContainsKey('Notes')) {
+        $notes = "## NOTES`r`n$($entry.Notes)`r`n`r`n"
+        $text = Update-Section -Text $text -Heading '## NOTES' -Replacement $notes
+    }
 
     $script:missing = @()
     $overrides = if ($entry.ContainsKey('Parameters')) { $entry['Parameters'] } else { @{} }
